@@ -1,90 +1,65 @@
-import { BrowserRouter, Routes, Route, Navigate, useOutletContext } from 'react-router-dom';
-import { Toaster } from 'sonner';
-import { useEffect } from 'react';
-import { WelcomeScreen } from './components/WelcomeScreen';
-import { LoginScreen } from './components/LoginScreen';
-import { MainLayout } from './components/MainLayout';
-import { Dashboard } from './components/Dashboard';
-import { CulturesTab } from './components/CulturesTab';
-import { ValvesTab } from './components/ValvesTab';
-import { SensorsTab } from './components/SensorsTab';
-import { WebAnalyticsTab } from './components/WebAnalyticsTab';
+import {
+  IonApp,
+  IonIcon,
+  IonLabel,
+  IonRouterOutlet,
+  IonTabBar,
+  IonTabButton,
+  IonTabs,
+  setupIonicReact,
+} from '@ionic/react';
+import { IonReactRouter } from '@ionic/react-router';
+import { homeOutline, leafOutline, timeOutline, optionsOutline } from 'ionicons/icons';
+import { Navigate, Route } from 'react-router-dom';
+import { SessionProvider } from '../features/irrigation/session';
+import { Overview } from '../features/irrigation/Overview';
+import { Areas } from '../features/irrigation/Areas';
+import { History } from '../features/irrigation/History';
+import { Settings } from '../features/irrigation/Settings';
+import { Laboratory } from '../features/laboratory/Laboratory';
+import '@ionic/react/css/core.css';
+import '@ionic/react/css/normalize.css';
+import '@ionic/react/css/structure.css';
+import '@ionic/react/css/typography.css';
+import '../styles/app.css';
 
-import { OutletContext } from './types';
-
-function DashboardWrapper() {
-  const { 
-    activeCultureNames, cultures, valves, sensors, 
-    sensorHistory, soilHealth, irrigationRecommendation 
-  } = useOutletContext<OutletContext>();
-  
-  return <Dashboard 
-    activeCultureNames={activeCultureNames} 
-    cultures={cultures}
-    valves={valves}
-    sensors={sensors}
-    sensorHistory={sensorHistory}
-    soilHealth={soilHealth}
-    irrigationRecommendation={irrigationRecommendation}
-  />;
-}
-
-function CulturesWrapper() {
-  const { cultures, onSetActiveCulture, onDeleteCulture } = useOutletContext<OutletContext>();
-  return <CulturesTab cultures={cultures} onSetActive={onSetActiveCulture} onDeleteCulture={onDeleteCulture} />;
-}
-
-function ValvesWrapper() {
-  const { valves, onAddValve, onToggleValve, onDeleteValve } = useOutletContext<OutletContext>();
-  return <ValvesTab valves={valves} onAddValve={onAddValve} onToggleValve={onToggleValve} onDeleteValve={onDeleteValve} />;
-}
-
-function SensorsWrapper() {
-  const { sensors, onAddSensor, onDeleteSensor } = useOutletContext<OutletContext>();
-  return <SensorsTab sensors={sensors} onAddSensor={onAddSensor} onDeleteSensor={onDeleteSensor} />;
-}
-
-function AnalyticsWrapper() {
-  const { sensorHistory } = useOutletContext<OutletContext>();
-  return <WebAnalyticsTab sensorHistory={sensorHistory} />;
-}
+setupIonicReact({ mode: 'md' });
 
 export default function App() {
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    if (savedTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, []);
-
   return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<WelcomeScreen />} />
-          <Route path="/login" element={<LoginScreen />} />
-          <Route element={<MainLayout />}>
-            <Route path="/cultures" element={<CulturesWrapper />} />
-            <Route path="/dashboard" element={<DashboardWrapper />} />
-            <Route path="/valves" element={<ValvesWrapper />} />
-            <Route path="/sensors" element={<SensorsWrapper />} />
-            <Route path="/analytics" element={<AnalyticsWrapper />} />
-          </Route>
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          style: {
-            background: '#ffffff',
-            color: '#1a2e1a',
-            border: '1px solid rgba(45, 90, 74, 0.2)',
-          },
-        }}
-      />
-    </>
+    <IonApp>
+      <SessionProvider>
+        <IonReactRouter>
+          <IonTabs>
+            <IonRouterOutlet>
+              <Route path="/app/home" element={<Overview />} />
+              <Route path="/app/areas" element={<Areas />} />
+              <Route path="/app/history" element={<History />} />
+              <Route path="/app/history/laboratory" element={<Laboratory />} />
+              <Route path="/app/settings" element={<Settings />} />
+              <Route path="*" element={<Navigate to="/app/home" replace />} />
+            </IonRouterOutlet>
+            <IonTabBar slot="bottom">
+              <IonTabButton tab="home" href="/app/home">
+                <IonIcon icon={homeOutline} />
+                <IonLabel>Início</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="areas" href="/app/areas">
+                <IonIcon icon={leafOutline} />
+                <IonLabel>Áreas</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="history" href="/app/history">
+                <IonIcon icon={timeOutline} />
+                <IonLabel>Histórico</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="settings" href="/app/settings">
+                <IonIcon icon={optionsOutline} />
+                <IonLabel>Ajustes</IonLabel>
+              </IonTabButton>
+            </IonTabBar>
+          </IonTabs>
+        </IonReactRouter>
+      </SessionProvider>
+    </IonApp>
   );
 }

@@ -1,0 +1,7 @@
+node_modules/
+dist/
+android/
+.local/
+package-lock.json
+RELATORIO.md
+WIREFRAMES.md

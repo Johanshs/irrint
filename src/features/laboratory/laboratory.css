@@ -1,0 +1,489 @@
+.field-experience {
+  margin: 20px 0;
+  color: #244d40;
+}
+.lab-live-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: end;
+  background: #fff;
+  border: 1px solid #d4e1d8;
+  border-radius: 14px;
+  padding: 18px;
+  margin: 14px 0;
+}
+.lab-live-controls .field {
+  flex: 1;
+  min-width: 170px;
+  margin: 0;
+}
+.lab-live-controls > .small-note {
+  width: 100%;
+  margin: 0;
+}
+.lab-live-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.lab-live-actions ion-button {
+  margin: 0;
+}
+.lab-replay-notice {
+  flex: 2;
+  min-width: 210px;
+}
+.lab-replay-notice p {
+  font-size: 0.82rem;
+  line-height: 1.6;
+  margin: 0 0 6px;
+  color: #617868;
+}
+.field-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  margin: 22px 0 14px;
+}
+.field-toolbar h2 {
+  font-size: 1.4rem;
+  margin: 5px 0 0;
+  letter-spacing: -0.035em;
+}
+.field-toggles {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.field-experience button,
+.component-inspector button {
+  font: inherit;
+  cursor: pointer;
+}
+.field-toggles button,
+.field-camera button,
+.component-directory button,
+.object-tools button {
+  min-height: 44px;
+  border: 1px solid #bfd0c6;
+  border-radius: 10px;
+  padding: 9px 13px;
+  background: #fcfdfb;
+  color: #285747;
+  font-size: 0.8rem;
+}
+.field-toggles button[aria-pressed='true'] {
+  background: #234f40;
+  color: #fff;
+  border-color: #234f40;
+}
+.field-experience button:focus-visible,
+.component-inspector button:focus-visible {
+  outline: 3px solid #2784bc;
+  outline-offset: 3px;
+}
+.field-stage {
+  position: relative;
+}
+.refined-scene .field-scene {
+  height: 530px;
+}
+.component-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.tag-leaders {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+.tag-leaders line {
+  stroke: #638c7c;
+  stroke-width: 1.2;
+  stroke-dasharray: 3 3;
+}
+.component-tag {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: auto;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  border: 1px solid #aac3b7;
+  background: #fffffff2;
+  border-radius: 7px;
+  box-shadow: 0 3px 12px #203d3512;
+  color: #284e40;
+  font-size: 11px !important;
+  min-height: 34px;
+  padding: 5px 9px;
+  white-space: nowrap;
+  transition:
+    background 0.15s,
+    box-shadow 0.15s;
+}
+.component-tag[hidden] {
+  display: none;
+}
+.component-tag > span {
+  color: #247660;
+  font-size: 16px;
+  line-height: 1;
+}
+.component-tag.hovered,
+.component-tag:hover {
+  background: #d6f1e4;
+  box-shadow: 0 0 0 2px #439e7f;
+}
+.field-camera {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 12px;
+}
+.mobile-label-note {
+  display: none;
+}
+.field-camera button {
+  min-width: 44px;
+  background: #f8fcf6;
+}
+.refined-scene .scene-caption {
+  padding: 8px 15px 15px;
+  margin: 0;
+}
+.water-panel {
+  background: #fff;
+  border: 1px solid #d4e1d8;
+  border-radius: 16px;
+  margin-top: 14px;
+  padding: 20px 22px;
+}
+.water-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.water-heading h3 {
+  font-size: 1.15rem;
+  margin: 5px 0 0;
+}
+.water-state {
+  font-size: 0.74rem;
+  border: 1px solid #d4dfd6;
+  border-radius: 20px;
+  padding: 6px 10px;
+  background: #f1f5ef;
+  text-align: center;
+}
+.water-state.flowing {
+  color: #096d81;
+  background: #e4f6fa;
+  border-color: #b5dee8;
+}
+.water-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+.water-metrics > div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.water-metrics > div > span {
+  font-size: 0.78rem;
+  color: #637d6e;
+}
+.water-metrics strong {
+  font-size: 1.8rem;
+  letter-spacing: -0.045em;
+  color: #1d5341;
+  font-variant-numeric: tabular-nums;
+}
+.water-metrics strong small {
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  margin-left: 5px;
+}
+.water-metrics small {
+  font-size: 0.68rem;
+  line-height: 1.4;
+  color: #6c8074;
+}
+.moisture-bar {
+  height: 4px;
+  border-radius: 4px;
+  background: #ebdfc3;
+  overflow: hidden;
+}
+.moisture-bar i {
+  display: block;
+  height: 100%;
+  background: #378f79;
+  transition: width 0.2s;
+}
+.water-assumption {
+  font-size: 0.73rem;
+  line-height: 1.6;
+  color: #6b7e70;
+  margin: 18px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid #e7eee7;
+}
+.component-directory {
+  margin: 16px 0;
+  font-size: 0.82rem;
+}
+.component-directory summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 12px 0;
+}
+.component-directory > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 0;
+}
+.system-path {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  list-style: none;
+  padding: 17px 0;
+  margin: 0;
+  border-top: 1px solid #d5e2d7;
+}
+.system-path li {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: #647c6d;
+}
+.system-path b {
+  color: #2a624c;
+  font-size: 0.82rem;
+}
+.component-inspector {
+  color: #244d40;
+  border: 1px solid #cbdcd1;
+  border-radius: 24px;
+  padding: 0;
+  width: min(980px, calc(100vw - 32px));
+  max-width: none;
+  max-height: 90dvh;
+  background: #fafcf9;
+  box-shadow: 0 30px 100px #102f4155;
+  overflow: auto;
+}
+.component-inspector::backdrop {
+  background: #16372f9e;
+  backdrop-filter: blur(5px);
+}
+.inspector-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 23px 27px;
+  border-bottom: 1px solid #dbe5dc;
+}
+.inspector-header h2 {
+  font-size: 1.65rem;
+  margin: 5px 0 0;
+  letter-spacing: -0.04em;
+}
+.inspector-close {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #c5d5c8;
+  border-radius: 50%;
+  background: #f6f9f2;
+  color: #285b45;
+}
+.inspector-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.object-stage {
+  position: relative;
+  background: radial-gradient(ellipse at 50% 40%, #f7faf2, #dfe9df);
+  border-radius: 0 0 0 24px;
+  align-self: stretch;
+  min-width: 0;
+}
+.object-preview {
+  width: 100%;
+  height: 370px;
+  touch-action: none;
+}
+.object-preview canvas {
+  display: block;
+  max-width: 100%;
+}
+.object-badge {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  pointer-events: none;
+  font-size: 0.62rem;
+  letter-spacing: 0.09em;
+  background: #ffffffbb;
+  border: 1px solid #cbdacf;
+  padding: 7px 9px;
+  border-radius: 5px;
+}
+.object-tools {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+}
+.object-stage > p {
+  font-size: 0.72rem;
+  text-align: center;
+  color: #698274;
+  padding: 0 20px 18px;
+}
+.object-description {
+  padding: 24px 26px;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  min-width: 0;
+}
+.object-description p {
+  margin: 0 0 17px;
+}
+.object-example {
+  font-size: 0.76rem;
+  color: #657c6c;
+  line-height: 1.5;
+}
+.object-description h3 {
+  font-size: 0.84rem;
+  margin: 15px 0 8px;
+}
+.object-description ul {
+  padding-left: 18px;
+  margin: 0 0 18px;
+}
+.object-description li {
+  margin-bottom: 6px;
+}
+.integration-note {
+  padding: 15px;
+  background: #e9f2e9;
+  border-left: 3px solid #73a483;
+  border-radius: 4px;
+}
+.integration-note h3 {
+  margin-top: 0;
+}
+.integration-note p {
+  margin: 0;
+}
+.object-description .small-note {
+  font-size: 0.7rem;
+  margin: 17px 0 0;
+}
+@media (max-width: 700px) {
+  .mobile-label-note {
+    display: block;
+    margin-top: 6px;
+  }
+  .field-camera button {
+    padding: 8px 9px;
+    font-size: 0.73rem;
+  }
+  .field-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .field-toolbar h2 {
+    font-size: 1.25rem;
+  }
+  .field-toggles {
+    width: 100%;
+  }
+  .field-toggles button {
+    flex: 1;
+    padding: 9px;
+    font-size: 0.73rem;
+  }
+  .refined-scene .field-scene {
+    height: 400px;
+  }
+  .component-tag {
+    min-height: 44px;
+    font-size: 10px !important;
+    padding: 5px 7px;
+    gap: 4px;
+  }
+  .water-panel {
+    padding: 16px;
+  }
+  .water-heading {
+    margin-bottom: 18px;
+  }
+  .water-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 14px;
+  }
+  .water-metrics strong {
+    font-size: 1.65rem;
+  }
+  .system-path {
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  .component-inspector {
+    width: calc(100vw - 16px);
+    max-height: 94dvh;
+    border-radius: 18px;
+  }
+  .inspector-header {
+    padding: 17px;
+  }
+  .inspector-header h2 {
+    font-size: 1.3rem;
+  }
+  .inspector-header .eyebrow {
+    font-size: 0.6rem;
+  }
+  .inspector-body {
+    grid-template-columns: 1fr;
+  }
+  .object-stage {
+    border-radius: 0;
+  }
+  .object-preview {
+    height: 270px;
+  }
+  .object-description {
+    padding: 20px;
+  }
+  .object-stage > p {
+    padding-bottom: 3px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .moisture-bar i,
+  .component-tag {
+    transition: none;
+  }
+}

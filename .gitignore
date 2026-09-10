@@ -32,3 +32,9 @@ pnpm-debug.log*
 Thumbs.db
 .vscode/
 .idea/
+
+# Isolated demonstration state and local test artifacts
+.local/
+test-results/
+playwright-report/
+coverage/

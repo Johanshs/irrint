@@ -1,3 +1,5 @@
+> Documento histórico da versão anterior à refatoração de setembro de 2026. As referências a IA e à integração antiga não descrevem a implementação atual. Consulte README.md e PROGRESSO.md.
+
 # Relatório do Projeto: Irrigação Inteligente
 
 ## Visão Geral

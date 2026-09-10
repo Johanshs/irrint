@@ -1,3 +1,5 @@
+> Registro histórico da interface anterior à refatoração de setembro de 2026. O aplicativo atual usa Ionic React e está descrito em README.md e PROGRESSO.md.
+
 # Wireframes - Sistema de Irrigação Inteligente
 
 ## Visão Geral
