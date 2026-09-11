@@ -14,6 +14,7 @@ interface Props {
   connected: boolean;
   selectedId: string;
   replay?: { second: number; playing: boolean; speed: number };
+  physicalFlow?: Record<string, boolean>;
   onInspect?: () => void;
 }
 
@@ -177,7 +178,7 @@ export default function FieldScene(props: Props) {
           .get(zone.id)
           ?.update(
             zone.latest?.moisture ?? 0,
-            status.irrigating,
+            current.physicalFlow?.[zone.id] ?? status.irrigating,
             zone.id === current.selectedId,
             status.online,
             current.section,

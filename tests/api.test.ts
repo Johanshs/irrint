@@ -7,13 +7,14 @@ import { IrrigationControl, initialState } from '../shared/control.ts';
 import { SimulatedDevice } from '../simulator/device.ts';
 import type { Command, Snapshot } from '../shared/contracts.ts';
 import { LocalSessionAuth } from '../server/auth.ts';
+import { isAllowedRequestHost } from '../server/network.ts';
 
 const servers: Server[] = [];
 afterEach(async () => {
   for (const server of servers.splice(0)) await new Promise<void>((resolve) => server.close(() => resolve()));
 });
 
-async function setup() {
+async function setup(networkAccess: 'loopback' | 'lan' = 'loopback') {
   let now = 1_800_000_000_000;
   const control = new IrrigationControl(initialState(now), () => now);
   const sessionAuth = new LocalSessionAuth(
@@ -28,6 +29,7 @@ async function setup() {
   const server = createApi(control, {
     deviceToken: 'test-device-token',
     sessionAuth,
+    networkAccess,
     persist: async () => {
       persisted = control.exportState();
     },
@@ -313,6 +315,44 @@ describe('API HTTP com cliente de dispositivo independente', () => {
         })
       ).status,
     ).toBe(413);
+  });
+
+  it('CT18: libera preflight do aplicativo Capacitor somente no modo LAN explícito', async () => {
+    const { url } = await setup('lan');
+    const response = await fetch(`${url}/api/v1/session`, {
+      method: 'OPTIONS',
+      headers: {
+        Origin: 'capacitor://localhost',
+        'Access-Control-Request-Method': 'POST',
+        'Access-Control-Request-Headers': 'authorization,content-type',
+      },
+    });
+    expect({
+      status: response.status,
+      origin: response.headers.get('access-control-allow-origin'),
+      methods: response.headers.get('access-control-allow-methods'),
+      headers: response.headers.get('access-control-allow-headers'),
+    }).toEqual({
+      status: 204,
+      origin: 'capacitor://localhost',
+      methods: 'GET, POST, PUT, OPTIONS',
+      headers: 'Authorization, Content-Type, X-Runner-Id',
+    });
+
+    const loopback = await setup();
+    expect(
+      (
+        await fetch(`${loopback.url}/api/v1/session`, {
+          method: 'OPTIONS',
+          headers: { Origin: 'capacitor://localhost' },
+        })
+      ).status,
+    ).toBe(403);
+    expect({
+      loopbackPrivate: isAllowedRequestHost('192.168.1.20:8787', 'loopback'),
+      lanPrivate: isAllowedRequestHost('192.168.1.20:8787', 'lan'),
+      lanPublic: isAllowedRequestHost('203.0.113.20:8787', 'lan'),
+    }).toEqual({ loopbackPrivate: false, lanPrivate: true, lanPublic: false });
   });
 
   it('CT16: dois processos não podem alimentar a mesma sessão ao mesmo tempo', async () => {

@@ -30,11 +30,12 @@ export function runExperiment(input: ExperimentInput): ExperimentReport {
   const isUnconfirmed = scenario === 'unconfirmed';
   const isDuplicate = scenario === 'duplicate';
   const isInvalid = scenario === 'invalid-reading';
+  const isStuck = scenario === 'stuck-valve';
   control.configure(zoneId, {
     mode: isDuplicate || isInvalid ? 'manual' : 'automatic',
     startBelow: 35,
     stopAt: isLoss || isUnconfirmed ? 80 : 45,
-    maxDurationSeconds: isLoss || isUnconfirmed ? 12 : 60,
+    maxDurationSeconds: isLoss || isUnconfirmed ? 12 : isStuck ? 600 : 60,
   });
   const frames: ExperimentReport['frames'] = [];
   const moments: ExperimentMoment[] = [];
@@ -179,6 +180,22 @@ export function runExperiment(input: ExperimentInput): ExperimentReport {
                 'Entrega retida',
                 'A solicitação está na API, mas ainda não foi recebida pelo dispositivo.',
               );
+            continue;
+          }
+          if (target && isStuck && command.action === 'close') {
+            control.acknowledge({
+              deviceId: device.deviceId,
+              commandId: command.id,
+              status: 'rejected',
+              valve: 'open',
+            });
+            moment(
+              second,
+              'fault',
+              'Válvula permaneceu aberta',
+              'O dispositivo rejeitou o fechamento e reportou fluxo ativo; a API não declara a parada.',
+              'device',
+            );
             continue;
           }
           if (device.apply(command, now) && !(target && isUnconfirmed && second < 30))

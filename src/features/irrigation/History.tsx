@@ -3,15 +3,27 @@ import { CheckCircle2, Clock3, Download, TriangleAlert } from 'lucide-react';
 import { Page } from './Page';
 import { useSession } from './session';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
+
+const periods = {
+  all: { label: 'Toda a sessão', milliseconds: null },
+  hour: { label: 'Última hora', milliseconds: 60 * 60 * 1000 },
+  day: { label: 'Últimas 24 horas', milliseconds: 24 * 60 * 60 * 1000 },
+  week: { label: 'Últimos 7 dias', milliseconds: 7 * 24 * 60 * 60 * 1000 },
+} as const;
 
 export function History() {
   const { state, selectedId, select, exportReport, connected } = useSession();
+  const [period, setPeriod] = useState<keyof typeof periods>('all');
+  const duration = periods[period].milliseconds;
+  const cutoff = state && duration !== null ? state.serverTime - duration : Number.NEGATIVE_INFINITY;
   const events =
     state?.events
-      .filter((event) => event.zoneId === selectedId)
+      .filter((event) => event.zoneId === selectedId && event.at >= cutoff)
       .slice()
       .reverse() ?? [];
-  const commands = state?.commands.filter((command) => command.zoneId === selectedId) ?? [];
+  const commands =
+    state?.commands.filter((command) => command.zoneId === selectedId && command.requestedAt >= cutoff) ?? [];
   const applied = commands.filter((command) => command.status === 'applied');
   const expired = commands.filter((command) => command.status === 'expired');
   return (
@@ -36,6 +48,16 @@ export function History() {
           {state?.zones.map((zone) => (
             <option value={zone.id} key={zone.id}>
               {zone.name}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="field">
+        <span>Período</span>
+        <select value={period} onChange={(event) => setPeriod(event.target.value as keyof typeof periods)}>
+          {Object.entries(periods).map(([id, option]) => (
+            <option value={id} key={id}>
+              {option.label}
             </option>
           ))}
         </select>
@@ -67,17 +89,13 @@ export function History() {
               )}
             </span>
             <div>
-              <time>{new Date(event.at).toLocaleTimeString('pt-BR')}</time>
+              <time>{new Date(event.at).toLocaleString('pt-BR')}</time>
               <p>{event.message}</p>
             </div>
           </li>
         ))}
       </ol>
-      {!events.length && (
-        <p className="empty-history">
-          Ainda não há eventos nesta área. Os comandos e mudanças de configuração aparecerão aqui.
-        </p>
-      )}
+      {!events.length && <p className="empty-history">Não há eventos desta área no período selecionado.</p>}
       <p className="small-note">
         O arquivo inclui leituras, comandos e eventos desta demonstração. As contagens representam operações
         do software, não resultados de hardware físico.

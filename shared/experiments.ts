@@ -51,6 +51,14 @@ export const scenarios = [
     expected:
       'Rejeitar as cinco amostras, preservar a última leitura válida e recuperar a recepção aos 10 s.',
   },
+  {
+    id: 'stuck-valve',
+    name: 'Válvula travada aberta',
+    description:
+      'A irrigação inicia normalmente, mas a válvula rejeita o fechamento e continua liberando água.',
+    expected:
+      'Manter um alerta sem declarar parada, mostrar o fluxo interno e registrar o consumo crescente.',
+  },
 ] as const;
 export const experimentSchema = z
   .object({
@@ -62,6 +70,7 @@ export const experimentSchema = z
       'command-timeout',
       'duplicate',
       'invalid-reading',
+      'stuck-valve',
     ]),
     seed: z.number().int().min(1).max(2147483646),
     zoneId: z.enum(['north', 'south']).default('north'),

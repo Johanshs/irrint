@@ -1,4 +1,4 @@
-package com.example.irrigacaoint;
+package br.com.irrint.app;
 
 import com.getcapacitor.BridgeActivity;
 

@@ -7,7 +7,7 @@ import { zoneStatus } from '../src/features/irrigation/session';
 const cases = scenarios.flatMap((scenario) =>
   (['north', 'south'] as const).map((zoneId) => ({ scenario: scenario.id, zoneId })),
 );
-describe('Laboratório: dois sistemas e sete ensaios', () => {
+describe('Laboratório: dois sistemas e oito ensaios', () => {
   it.each(cases)('$scenario em $zoneId: comportamento e evidências do ensaio', (input) => {
     const report = runExperiment({ ...input, seed: 2026 });
     expect(report.checks.map((check) => ({ name: check.name, passed: check.passed }))).toEqual(
@@ -21,6 +21,7 @@ describe('Laboratório: dois sistemas e sete ensaios', () => {
       'command-timeout': { openSeconds: 0, totalLiters: 0, confirmedCommands: 0, totalCommands: 1 },
       duplicate: { openSeconds: 12, totalLiters: 0.12, confirmedCommands: 1, totalCommands: 1 },
       'invalid-reading': { openSeconds: 0, totalLiters: 0, confirmedCommands: 0, totalCommands: 0 },
+      'stuck-valve': { openSeconds: 89, totalLiters: 0.89, confirmedCommands: 1, totalCommands: 2 },
     }[input.scenario];
     expect(report.metrics).toMatchObject(expected);
     expect(report.frames).toHaveLength(90);

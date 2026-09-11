@@ -7,6 +7,8 @@ import { JsonFileStateStore } from './storage.ts';
 import { LocalSessionAuth } from './auth.ts';
 
 const directory = resolve('.local');
+const networkAccess = process.env.IRRINT_DEMO_NETWORK === 'lan' ? 'lan' : 'loopback';
+const host = networkAccess === 'lan' ? '0.0.0.0' : '127.0.0.1';
 await mkdir(directory, { recursive: true });
 const path = resolve(directory, 'state.json');
 const store = new JsonFileStateStore(path);
@@ -27,11 +29,16 @@ const sessionAuth = new LocalSessionAuth([
 const api = createApi(control, {
   deviceToken: token,
   sessionAuth,
+  networkAccess,
   persist: () => store.save(control.exportState()),
 });
-api.listen(8787, '127.0.0.1', async () => {
+api.listen(8787, host, async () => {
   await writeFile(resolve(directory, 'device-token'), token, { mode: 0o600 });
-  console.log('API demonstrativa local: http://127.0.0.1:8787 — dados em .local/state.json');
+  console.log(
+    networkAccess === 'lan'
+      ? 'API demonstrativa na rede local: porta 8787 — dados em .local/state.json'
+      : 'API demonstrativa local: http://127.0.0.1:8787 — dados em .local/state.json',
+  );
 });
 api.on('error', (error) => {
   console.error(error.message);

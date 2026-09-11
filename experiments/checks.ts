@@ -139,6 +139,37 @@ export function evaluateExperiment(
         evidence: 'Sequência recebida aos 10 s: ' + zoneAt(frames[9]).latest?.sequence + '.',
       },
     );
+  } else if (scenario === 'stuck-valve') {
+    const close = commands.find((command) => command.action === 'close');
+    const closeIndex = frames.findIndex((frame) => frame.at === close?.requestedAt);
+    checks.push(
+      {
+        name: 'Fechamento rejeitado mantém estado incerto',
+        passed:
+          close?.status === 'rejected' &&
+          close.appliedAt === null &&
+          target.activeCommandId === close.id &&
+          target.latest?.valve === 'open',
+        evidence:
+          'Fechamento ' +
+          (close?.status ?? 'ausente') +
+          '; última válvula reportada ' +
+          (target.latest?.valve ?? 'sem leitura') +
+          '.',
+      },
+      {
+        name: 'Fluxo e consumo continuam após a falha',
+        passed:
+          closeIndex >= 0 &&
+          frames.slice(closeIndex).every((frame) => frame.deviceOpen[zoneId]) &&
+          frames.at(-1)!.deviceWater[zoneId].totalLiters > frames[closeIndex].deviceWater[zoneId].totalLiters,
+        evidence:
+          openFrames.length +
+          ' quadros com fluxo; volume final ' +
+          frames.at(-1)!.deviceWater[zoneId].totalLiters.toFixed(3) +
+          ' L.',
+      },
+    );
   } else {
     checks.push({
       name: 'Dispositivo respeita o prazo local de 12 s',

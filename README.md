@@ -4,7 +4,7 @@ Protótipo acadêmico com interface mobile em Ionic React, contrato HTTP, contro
 
 **Estado desta versão:** demonstração local funcional. Autenticação, persistência em nuvem e integração com o site publicado ainda são etapas seguintes. A versão local não acessa as contas nem os dados Firebase existentes. Consulte [PROGRESSO.md](PROGRESSO.md) para ver a execução do plano.
 
-**Versões:** `main` / `v0.3.0` é a versão atual. A versão anterior está preservada em `legacy` / `v0.1.0-legacy`; a tag `v0.2.0` conserva o primeiro marco da nova arquitetura. Veja [VERSOES.md](VERSOES.md) para consultar o histórico e a separação entre GitHub e implantação na Vercel.
+**Versões:** `main` é a linha atual. A versão anterior está preservada em `legacy` / `v0.1.0-legacy`; as tags `v0.2.0` e `v0.3.0` conservam marcos da nova arquitetura. Veja [VERSOES.md](VERSOES.md) para consultar o histórico e a separação entre GitHub e implantação na Vercel.
 
 ## Começar
 
@@ -15,7 +15,7 @@ npm ci
 npm run demo:start
 ```
 
-Abra **http://127.0.0.1:5173** no mesmo computador. Um único comando inicia a API na porta 8787, os dois dispositivos simulados e a interface na porta 5173. Use **Ctrl+C** no terminal para encerrar os três processos. Não é necessário login nem configurar Firebase para esta demonstração.
+Abra **http://127.0.0.1:5173** no mesmo computador. Um único comando inicia a API na porta 8787, os dois dispositivos simulados e a interface na porta 5173. Use **Ctrl+C** no terminal para encerrar os três processos. Entre com `produtor@demo.local` / `irrigacao`; não é necessário configurar Firebase.
 
 `npm run dev` inicia somente a interface e pressupõe uma API já iniciada. Em três terminais separados, também é possível usar `npm run demo:api`, `npm run demo:device` e `npm run dev`.
 
@@ -41,7 +41,7 @@ O laboratório tem um único acionamento de teste, sem controles ao vivo duplica
 - Processo de simulação separado da interface; fechar a aba não interrompe o controlador nem o dispositivo.
 - Maquete em Three.js com reservatório, bomba, tubulações e dois conjuntos de microcontrolador/relé, válvula e sensor capacitivo. Etiquetas, inspeção 3D, corte do solo e gotejamento acompanham os dados; não geram decisões.
 - Volume nominal por área, aplicação média por planta e consumo acumulado; registrados no dispositivo e exportados com os cenários.
-- Sete cenários de 90 s, selecionáveis em N/S: automático, parada manual, perda de comunicação, confirmação perdida, comando vencido, repetição e leituras inválidas. Replay, dois gráficos, cronologia, critérios e comparação de até sete resultados nesta visita.
+- Oito cenários de 90 s, selecionáveis em N/S: automático, parada manual, perda de comunicação, confirmação perdida, comando vencido, repetição, leituras inválidas e válvula travada aberta. Replay, dois gráficos, cronologia, critérios e comparação dos oito resultados nesta visita.
 
 IA, recomendações preditivas, clima fixo e SSO com outra aplicação foram removidos desta versão. Não há chamadas pagas nem dependência de serviços externos em execução local.
 
@@ -51,15 +51,17 @@ IA, recomendações preditivas, clima fixo e SSO com outra aplicação foram rem
 npm test
 npm run test:report
 npm run demo:evidence
+npm run measure:latency
 npm run build
 ```
 
 - `npm test`: testes do contrato, controlador, dispositivo, API HTTP e experimentos.
 - `test:report`: a mesma suíte e um relatório em `.local/test-results.json`.
-- `demo:evidence`: executa os sete cenários em ambos os sistemas; cria 14 JSONs, 14 CSVs, 14 relatórios HTML, resumo Markdown e impressão SHA-256 das fontes em `.local/reports/<data>/`.
+- `demo:evidence`: executa os oito cenários em ambos os sistemas; cria 16 JSONs, 16 CSVs, 16 relatórios HTML, resumo Markdown e impressão SHA-256 das fontes em `.local/reports/<data>/`.
+- `measure:latency`: com a demonstração ativa, alterna 30 aberturas/fechamentos e mede do pedido até ACK mais telemetria coerente; grava JSON e resumo em `.local/latency/<data>/`.
 - `build`: valida TypeScript e produz a aplicação web em `dist/`.
 
-Validação deste marco: **62 testes e 42 critérios em 14 ensaios**. Os critérios dos cenários não representam toda a matriz do TCC. Hardware físico, regras Firebase, dispositivos móveis reais e implantação continuam pendentes.
+Validação deste marco: **68 testes e 48 critérios em 16 ensaios**. Os critérios dos cenários não representam toda a matriz do TCC. A instalação em aparelho físico, a avaliação com produtores e a implantação multiusuário continuam pendentes.
 
 ## Dados locais
 
@@ -103,6 +105,12 @@ O adaptador local foi escolhido para validar o ciclo completo antes de migrar da
 
 O armazenamento local valida o estado completo antes de carregar ou gravar, mantém `state.json.bak` e preserva um arquivo inválido antes de restaurar a última cópia utilizável.
 
+`clients/openapi-device.ts` é uma segunda implementação de dispositivo. Ela não importa o controlador nem `SimulatedDevice`: descobre as rotas pelos `operationId` do OpenAPI, envia telemetria com `source: "device"`, consulta comandos, confirma a execução e mantém watchdog e volume próprios. Para substituir o simulador padrão nessa demonstração:
+
+```sh
+npm run demo:start:reference
+```
+
 Ao abrir o aplicativo, use a conta sintética `produtor@demo.local` e a senha `irrigacao`. Ela cria uma sessão local de 30 minutos e só recebe as áreas vinculadas a `demo-producer`. As credenciais podem ser substituídas pelas variáveis `DEMO_USER_EMAIL` e `DEMO_USER_PASSWORD`; esse acesso não consulta o Firebase legacy.
 
 Em **Áreas**, o produtor pode cadastrar e editar a identificação de um cultivo. O cadastro gera vínculos únicos para dispositivo, sensor e válvula; o runner detecta a nova área em até 5 s e começa a enviar leituras simuladas. Os identificadores ficam visíveis no cartão como evidência do vínculo, mas não exigem configuração técnica do produtor.
@@ -114,6 +122,15 @@ npm run build
 npm run android:sync
 ```
 
+Para gerar um APK de depuração ligado à API do computador na mesma rede:
+
+```powershell
+$env:IRRINT_API_URL = "http://192.168.1.20:8787"
+npm run android:debug:lan
+```
+
+Em outro terminal, inicie o serviço opt-in de rede local com `npm run demo:start:lan`. O modo padrão continua limitado ao loopback. A API LAN aceita apenas hosts privados e origens locais/Capacitor; o manifesto permite HTTP sem TLS somente no build `debug`. Consulte [VALIDACAO-MOBILE-OPENAPI.md](VALIDACAO-MOBILE-OPENAPI.md).
+
 Com Java 21, SDK Android 36 e `ANDROID_HOME` configurado, execute em `android/`:
 
 ```powershell
@@ -122,7 +139,7 @@ Com Java 21, SDK Android 36 e `ANDROID_HOME` configurado, execute em `android/`:
 
 Se o caminho tiver acentos no Windows, a verificação desta versão passou usando o argumento local `'-Pandroid.overridePathCheck=true'`. Prefira um checkout sem acentos para trabalho Android contínuo. O APK fica em `android/app/build/outputs/apk/debug/app-debug.apk`.
 
-**A compilação Android não equivale a uma demonstração instalada e conectada.** A API atual só atende no computador. O pacote precisa de configuração e validação do transporte para um aparelho, autenticação e um endpoint apropriado antes de distribuição. Não há dispositivo conectado validado nesta entrega.
+**A compilação Android não equivale a uma demonstração instalada e conectada.** O transporte LAN, o CORS, o endpoint incorporado e o APK atual foram verificados; nenhum aparelho apareceu em `adb devices`, portanto instalação, navegação e desempenho físicos ainda não foram validados.
 
 Esta versão não deve substituir o site Vercel enquanto a API de demonstração publicada não estiver pronta. `VITE_API_BASE_URL` é o ponto de configuração do cliente; só definir a variável não implementa CORS, autenticação nem hospedagem. O backend Node persistente não deve ser tratado como um processo em segundo plano dentro de uma função efêmera Vercel.
 

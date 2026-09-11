@@ -51,6 +51,8 @@ Telemetria:
 
 `source` aceita `simulated` para o modelo demonstrativo e `device` para outro cliente que implemente o contrato. Esse campo identifica a origem da leitura e não altera as regras de controle.
 
+O cliente de referência em `clients/openapi-device.ts` comprova o segundo caso: ele usa apenas o documento OpenAPI e HTTP, mantém tipos e estado próprios e não importa `shared/control.ts` nem `simulator/device.ts`. `npm run demo:start:reference` troca o runner da demonstração sem alterar a interface ou a API.
+
 `water` é uma extensão opcional: estados anteriores continuam válidos e a interface mostra “—” quando não há volume disponível. Seus campos são números finitos não negativos: `totalLiters` é o acumulado nominal da área na sessão e `flowLitersPerHour` é a vazão nominal instantânea do dispositivo. O runner recupera o acumulado da última leitura persistida; um intervalo não transmitido antes de encerrar o processo não é recuperável. A precisão de saída é de seis casas decimais em litros, sem representar precisão de um instrumento físico.
 
 O modelo usa 18 emissores de 2 L/h por área (36 L/h) e integra o relógio do dispositivo somente durante a abertura, respeitando o fechamento entre passos e o watchdog. Reinício começa fechado. Reenvio de comando não reinicia o contador nem prolonga o prazo. Umidade continua seguindo o modelo linear didático; não é calculada por balanço hídrico a partir desse volume.
@@ -71,11 +73,13 @@ O modelo usa 18 emissores de 2 L/h por área (36 L/h) e integra o relógio do di
 
 A API serializa operações e grava apenas alterações de estado. Antes de aceitar ou gravar, o adaptador valida integralmente as áreas, vínculos, regras, leituras, comandos e eventos. Arquivo temporário e troca atômica evitam gravação parcial. A versão anterior permanece em `state.json.bak`; se o arquivo principal estiver inválido, ele é preservado com o sufixo `.corrupt-<instante>` e a cópia válida é restaurada. Erro de persistência reverte a alteração em memória. Migrações entre futuras versões do schema continuam como etapa posterior.
 
-Somente loopback; origens web locais nas portas 5173 e 4173. JSON com limite de 64 KiB na entrada. A conta local é sintética, configurável por `DEMO_USER_EMAIL` e `DEMO_USER_PASSWORD`, e as sessões permanecem apenas na memória do processo. Esse mecanismo comprova o isolamento da API local, mas não substitui Firebase Auth, regras de banco ou gestão de contas de produção. Não expor este adaptador por túnel ou publicar como backend de produção.
+Por padrão, o adaptador aceita somente loopback e origens web locais nas portas 5173 e 4173. `npm run demo:start:lan` ativa explicitamente a bancada móvel: Host limitado a endereços privados/locais, CORS para frontend local e `capacitor://localhost`, com preflight de `Authorization`, `Content-Type` e `X-Runner-Id`. JSON permanece limitado a 64 KiB. A conta é sintética, configurável por `DEMO_USER_EMAIL` e `DEMO_USER_PASSWORD`, e as sessões permanecem apenas na memória do processo. Esse mecanismo comprova o isolamento da API local, mas não substitui TLS, Firebase Auth, regras de banco ou gestão de contas de produção. Não expor este adaptador por túnel ou publicar como backend de produção.
 
 ## Experimentos
 
-Aceita `automatic`, `manual-stop`, `connection-loss`, `unconfirmed`, `command-timeout`, `duplicate` e `invalid-reading`. Seed inteira de 1 a 2147483646. `zoneId` aceita `north` ou `south`; a omissão mantém `north` por compatibilidade. Um identificador desconhecido retorna 422. Cada execução usa novas instâncias de controlador e dois dispositivos, sem alterar o estado ao vivo.
+Aceita `automatic`, `manual-stop`, `connection-loss`, `unconfirmed`, `command-timeout`, `duplicate`, `invalid-reading` e `stuck-valve`. Seed inteira de 1 a 2147483646. `zoneId` aceita `north` ou `south`; a omissão mantém `north` por compatibilidade. Um identificador desconhecido retorna 422. Cada execução usa novas instâncias de controlador e dois dispositivos, sem alterar o estado ao vivo.
+
+Em `stuck-valve`, a abertura automática é confirmada, o fechamento posterior é rejeitado com a válvula ainda aberta e o fluxo interno continua durante o restante da janela. O aplicativo conserva o comando rejeitado como estado incerto; a visualização identifica explicitamente que as gotas representam a observação interna do ensaio, sem declarar uma parada que não ocorreu.
 
 Exemplo: `{"scenario":"connection-loss","seed":2026,"zoneId":"south"}`. O relatório de experimentos tem `version: "1.1"` e modelo `linear-educational-v3`; isso não altera a versão 1.0 da telemetria/controle. `input` retorna os parâmetros normalizados, incluindo o sistema. `moments` registra instante, origem (teste/controlador/dispositivo), tipo, descrição e, quando existe, ID do comando. Instantes dentro do mesmo segundo são agrupados por etapa de apresentação, sem resolução de latência.
 

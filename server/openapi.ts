@@ -417,6 +417,7 @@ export const openApiDocument = {
               'command-timeout',
               'duplicate',
               'invalid-reading',
+              'stuck-valve',
             ],
           },
           seed: { type: 'integer', minimum: 1, maximum: 2147483646 },

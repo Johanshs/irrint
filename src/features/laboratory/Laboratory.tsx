@@ -99,7 +99,7 @@ export function Laboratory() {
         seed: Number(seed),
       });
       setReport(result);
-      setHistory((items) => [result, ...items].slice(0, 7));
+      setHistory((items) => [result, ...items].slice(0, scenarios.length));
       setFrameIndex(0);
       setView('scene');
       setPlaying(true);
@@ -116,6 +116,9 @@ export function Laboratory() {
   const selectedScenario = scenarios.find((item) => item.id === scenario)!;
   const latestMoment = report?.moments.filter((moment) => moment.second <= (frame?.second ?? 0)).at(-1);
   const receivedWater = selected.latest?.water?.totalLiters;
+  const stuckFaultActive =
+    report?.input.scenario === 'stuck-valve' &&
+    frame?.commands.some((command) => command.action === 'close' && command.status === 'rejected');
   const prefix = report
     ? 'irrint-' + report.input.scenario + '-' + report.input.zoneId + '-' + report.id
     : '';
@@ -264,6 +267,12 @@ export function Laboratory() {
                 : ' Distribuição nominal uniforme, sem cálculo de absorção.'}
             </p>
           )}
+          {stuckFaultActive && (
+            <p className="error-banner" role="status">
+              Neste ensaio, o gotejamento representa o fluxo interno que permaneceu ativo após a rejeição do
+              fechamento. A API mantém o estado como incerto.
+            </p>
+          )}
         </section>
       )}
       {view === 'scene' && (
@@ -273,6 +282,7 @@ export function Laboratory() {
             connected={!!report}
             selectedId={zoneId}
             replay={{ second: frame?.second ?? 0, playing, speed: Number(speed) }}
+            physicalFlow={stuckFaultActive ? frame?.deviceOpen : undefined}
             onInspect={() => setPlaying(false)}
           />
         </Suspense>
@@ -404,7 +414,9 @@ export function Laboratory() {
             </button>
           </div>
           <details className="lab-comparison">
-            <summary>Comparar últimos testes desta visita ({history.length}/7)</summary>
+            <summary>
+              Comparar últimos testes desta visita ({history.length}/{scenarios.length})
+            </summary>
             <p>
               Mesmas condições iniciais por execução. Salve os relatórios antes de sair: esta lista fica
               apenas nesta visita.
