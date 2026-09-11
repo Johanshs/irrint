@@ -65,7 +65,7 @@ npm run build
 - `measure:latency`: com a demonstração ativa, alterna 30 aberturas/fechamentos e mede do pedido até ACK mais telemetria coerente; grava JSON e resumo em `.local/latency/<data>/`.
 - `build`: valida TypeScript e produz a aplicação web em `dist/`.
 
-Validação deste marco: **69 testes, 3 fluxos E2E e 48 critérios em 16 ensaios**. Os critérios dos cenários não representam toda a matriz do TCC. A instalação em aparelho físico, a avaliação com produtores e a implantação multiusuário continuam pendentes.
+Validação deste marco: **69 testes, 3 fluxos E2E e 48 critérios em 16 ensaios**, além de instalação e fluxo principal no Galaxy S25 Ultra. Os critérios dos cenários não representam toda a matriz do TCC. A avaliação com produtores e a implantação multiusuário continuam pendentes.
 
 ## Dados locais
 
@@ -143,7 +143,7 @@ Com Java 21, SDK Android 36 e `ANDROID_HOME` configurado, execute em `android/`:
 
 Se o caminho tiver acentos no Windows, a verificação desta versão passou usando o argumento local `'-Pandroid.overridePathCheck=true'`. Prefira um checkout sem acentos para trabalho Android contínuo. O APK fica em `android/app/build/outputs/apk/debug/app-debug.apk`.
 
-**A compilação Android não equivale a uma demonstração instalada e conectada.** O transporte LAN, o CORS, o endpoint incorporado e o APK atual foram verificados; nenhum aparelho apareceu em `adb devices`, portanto instalação, navegação e desempenho físicos ainda não foram validados.
+O APK atual foi instalado e conectado à API de bancada em um Galaxy S25 Ultra com Android 16. Login, acionamento/parada do Canteiro sul, Áreas, Ajustes, Histórico e laboratório WebGL 2.0 foram exercitados; o responsável considerou a apresentação e a fluidez adequadas. Voltar, rotação forçada, reconexão, escala de fonte e métricas de FPS/memória permanecem como regressão instrumentada de distribuição. Consulte [VALIDACAO-ANDROID-S25-ULTRA.md](VALIDACAO-ANDROID-S25-ULTRA.md).
 
 Esta versão não deve substituir o site Vercel enquanto a API de demonstração publicada não estiver pronta. `VITE_API_BASE_URL` é o ponto de configuração do cliente; só definir a variável não implementa CORS, autenticação nem hospedagem. O backend Node persistente não deve ser tratado como um processo em segundo plano dentro de uma função efêmera Vercel.
 

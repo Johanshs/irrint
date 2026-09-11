@@ -102,7 +102,7 @@ O gerador cria 16 JSONs, 16 CSVs, 16 relatórios HTML e **RESUMO.md** em uma pas
 | RF08 — evidenciar                        | CSV, JSON, relatório imprimível e comparação de execuções                                     | Comparação apenas durante a visita; sem arquivo de experimentos no servidor |
 | RF09 / CT13                              | Sessão local de 30 min e isolamento por proprietário na API                                   | Não substitui autenticação e regras de produção                             |
 
-O plano original e sua matriz continuam sendo referências históricas de escopo, não laudos de execução de todos os casos. Esta entrega **conclui o laboratório demonstrativo local**, não todas as etapas do projeto. Android físico, desempenho, acessibilidade em aparelho, implantação multiusuário e TAM continuam em [PROGRESSO.md](PROGRESSO.md).
+O plano original e sua matriz continuam sendo referências históricas de escopo, não laudos de execução de todos os casos. Esta entrega **conclui o laboratório demonstrativo local**. A maquete abriu com WebGL 2.0 no Galaxy S25 Ultra e o responsável considerou animações e fluidez adequadas; a coleta instrumentada de FPS/memória, a regressão completa de acessibilidade, a implantação multiusuário e o TAM continuam em [PROGRESSO.md](PROGRESSO.md) e [VALIDACAO-ANDROID-S25-ULTRA.md](VALIDACAO-ANDROID-S25-ULTRA.md).
 
 ## Modelos e limites
 

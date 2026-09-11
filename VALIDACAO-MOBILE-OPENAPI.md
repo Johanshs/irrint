@@ -4,14 +4,14 @@ Este marco prepara a demonstração Android em rede local e comprova uma segunda
 
 ## Resultados executados em 11 de setembro de 2026
 
-| Caso                        | Evidência                                                                                                                                                       | Resultado                                           |
-| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| CT14 — reinício             | Estado JSON recarregado com vínculos, leitura e evento confirmado; comando pendente reaparece vencido e sua expiração é persistida                              | Atendido por teste automatizado                     |
-| CT18 — transporte mobile    | Preflight de `capacitor://localhost`, host LAN privado, manifesto debug com Network Security Config e APK com endpoint configurado                              | Atendido até a compilação; aparelho físico pendente |
-| CT18 — usabilidade web      | Playwright: teclado, fonte 125%, 360/390/430 px sem corte horizontal e fallback forçado de WebGL com diretório/descrições acessíveis                            | Atendido no Chromium; Android físico pendente       |
-| CT20 — cliente independente | `clients/openapi-device.ts` descobre quatro operações por `operationId`, executa abertura/fechamento e envia `source: device` sem importar domínio ou simulador | Atendido por teste e execução LAN                   |
-| CT21 — válvula travada      | Fechamento rejeitado, estado incerto, válvula interna aberta e volume crescente durante 89 s contabilizados                                                     | Atendido em N e S                                   |
-| CT22 — execução/relatório   | Lease com substituição após vencimento; `not-measured` no relatório vazio; replay pausado com runner ativo, 10×, reinício e dois resultados isolados            | Atendido por integração e E2E                       |
+| Caso                        | Evidência                                                                                                                                                       | Resultado                                                  |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| CT14 — reinício             | Estado JSON recarregado com vínculos, leitura e evento confirmado; comando pendente reaparece vencido e sua expiração é persistida                              | Atendido por teste automatizado                            |
+| CT18 — transporte mobile    | Preflight local, host LAN privado, Network Security Config e conteúdo misto exclusivos de debug, APK instalado e API acessível pelo WebView                     | Atendido na bancada Android                                |
+| CT18 — usabilidade          | Playwright: teclado, fonte 125%, 360/390/430 px e fallback WebGL; S25 Ultra: login, comandos, páginas principais e laboratório WebGL 2.0                        | Atendido para o marco; regressão física detalhada pendente |
+| CT20 — cliente independente | `clients/openapi-device.ts` descobre quatro operações por `operationId`, executa abertura/fechamento e envia `source: device` sem importar domínio ou simulador | Atendido por teste e execução LAN                          |
+| CT21 — válvula travada      | Fechamento rejeitado, estado incerto, válvula interna aberta e volume crescente durante 89 s contabilizados                                                     | Atendido em N e S                                          |
+| CT22 — execução/relatório   | Lease com substituição após vencimento; `not-measured` no relatório vazio; replay pausado com runner ativo, 10×, reinício e dois resultados isolados            | Atendido por integração e E2E                              |
 
 Resultados agregados: **69/69 testes**, **3/3 fluxos E2E** e **48/48 critérios em 16 ensaios**. A pasta local mais recente é criada por `npm run demo:evidence` e contém JSON, CSV, HTML, `RESUMO.md` e a impressão SHA-256 das fontes usadas.
 
@@ -44,7 +44,7 @@ npm run android:debug:lan
 
 O script valida o endpoint, executa TypeScript/Vite, sincroniza o Capacitor, localiza o SDK Android e gera `android/app/build/outputs/apk/debug/app-debug.apk`. O identificador do aplicativo é `br.com.irrint.app`.
 
-HTTP local sem TLS existe apenas em `android/app/src/debug`: o manifesto principal não habilita texto claro. Essa permissão serve para a bancada na mesma rede e não deve ser usada como configuração de distribuição. Para produção, use API HTTPS e autenticação persistente.
+HTTP local sem TLS existe apenas em `android/app/src/debug`: o manifesto principal não habilita texto claro. O overlay debug também ativa `android.allowMixedContent`, necessário porque o WebView serve os arquivos locais em `https://localhost` e a API de bancada usa HTTP privado. Essas permissões não devem ser usadas como configuração de distribuição. Para produção, use API HTTPS e autenticação persistente.
 
 Com um aparelho autorizado por USB:
 
@@ -53,7 +53,7 @@ adb devices -l
 adb install -r android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
-Na execução deste marco, `adb devices -l` retornou a lista vazia. O Chromium cobriu 360/390/430 px, fonte ampliada, foco/teclado e perda forçada de WebGL, mas emulação web não equivale a aparelho. Ainda faltam instalação, login, Voltar, comandos, reconexão, orientação, essas mesmas condições de interface, FPS e memória em Android real.
+O Galaxy S25 Ultra `SM-S938B`, com Android 16/API 36, foi autorizado por USB. O APK foi instalado e abriu login, API, irrigação/parada do Canteiro sul, Áreas, Ajustes, Histórico e laboratório WebGL 2.0. A revisão visual do responsável considerou animações e desempenho adequados. A configuração observada foi 720 × 1560, densidade substituída 280, com viewport lógico 411 × 891 e DPR 1,75. Voltar, rotação forçada, reconexão, escala de fonte e FPS/memória não receberam coleta física instrumentada nesta rodada. Consulte [VALIDACAO-ANDROID-S25-ULTRA.md](VALIDACAO-ANDROID-S25-ULTRA.md).
 
 ## Evidência E2E reproduzível
 

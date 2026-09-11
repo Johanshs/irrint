@@ -1,0 +1,8 @@
+{
+  "appId": "br.com.irrint.app",
+  "appName": "Irrigacao Inteligente",
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": true
+  }
+}
