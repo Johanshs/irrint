@@ -3,6 +3,7 @@ import { timingSafeEqual } from 'node:crypto';
 import { ZodError } from 'zod';
 import { IrrigationControl, ControlError } from '../shared/control.ts';
 import { runExperiment } from '../experiments/run.ts';
+import { openApiDocument } from './openapi.ts';
 
 interface Options {
   deviceToken: string;
@@ -66,7 +67,8 @@ export function createApi(control: IrrigationControl, options: Options) {
         }
         let result: unknown;
         let status = 200;
-        if (request.method === 'GET' && path === '/api/v1/state') result = control.snapshot();
+        if (request.method === 'GET' && path === '/api/v1/openapi.json') result = openApiDocument;
+        else if (request.method === 'GET' && path === '/api/v1/state') result = control.snapshot();
         else if (request.method === 'GET' && path === '/api/v1/report')
           result = {
             ...control.snapshot(),

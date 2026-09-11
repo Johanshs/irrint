@@ -89,17 +89,19 @@ API local ── Controlador ── persistência JSON
 Dispositivos simulados (processo Node independente)
 ```
 
-| Diretório | Responsabilidade |
-| --- | --- |
-| `shared/` | Contratos validados e decisões de controle |
-| `server/` | Adaptador HTTP local e persistência |
-| `simulator/` | Modelo do dispositivo e processo de comunicação |
-| `experiments/` | Estímulos, relógio virtual, métricas e critérios |
+| Diretório                  | Responsabilidade                                   |
+| -------------------------- | -------------------------------------------------- |
+| `shared/`                  | Contratos validados e decisões de controle         |
+| `server/`                  | Adaptador HTTP local e persistência                |
+| `simulator/`               | Modelo do dispositivo e processo de comunicação    |
+| `experiments/`             | Estímulos, relógio virtual, métricas e critérios   |
 | `src/features/irrigation/` | Monitoramento, comandos, áreas, regras e histórico |
-| `src/features/laboratory/` | Maquete e visualização do experimento |
-| `tests/` | Testes executáveis |
+| `src/features/laboratory/` | Maquete e visualização do experimento              |
+| `tests/`                   | Testes executáveis                                 |
 
-O adaptador local foi escolhido para validar o ciclo completo antes de migrar dados ou depender de credenciais e cobrança em nuvem. O plano continua prevendo Firebase Auth e um repositório persistente por usuário atrás da API. Isso não está implementado nesta entrega. O contrato atual está em [CONTRATO.md](CONTRATO.md).
+O adaptador local foi escolhido para validar o ciclo completo antes de migrar dados ou depender de credenciais e cobrança em nuvem. O plano continua prevendo Firebase Auth e um repositório persistente por usuário atrás da API. Isso não está implementado nesta entrega. O contrato legível está em [CONTRATO.md](CONTRATO.md) e a descrição OpenAPI 3.1 é servida em `GET /api/v1/openapi.json`.
+
+O armazenamento local valida o estado completo antes de carregar ou gravar, mantém `state.json.bak` e preserva um arquivo inválido antes de restaurar a última cópia utilizável.
 
 ## Android e publicação
 

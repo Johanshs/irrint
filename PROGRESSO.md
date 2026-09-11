@@ -1,23 +1,23 @@
 # Execução do plano · 10 de setembro de 2026
 
-Marco atual **v0.3.0**: laboratório demonstrativo local concluído com fluxo único, sete ensaios nos dois sistemas, maquete, explicação de falhas e relatórios. A base v0.2.0 e a versão legacy permanecem consultáveis; veja [VERSOES.md](VERSOES.md).
+Marco atual **v0.3.0 + fundação da próxima etapa**: laboratório demonstrativo local concluído e contrato/persistência reforçados para a evolução operacional. A base v0.2.0 e a versão legacy permanecem consultáveis; veja [VERSOES.md](VERSOES.md).
 
 ## Etapas e situação
 
-| Etapa | Entregue | Restante |
-| --- | --- | --- |
-| E0 — Base | React 18, Ionic 9, Router 6 e Capacitor 8; build web | Validação da experiência atual em aparelho |
-| E1 — Contrato | Zod 1.0 para controle/telemetria; relatório de experimentos 1.1; sequência, prazos, ACK e idempotência | OpenAPI, propriedade e autenticação |
-| E2 — API/dispositivo | API local, persistência JSON, regras fora da UI, dois dispositivos em processo separado e ensaios isolados | Adaptador de nuvem, armazenamento transacional e recuperação/migração completas |
-| E3 — Mobile | Início, Áreas, Histórico, Ajustes; estados conhecidos, pendentes e incertos | CRUD da topologia, contas, acessibilidade formal e avaliação com usuários |
-| E4 — Evidências | 55 testes; 14 ensaios (7 × N/S), 42 critérios; CSV/JSON/HTML, gráficos, cronologia e comparação | Matriz completa do TCC, E2E automatizado, testes de contas e desempenho |
-| E5 — 3D | Laboratório simplificado, peças identificáveis, inspeção, nomes opcionais, corte do solo e água nominal | Medição em celular e ajustes decorrentes de avaliação de uso |
-| E6 — Distribuição | Código atual no GitHub; APK de depuração compilado no marco inicial | API hospedada, APK atual em aparelho e substituição controlada do site Vercel |
-| E7 — TCC | Escopo e limites documentados, relatórios reproduzíveis | Aplicação de TAM e análise de resultados com participantes |
+| Etapa                | Entregue                                                                                                                                                | Restante                                                                                      |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| E0 — Base            | React 18, Ionic 9, Router 6 e Capacitor 8; build web                                                                                                    | Validação da experiência atual em aparelho                                                    |
+| E1 — Contrato        | Zod 1.0 para controle/telemetria; OpenAPI 3.1; relatório de experimentos 1.1; sequência, prazos, ACK e idempotência                                     | Propriedade e autenticação                                                                    |
+| E2 — API/dispositivo | API local, estado integralmente validado, gravação atômica, backup recuperável, regras fora da UI, dispositivos em processo separado e ensaios isolados | Adaptador de nuvem, armazenamento transacional multiusuário e migrações entre futuras versões |
+| E3 — Mobile          | Início, Áreas, Histórico, Ajustes; estados conhecidos, pendentes e incertos                                                                             | CRUD da topologia, contas, acessibilidade formal e avaliação com usuários                     |
+| E4 — Evidências      | 57 testes; 14 ensaios (7 × N/S), 42 critérios; CSV/JSON/HTML, gráficos, cronologia e comparação                                                         | Matriz completa do TCC, E2E automatizado, testes de contas e desempenho                       |
+| E5 — 3D              | Laboratório simplificado, peças identificáveis, inspeção, nomes opcionais, corte do solo e água nominal                                                 | Medição em celular e ajustes decorrentes de avaliação de uso                                  |
+| E6 — Distribuição    | Código atual no GitHub; APK de depuração compilado no marco inicial                                                                                     | API hospedada, APK atual em aparelho e substituição controlada do site Vercel                 |
+| E7 — TCC             | Escopo e limites documentados, relatórios reproduzíveis                                                                                                 | Aplicação de TAM e análise de resultados com participantes                                    |
 
 ## Validação deste marco
 
-- **55/55 testes**: controlador/dispositivo (16), cálculo de água (7), cenários/repetibilidade/exportação (23) e integração HTTP (9).
+- **57/57 testes**: controlador/dispositivo (16), cálculo de água (7), cenários/repetibilidade/exportação (23), integração HTTP (10) e recuperação do armazenamento (1).
 - **42/42 critérios em 14 ensaios**, seed 2026: sete cenários executados tanto no norte quanto no sul. Comparação canônica confirma as mesmas séries e métricas sob condições equivalentes.
 - **Build web e TypeScript** verificados. Permanecem avisos de chunks grandes de Ionic/Three.js; não são uma medição de desempenho.
 - Navegador: acionamento do sul pelo seletor único; perda de contato em 20 s com 0,030 L recebidos versus 0,120 L internos; cronologia, resultados e inspeção do microcontrolador. Modal inspecionado a 390 px, sem transbordamento horizontal.
@@ -44,14 +44,13 @@ Duas áreas fixas; um sensor e uma válvula por área. Sem IA, clima, calibraç�
 
 A API local não possui contas de usuário nem persistência em nuvem. A trava de build Vercel permanece: publicar o frontend isolado deixaria a nova experiência sem backend acessível. A comparação de experimentos mantém no máximo sete execuções em memória; para preservar, exporte os relatórios.
 
-A sessão ao vivo retém as últimas 2.000 leituras, 1.000 eventos e limita novos inícios depois de 500 comandos. O laboratório começa do zero e não depende desse histórico. Migração e validação integral do armazenamento ainda pertencem à próxima etapa.
+A sessão ao vivo retém as últimas 2.000 leituras, 1.000 eventos e limita novos inícios depois de 500 comandos. O laboratório começa do zero e não depende desse histórico. O estado local agora é validado integralmente e tem recuperação por backup; a migração entre futuras versões do schema ainda pertence à próxima etapa.
 
 ## Próxima sequência
 
-1. OpenAPI, abstração de armazenamento e validação/recuperação integral do estado.
-2. Autenticação e isolamento por usuário/dispositivo em emuladores; migração com backup.
-3. CRUD de áreas, sensores e vínculos.
-4. Matriz restante, E2E da interface e latência HTTP medida fora do relógio virtual.
-5. API acessível ao APK, instalação Android, desempenho, acessibilidade e retomada de conexão.
-6. Backend e simulador hospedados; preview integrado antes de atualizar a Vercel.
-7. TAM e redação dos resultados do TCC, restritos à evidência observada.
+1. Autenticação e isolamento por usuário/dispositivo em emuladores.
+2. CRUD de áreas, sensores e vínculos.
+3. Matriz restante, E2E da interface e latência HTTP medida fora do relógio virtual.
+4. API acessível ao APK, instalação Android, desempenho, acessibilidade e retomada de conexão.
+5. Backend e simulador hospedados; preview integrado antes de atualizar a Vercel.
+6. Instrumento de avaliação com produtores e redação dos resultados, restritos à evidência observada.

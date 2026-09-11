@@ -48,6 +48,28 @@ async function setup() {
 }
 
 describe('API HTTP com cliente de dispositivo independente', () => {
+  it('publica um contrato OpenAPI com os fluxos de operador e dispositivo', async () => {
+    const { request } = await setup();
+    const response = await request('/api/v1/openapi.json');
+    const document = await response.json();
+    expect(response.status).toBe(200);
+    expect({
+      openapi: document.openapi,
+      version: document.info.version,
+      operations: [
+        document.paths['/api/v1/zones/{zoneId}/commands'].post.operationId,
+        document.paths['/device/v1/telemetry'].post.operationId,
+        document.paths['/device/v1/ack'].post.operationId,
+      ],
+      telemetrySources: document.components.schemas.Telemetry.properties.source.enum,
+    }).toEqual({
+      openapi: '3.1.0',
+      version: '1.0.0',
+      operations: ['requestCommand', 'sendTelemetry', 'acknowledgeCommand'],
+      telemetrySources: ['simulated', 'device'],
+    });
+  });
+
   it('irriga e para o canteiro sul por HTTP sem acionar o norte', async () => {
     const { request, time, advance, persisted } = await setup();
     const north = new SimulatedDevice('sim-north', 42, 2026);

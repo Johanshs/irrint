@@ -37,7 +37,7 @@ export const telemetrySchema = z
     unit: z.literal('normalizedPercent'),
     valve: z.enum(['open', 'closed']),
     lastCommandId: z.string().uuid().nullable(),
-    source: z.literal('simulated'),
+    source: z.enum(['simulated', 'device']),
     water: z
       .object({
         totalLiters: z.number().finite().nonnegative(),
@@ -117,3 +117,103 @@ export interface Snapshot extends SystemState {
   environment: 'local-simulation';
   offlineAfterMs: number;
 }
+
+const persistedCommandSchema: z.ZodType<Command> = z
+  .object({
+    id: z.string().uuid(),
+    zoneId: z.string().min(1).max(80),
+    deviceId: z.string().min(1).max(80),
+    action: z.enum(['open', 'close']),
+    durationSeconds: z.number().int().min(5).max(600).optional(),
+    idempotencyKey: z.string().uuid(),
+    origin: z.enum(['manual', 'automatic']),
+    status: z.enum(['pending', 'applied', 'rejected', 'expired', 'superseded']),
+    requestedAt: z.number().int().nonnegative(),
+    expiresAt: z.number().int().nonnegative(),
+    appliedAt: z.number().int().nonnegative().nullable(),
+  })
+  .strict();
+
+const readingSchema: z.ZodType<Reading> = telemetrySchema
+  .extend({ zoneId: z.string().min(1).max(80), receivedAt: z.number().int().nonnegative() })
+  .strict();
+
+const zoneSchema: z.ZodType<Zone> = z
+  .object({
+    id: z.string().min(1).max(80),
+    name: z.string().trim().min(1).max(80),
+    crop: z.string().trim().min(1).max(80),
+    deviceId: z.string().min(1).max(80),
+    rule: ruleSchema,
+    automaticPaused: z.boolean(),
+    latest: readingSchema.nullable(),
+    activeCommandId: z.string().uuid().nullable(),
+  })
+  .strict();
+
+const irrigationEventSchema: z.ZodType<IrrigationEvent> = z
+  .object({
+    id: z.string().uuid(),
+    zoneId: z.string().min(1).max(80),
+    at: z.number().int().nonnegative(),
+    type: z.enum(['command', 'applied', 'rejected', 'expired', 'rule', 'safety']),
+    message: z.string().min(1).max(500),
+    commandId: z.string().uuid().nullable(),
+  })
+  .strict();
+
+/** Validates the complete durable state before it is accepted or written by an adapter. */
+export const systemStateSchema: z.ZodType<SystemState> = z
+  .object({
+    schemaVersion: z.literal('1.0'),
+    createdAt: z.number().int().nonnegative(),
+    zones: z.array(zoneSchema).min(1),
+    commands: z.array(persistedCommandSchema),
+    readings: z.array(readingSchema).max(2000),
+    events: z.array(irrigationEventSchema).max(1000),
+  })
+  .strict()
+  .superRefine((state, context) => {
+    const zoneIds = new Set<string>();
+    const deviceIds = new Set<string>();
+    for (const [index, zone] of state.zones.entries()) {
+      if (zoneIds.has(zone.id))
+        context.addIssue({ code: 'custom', path: ['zones', index, 'id'], message: 'Área duplicada.' });
+      if (deviceIds.has(zone.deviceId))
+        context.addIssue({
+          code: 'custom',
+          path: ['zones', index, 'deviceId'],
+          message: 'Dispositivo vinculado a mais de uma área.',
+        });
+      zoneIds.add(zone.id);
+      deviceIds.add(zone.deviceId);
+      if (zone.latest && (zone.latest.zoneId !== zone.id || zone.latest.deviceId !== zone.deviceId))
+        context.addIssue({
+          code: 'custom',
+          path: ['zones', index, 'latest'],
+          message: 'Última leitura não pertence à área e ao dispositivo vinculados.',
+        });
+    }
+    for (const [index, command] of state.commands.entries()) {
+      const zone = state.zones.find((item) => item.id === command.zoneId);
+      if (!zone || zone.deviceId !== command.deviceId)
+        context.addIssue({
+          code: 'custom',
+          path: ['commands', index],
+          message: 'Comando sem vínculo válido entre área e dispositivo.',
+        });
+    }
+    for (const [index, reading] of state.readings.entries()) {
+      const zone = state.zones.find((item) => item.id === reading.zoneId);
+      if (!zone || zone.deviceId !== reading.deviceId)
+        context.addIssue({
+          code: 'custom',
+          path: ['readings', index],
+          message: 'Leitura sem vínculo válido entre área e dispositivo.',
+        });
+    }
+    for (const [index, event] of state.events.entries()) {
+      if (!zoneIds.has(event.zoneId))
+        context.addIssue({ code: 'custom', path: ['events', index], message: 'Evento sem área válida.' });
+    }
+  });
