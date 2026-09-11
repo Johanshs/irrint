@@ -28,9 +28,11 @@ A mensagem de falha de disco no teste CT19 é intencional: valida HTTP 500 e rev
 
 ## O que mudou no laboratório
 
-O acionamento ao vivo e os testes predefinidos disputavam a mesma tela. A v0.3.0 usa **Sistema → Teste → Executar teste** e mantém o controle ao vivo nas telas operacionais. Cada ensaio funciona em N ou S. Nomes, câmera, corte e inspeção ficam em opções recolhidas.
+O acionamento ao vivo e os testes predefinidos disputavam a mesma tela. A v0.3.0 usa **Sistema → Teste → Executar teste** e mantém o controle ao vivo nas telas operacionais. Cada ensaio funciona em N ou S. Os controles de nomes e gotejamento ficam visíveis acima da maquete; câmera, corte e lista de peças ficam recolhidos. As etiquetas têm linhas ligadas às peças e movimento suave; o inspetor abre girando, com opção de pausa.
 
 A apresentação tem três visualizações: **Maquete 3D**, **Entender o teste** e **Resultados**. A maquete conserva o estado conhecido pelo aplicativo. A análise mostra separadamente o estado interno do simulador, curvas em unidades próprias e uma cronologia navegável. O resultado inclui critérios calculados e relatório para impressão, CSV e JSON.
+
+O ajuste posterior de etiquetas e gotejamento foi verificado no navegador: linhas partindo das peças e terminando nas caixas, inspetor aberto com rotação ativa e alternância de gotas sem mudar as medições de um replay pausado. Build web aprovado; controlador, contrato e modelo de consumo permanecem os mesmos do marco testado.
 
 O caso automático abre em 1 s, fecha em 19 s e volta a abrir em 87 s: 21 s e 0,210 L dentro da janela de 90 s. Ele não representa uma sessão encerrada com todas as válvulas fechadas. Os casos de prazo local encerram em 13 s, após 12 s de abertura; o ensaio de parada manual consome 0,030 L. Casos que bloqueiam atuação consomem zero.
 

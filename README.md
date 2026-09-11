@@ -23,14 +23,14 @@ Abra **http://127.0.0.1:5173** no mesmo computador. Um único comando inicia a A
 
 1. **Início:** selecione Horta norte. Inicie e pare a irrigação manual. Observe a solicitação, a confirmação e a mudança da umidade.
 2. **Ajustes:** escolha Automático e salve. O controlador inicia abaixo de 35% e solicita parada em 45%. São valores didáticos, configuráveis por área.
-3. **Histórico → laboratório:** escolha **Sistema: Canteiro sul (S)**, **Teste: Solo seco e recuperação** e use **Executar teste**. O mesmo fluxo funciona no norte. Pause e explore nomes, peças e corte do solo em **Visualização e componentes**.
+3. **Histórico → laboratório:** escolha **Sistema: Canteiro sul (S)**, **Teste: Solo seco e recuperação** e use **Executar teste**. O mesmo fluxo funciona no norte. Use **Mostrar nomes** acima da maquete para exibir etiquetas com linhas e movimento suave. Peças e corte do solo ficam em **Visualização e componentes**; o inspetor abre com rotação automática.
 4. Execute **Perda de comunicação**. Em **Entender o teste**, vá a 20 s: a API mantém 0,030 L recebidos e estado incerto, enquanto o simulador já fechou e acumulou 0,120 L. Toque na reconexão de 30 s para ver a atualização.
 5. Compare **Confirmação perdida** (água liberada sem ACK) com **Comando não entregue** (nenhuma água). Os critérios explicam por que ausência de confirmação não prova ausência de efeito.
 6. Em **Resultados**, confira as verificações e baixe **Relatório para impressão**, **Dados CSV** ou **Execução JSON**. Consulte o [guia completo, cenários e limites](DEMONSTRACAO-3D.md).
 
 Os experimentos são isolados: não alteram as áreas da demonstração ao vivo. N fica ao fundo da maquete; S, à frente. O seletor **Sistema** define o alvo do teste; tocar em uma peça abre sua descrição. Indicadores, gráficos, cronologia e resultados não dependem do WebGL.
 
-O laboratório tem um único acionamento de teste, sem controles ao vivo duplicados. Início e Áreas mantêm a operação manual. Se o sistema prefere movimento reduzido, use **Visualização e componentes → Animar água** para habilitar os efeitos.
+O laboratório tem um único acionamento de teste, sem controles ao vivo duplicados. Início e Áreas mantêm a operação manual. Use **Animar gotejamento / Ocultar gotejamento**, acima da maquete, para alternar gotas e anéis durante uma irrigação confirmada. O efeito pausa com o replay e não altera o consumo calculado.
 
 ## O que funciona
 

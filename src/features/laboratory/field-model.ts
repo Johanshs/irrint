@@ -154,6 +154,7 @@ export function createField(scene: T.Scene) {
         online: boolean,
         section: boolean,
         time: number,
+        showDrips: boolean,
       ) {
         const wet = Math.max(0, Math.min(1, moisture / 100));
         soil.color.set('#896647').lerp(new T.Color('#474335'), wet);
@@ -161,8 +162,8 @@ export function createField(scene: T.Scene) {
         haloMaterial.color.set(!online ? '#ce9441' : flow ? '#4ce0d3' : '#5a7068');
         front.visible = !section;
         cut.visible = section;
-        droplets.visible = flow;
-        ripples.visible = flow;
+        droplets.visible = flow && showDrips;
+        ripples.visible = flow && showDrips;
         points.forEach((point, i) => {
           dummy.position.copy(point);
           dummy.rotation.set(-Math.PI / 2, 0, 0);

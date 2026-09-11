@@ -17,14 +17,16 @@ A tela inicial mostra apenas uma maquete preparada. Não apresenta a sessão ao 
 
 ## Maquete sem excesso de controles
 
-Os nomes começam ocultos. Em **Visualização e componentes** ficam:
-- Mostrar/ocultar nomes, animar/pausar efeitos e corte do solo;
+Os nomes começam ocultos. **Mostrar nomes** e **Animar gotejamento / Ocultar gotejamento** ficam sempre visíveis acima da maquete. As etiquetas possuem uma linha contínua com ponto de origem na peça; o movimento das caixas usa easing exponencial, e a linha acompanha a borda da caixa durante o deslocamento.
+
+Em **Visualização e componentes** ficam:
+- corte do solo;
 - recentrar e aproximar o sistema selecionado;
 - lista de peças acessível por toque e teclado.
 
-Arraste a maquete para girar e use pinça/roda para aproximar. Hover destaca a peça; clique ou toque abre seu modelo 3D e a descrição da integração. Inspecionar uma peça pausa o replay e não troca o sistema do teste. Escape fecha o modal e devolve o foco.
+Arraste a maquete para girar e use pinça/roda para aproximar. Hover destaca a peça e sua linha; clique ou toque abre seu modelo 3D **girando automaticamente**, com a descrição da integração. Use **Pausar rotação** para examinar uma face. Inspecionar uma peça pausa o replay e não troca o sistema do teste. Escape fecha o modal e devolve o foco.
 
-O sistema N fica ao fundo e S à frente, na posição inicial. No celular, etiquetas mostram os componentes comuns e os do sistema selecionado. Se o aparelho prefere movimento reduzido, os efeitos começam pausados: habilite **Animar água** para apresentar o gotejamento.
+O sistema N fica ao fundo e S à frente, na posição inicial. No celular, etiquetas mostram os componentes comuns e os do sistema selecionado. Se o aparelho prefere movimento reduzido, o gotejamento começa oculto: habilite **Animar gotejamento** para apresentar as gotas. Elas aparecem somente quando há irrigação confirmada e pausam junto com o replay. Ocultar o efeito não altera válvulas, umidade ou volume. A rotação automática do inspetor é a preferência explícita desta demonstração, com pausa disponível.
 
 O corte revela raízes e regiões ilustrativas de umidade. Cor do solo, gotas e fluxo acompanham a informação recebida. Sem confirmação, a cena não inventa irrigação. Quando WebGL não está disponível, as descrições, indicadores, gráficos, cronologia e resultados continuam utilizáveis; a avaliação formal dessa contingência em aparelhos está pendente.
 

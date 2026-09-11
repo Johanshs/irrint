@@ -7,6 +7,13 @@
   gap: 8px;
   flex-wrap: wrap;
 }
+.scene-quick-toggles {
+  margin: 12px 0 0;
+}
+.scene-quick-toggles button {
+  flex: 1;
+  min-width: 130px;
+}
 .field-experience button,
 .component-inspector button {
   font: inherit;
@@ -54,9 +61,14 @@
   pointer-events: none;
 }
 .tag-leaders line {
-  stroke: #638c7c;
-  stroke-width: 1.2;
-  stroke-dasharray: 3 3;
+  stroke: #487b68;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  filter: drop-shadow(0 1px 1px #ffffffc0);
+}
+.tag-leaders line.hovered {
+  stroke: #137958;
+  stroke-width: 2.4;
 }
 .component-tag {
   position: absolute;
@@ -75,6 +87,7 @@
   min-height: 34px;
   padding: 5px 9px;
   white-space: nowrap;
+  will-change: transform;
   transition:
     background 0.15s,
     box-shadow 0.15s;

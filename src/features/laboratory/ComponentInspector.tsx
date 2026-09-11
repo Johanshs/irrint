@@ -7,7 +7,7 @@ import { createComponent, disposeScene } from './models';
 export function ComponentInspector({ part, onClose }: { part: FieldComponent; onClose: () => void }) {
   const dialog = useRef<HTMLDialogElement>(null),
     host = useRef<HTMLDivElement>(null);
-  const [spinning, setSpinning] = useState(() => !matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const [spinning, setSpinning] = useState(true);
   const [unavailable, setUnavailable] = useState(false);
   const spin = useRef(spinning);
   spin.current = spinning;
