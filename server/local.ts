@@ -4,6 +4,7 @@ import { resolve } from 'node:path';
 import { initialState, IrrigationControl } from '../shared/control.ts';
 import { createApi } from './api.ts';
 import { JsonFileStateStore } from './storage.ts';
+import { LocalSessionAuth } from './auth.ts';
 
 const directory = resolve('.local');
 await mkdir(directory, { recursive: true });
@@ -15,8 +16,17 @@ if (loaded.recoveredFromBackup)
   console.warn('Estado principal inválido. A sessão foi recuperada da cópia de segurança.');
 const token = randomBytes(32).toString('hex');
 const control = new IrrigationControl(state);
+const sessionAuth = new LocalSessionAuth([
+  {
+    id: 'demo-producer',
+    name: 'Produtor demonstrativo',
+    email: process.env.DEMO_USER_EMAIL ?? 'produtor@demo.local',
+    password: process.env.DEMO_USER_PASSWORD ?? 'irrigacao',
+  },
+]);
 const api = createApi(control, {
   deviceToken: token,
+  sessionAuth,
   persist: () => store.save(control.exportState()),
 });
 api.listen(8787, '127.0.0.1', async () => {

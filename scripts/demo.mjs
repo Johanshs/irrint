@@ -30,7 +30,7 @@ try {
   let ready = false;
   for (let attempt = 0; attempt < 50 && !stopping; attempt++) {
     try {
-      const response = await fetch('http://127.0.0.1:8787/api/v1/state');
+      const response = await fetch('http://127.0.0.1:8787/api/v1/openapi.json');
       if (response.ok) {
         ready = true;
         break;

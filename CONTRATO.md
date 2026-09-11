@@ -1,24 +1,30 @@
 # Contrato da demonstração local · versão 1.0
 
-Os schemas executáveis em `shared/contracts.ts` e `shared/experiments.ts` validam a execução. A especificação OpenAPI 3.1 pode ser consultada em `GET /api/v1/openapi.json`. Persistência em nuvem e propriedade por usuário continuam como etapas posteriores.
+Os schemas executáveis em `shared/contracts.ts` e `shared/experiments.ts` validam a execução. A especificação OpenAPI 3.1 pode ser consultada em `GET /api/v1/openapi.json`. Persistência em nuvem e autenticação de produção continuam como etapas posteriores.
 
 ## Operador
 
 | Método | Caminho                      | Entrada / resultado                                                                   |
 | ------ | ---------------------------- | ------------------------------------------------------------------------------------- |
 | GET    | `/api/v1/openapi.json`       | Especificação OpenAPI 3.1 para clientes de operador e dispositivo                     |
+| POST   | `/api/v1/session`            | `email`, `password`; cria uma sessão local com duração máxima de 30 minutos           |
 | GET    | `/api/v1/state`              | Snapshot: áreas, leituras, comandos, eventos, horário do servidor e prazo de contato  |
+| POST   | `/api/v1/zones`              | Cadastra `name` e `crop`; vínculos demonstrativos são gerados quando omitidos         |
+| PUT    | `/api/v1/zones/:id`          | Atualiza o nome e o cultivo sem perder o histórico ou os vínculos                     |
 | POST   | `/api/v1/zones/:id/commands` | `action`, `idempotencyKey`; `durationSeconds` obrigatório somente para `open`         |
 | PUT    | `/api/v1/zones/:id/rule`     | `mode`, `startBelow`, `stopAt`, `maxDurationSeconds`                                  |
 | GET    | `/api/v1/report`             | Estado ao vivo retido e limites da evidência                                          |
 | POST   | `/api/v1/experiments`        | `scenario`, `seed`, `zoneId` opcional; retorna relatório completo de execução isolada |
 
-`north` e `south` são as áreas iniciais. IDs são strings. Um `POST` de comando retorna HTTP 202 com estado `pending`: isso confirma recebimento, não execução física. A interface aguarda `applied` ou uma leitura coerente com `lastCommandId`.
+`north` e `south` são as áreas iniciais da conta demonstrativa. As demais rotas de operador exigem `Authorization: Bearer <token da sessão>` e retornam somente áreas, comandos, leituras e eventos da conta autenticada. Um `POST` de comando retorna HTTP 202 com estado `pending`: isso confirma recebimento, não execução física. A interface aguarda `applied` ou uma leitura coerente com `lastCommandId`.
+
+Ao cadastrar uma área pela interface, a API cria identificadores únicos para dispositivo, sensor de umidade e válvula. Clientes de integração podem informar `id`, `deviceId`, `sensorId` e `valveId` no cadastro. O runner consulta `/device/v1/config` a cada 5 s e inicia um dispositivo simulado para vínculos novos. Esta etapa permite criar e editar; remoção e troca de componentes com histórico permanecem fora do fluxo atual.
 
 ## Dispositivo
 
 | Método | Caminho                         | Entrada / resultado                                                          |
 | ------ | ------------------------------- | ---------------------------------------------------------------------------- |
+| GET    | `/device/v1/config`             | Áreas, dispositivos e últimas leituras necessárias ao runner                 |
 | GET    | `/device/v1/commands/:deviceId` | Comandos pendentes e ainda válidos                                           |
 | POST   | `/device/v1/telemetry`          | Leitura com sequência crescente, estado da válvula e último comando aplicado |
 | POST   | `/device/v1/ack`                | `deviceId`, `commandId`, `status` (`applied`/`rejected`), `valve`            |
@@ -65,7 +71,7 @@ O modelo usa 18 emissores de 2 L/h por área (36 L/h) e integra o relógio do di
 
 A API serializa operações e grava apenas alterações de estado. Antes de aceitar ou gravar, o adaptador valida integralmente as áreas, vínculos, regras, leituras, comandos e eventos. Arquivo temporário e troca atômica evitam gravação parcial. A versão anterior permanece em `state.json.bak`; se o arquivo principal estiver inválido, ele é preservado com o sufixo `.corrupt-<instante>` e a cópia válida é restaurada. Erro de persistência reverte a alteração em memória. Migrações entre futuras versões do schema continuam como etapa posterior.
 
-Somente loopback; origens web locais nas portas 5173 e 4173. JSON com limite de 64 KiB na entrada. Sem autenticação de usuário. Não expor este adaptador por túnel ou publicar como backend de produção.
+Somente loopback; origens web locais nas portas 5173 e 4173. JSON com limite de 64 KiB na entrada. A conta local é sintética, configurável por `DEMO_USER_EMAIL` e `DEMO_USER_PASSWORD`, e as sessões permanecem apenas na memória do processo. Esse mecanismo comprova o isolamento da API local, mas não substitui Firebase Auth, regras de banco ou gestão de contas de produção. Não expor este adaptador por túnel ou publicar como backend de produção.
 
 ## Experimentos
 

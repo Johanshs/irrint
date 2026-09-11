@@ -1,48 +1,104 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
-import type { CommandInput, Rule, Snapshot, Zone } from '../../../shared/contracts';
+import type {
+  CommandInput,
+  Rule,
+  SessionInfo,
+  SessionUser,
+  Snapshot,
+  Zone,
+  ZoneCreate,
+  ZoneUpdate,
+} from '../../../shared/contracts';
 
 const base = import.meta.env.VITE_API_BASE_URL ?? '';
-export async function request<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
+const tokenKey = 'irrint-session-token';
+const userKey = 'irrint-session-user';
+
+class RequestError extends Error {
+  constructor(
+    public status: number,
+    message: string,
+  ) {
+    super(message);
+  }
+}
+
+function storedUser() {
+  try {
+    return JSON.parse(localStorage.getItem(userKey) ?? 'null') as SessionUser | null;
+  } catch {
+    return null;
+  }
+}
+
+function clearStoredSession() {
+  localStorage.removeItem(tokenKey);
+  localStorage.removeItem(userKey);
+}
+
+export async function request<T>(
+  path: string,
+  method = 'GET',
+  body?: unknown,
+  authenticated = true,
+): Promise<T> {
+  const token = authenticated ? localStorage.getItem(tokenKey) : null;
   const response = await fetch(`${base}${path}`, {
     method,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     body: body === undefined ? undefined : JSON.stringify(body),
     signal: AbortSignal.timeout(5000),
   });
   const data = await response.json().catch(() => ({ error: 'Serviço demonstrativo indisponível.' }));
-  if (!response.ok) throw new Error(data.error ?? 'Não foi possível concluir a operação.');
+  if (!response.ok)
+    throw new RequestError(response.status, data.error ?? 'Não foi possível concluir a operação.');
   return data as T;
 }
 
 interface Session {
+  user: SessionUser | null;
   state: Snapshot | null;
   selectedId: string;
   select: (id: string) => void;
   error: string | null;
   connected: boolean;
   busy: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
   refresh: () => Promise<void>;
   command: (zoneId: string, input: CommandInput) => Promise<void>;
   configure: (zoneId: string, rule: Rule) => Promise<void>;
+  createZone: (input: ZoneCreate) => Promise<void>;
+  updateZone: (zoneId: string, input: ZoneUpdate) => Promise<void>;
   exportReport: () => Promise<void>;
 }
 const Context = createContext<Session | null>(null);
 
 export function SessionProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<SessionUser | null>(storedUser);
   const [state, setState] = useState<Snapshot | null>(null);
   const [selectedId, select] = useState('north');
   const [error, setError] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
   const [busy, setBusy] = useState(false);
   const refresh = useCallback(async () => {
+    if (!localStorage.getItem(tokenKey)) {
+      setConnected(false);
+      return;
+    }
     try {
       const next = await request<Snapshot>('/api/v1/state');
       if (next.schemaVersion !== '1.0' || !Array.isArray(next.zones))
         throw new Error('Contrato de comunicação incompatível.');
       setState(next);
       setConnected(true);
-    } catch {
+    } catch (error) {
       setConnected(false);
+      if (error instanceof RequestError && error.status === 401) {
+        clearStoredSession();
+        setUser(null);
+        setState(null);
+      }
     }
   }, []);
   useEffect(() => {
@@ -63,12 +119,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       document.removeEventListener('visibilitychange', visible);
     };
   }, [refresh]);
-  async function mutate(path: string, method: string, body: unknown) {
+  async function mutate<T>(path: string, method: string, body: unknown) {
     setBusy(true);
     setError(null);
     try {
-      await request(path, method, body);
+      const result = await request<T>(path, method, body);
       await refresh();
+      return result;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Operação não concluída.';
       setError(message);
@@ -76,6 +133,30 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     } finally {
       setBusy(false);
     }
+  }
+  async function login(email: string, password: string) {
+    setBusy(true);
+    setError(null);
+    try {
+      const session = await request<SessionInfo>('/api/v1/session', 'POST', { email, password }, false);
+      localStorage.setItem(tokenKey, session.token);
+      localStorage.setItem(userKey, JSON.stringify(session.user));
+      setUser(session.user);
+      await refresh();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Não foi possível entrar.';
+      setError(message);
+      throw new Error(message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  function logout() {
+    clearStoredSession();
+    setUser(null);
+    setState(null);
+    setConnected(false);
+    setError(null);
   }
   async function exportReport() {
     setError(null);
@@ -96,16 +177,25 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   return (
     <Context.Provider
       value={{
+        user,
         state,
         selectedId,
         select,
         error,
         connected,
         busy,
+        login,
+        logout,
         refresh,
         exportReport,
-        command: (zoneId, input) => mutate(`/api/v1/zones/${zoneId}/commands`, 'POST', input),
-        configure: (zoneId, rule) => mutate(`/api/v1/zones/${zoneId}/rule`, 'PUT', rule),
+        command: async (zoneId, input) =>
+          void (await mutate(`/api/v1/zones/${zoneId}/commands`, 'POST', input)),
+        configure: async (zoneId, rule) => void (await mutate(`/api/v1/zones/${zoneId}/rule`, 'PUT', rule)),
+        createZone: async (input) => {
+          const zone = await mutate<Zone>('/api/v1/zones', 'POST', input);
+          select(zone.id);
+        },
+        updateZone: async (zoneId, input) => void (await mutate(`/api/v1/zones/${zoneId}`, 'PUT', input)),
       }}
     >
       {children}

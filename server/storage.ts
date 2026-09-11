@@ -18,7 +18,20 @@ export class JsonFileStateStore implements StateStore {
   }
 
   private async read(path: string): Promise<SystemState> {
-    return systemStateSchema.parse(JSON.parse(await readFile(path, 'utf8')));
+    const raw = JSON.parse(await readFile(path, 'utf8'));
+    if (raw && typeof raw === 'object' && Array.isArray(raw.zones)) {
+      raw.zones = raw.zones.map((zone: unknown) => {
+        if (!zone || typeof zone !== 'object') return zone;
+        const id = 'id' in zone && typeof zone.id === 'string' ? zone.id : 'unbound';
+        return {
+          ...zone,
+          ownerId: 'ownerId' in zone ? zone.ownerId : 'demo-producer',
+          sensorId: 'sensorId' in zone ? zone.sensorId : `soil-${id}`,
+          valveId: 'valveId' in zone ? zone.valveId : `valve-${id}`,
+        };
+      });
+    }
+    return systemStateSchema.parse(raw);
   }
 
   async load(fallback: SystemState) {

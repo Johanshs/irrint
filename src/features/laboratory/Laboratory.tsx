@@ -29,8 +29,11 @@ const preview: Snapshot = {
   events: [],
   zones: systems.map((system) => ({
     ...system,
+    ownerId: 'demo-producer',
     crop: 'Demonstração',
     deviceId: 'sim-' + system.id,
+    sensorId: 'soil-' + system.id,
+    valveId: 'valve-' + system.id,
     automaticPaused: false,
     latest: null,
     activeCommandId: null,

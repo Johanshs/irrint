@@ -59,7 +59,7 @@ npm run build
 - `demo:evidence`: executa os sete cenários em ambos os sistemas; cria 14 JSONs, 14 CSVs, 14 relatórios HTML, resumo Markdown e impressão SHA-256 das fontes em `.local/reports/<data>/`.
 - `build`: valida TypeScript e produz a aplicação web em `dist/`.
 
-Validação deste marco: **55 testes e 42 critérios em 14 ensaios**. Os critérios dos cenários não representam toda a matriz do TCC. Usuários, hardware físico, isolamento por conta, dispositivos móveis reais e implantação continuam pendentes.
+Validação deste marco: **62 testes e 42 critérios em 14 ensaios**. Os critérios dos cenários não representam toda a matriz do TCC. Hardware físico, regras Firebase, dispositivos móveis reais e implantação continuam pendentes.
 
 ## Dados locais
 
@@ -102,6 +102,10 @@ Dispositivos simulados (processo Node independente)
 O adaptador local foi escolhido para validar o ciclo completo antes de migrar dados ou depender de credenciais e cobrança em nuvem. O plano continua prevendo Firebase Auth e um repositório persistente por usuário atrás da API. Isso não está implementado nesta entrega. O contrato legível está em [CONTRATO.md](CONTRATO.md) e a descrição OpenAPI 3.1 é servida em `GET /api/v1/openapi.json`.
 
 O armazenamento local valida o estado completo antes de carregar ou gravar, mantém `state.json.bak` e preserva um arquivo inválido antes de restaurar a última cópia utilizável.
+
+Ao abrir o aplicativo, use a conta sintética `produtor@demo.local` e a senha `irrigacao`. Ela cria uma sessão local de 30 minutos e só recebe as áreas vinculadas a `demo-producer`. As credenciais podem ser substituídas pelas variáveis `DEMO_USER_EMAIL` e `DEMO_USER_PASSWORD`; esse acesso não consulta o Firebase legacy.
+
+Em **Áreas**, o produtor pode cadastrar e editar a identificação de um cultivo. O cadastro gera vínculos únicos para dispositivo, sensor e válvula; o runner detecta a nova área em até 5 s e começa a enviar leituras simuladas. Os identificadores ficam visíveis no cartão como evidência do vínculo, mas não exigem configuração técnica do produtor.
 
 ## Android e publicação
 

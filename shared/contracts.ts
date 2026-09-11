@@ -85,9 +85,12 @@ export interface Reading extends Telemetry {
 
 export interface Zone {
   id: string;
+  ownerId: string;
   name: string;
   crop: string;
   deviceId: string;
+  sensorId: string;
+  valveId: string;
   rule: Rule;
   automaticPaused: boolean;
   latest: Reading | null;
@@ -98,7 +101,7 @@ export interface IrrigationEvent {
   id: string;
   zoneId: string;
   at: number;
-  type: 'command' | 'applied' | 'rejected' | 'expired' | 'rule' | 'safety';
+  type: 'command' | 'applied' | 'rejected' | 'expired' | 'rule' | 'safety' | 'topology';
   message: string;
   commandId: string | null;
 }
@@ -141,9 +144,12 @@ const readingSchema: z.ZodType<Reading> = telemetrySchema
 const zoneSchema: z.ZodType<Zone> = z
   .object({
     id: z.string().min(1).max(80),
+    ownerId: z.string().min(1).max(80),
     name: z.string().trim().min(1).max(80),
     crop: z.string().trim().min(1).max(80),
     deviceId: z.string().min(1).max(80),
+    sensorId: z.string().min(1).max(80),
+    valveId: z.string().min(1).max(80),
     rule: ruleSchema,
     automaticPaused: z.boolean(),
     latest: readingSchema.nullable(),
@@ -151,12 +157,34 @@ const zoneSchema: z.ZodType<Zone> = z
   })
   .strict();
 
+const optionalIdentifier = z
+  .string()
+  .trim()
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+  .max(80)
+  .optional();
+export const zoneCreateSchema = z
+  .object({
+    name: z.string().trim().min(2).max(80),
+    crop: z.string().trim().min(2).max(80),
+    id: optionalIdentifier,
+    deviceId: optionalIdentifier,
+    sensorId: optionalIdentifier,
+    valveId: optionalIdentifier,
+  })
+  .strict();
+export const zoneUpdateSchema = z
+  .object({ name: z.string().trim().min(2).max(80), crop: z.string().trim().min(2).max(80) })
+  .strict();
+export type ZoneCreate = z.infer<typeof zoneCreateSchema>;
+export type ZoneUpdate = z.infer<typeof zoneUpdateSchema>;
+
 const irrigationEventSchema: z.ZodType<IrrigationEvent> = z
   .object({
     id: z.string().uuid(),
     zoneId: z.string().min(1).max(80),
     at: z.number().int().nonnegative(),
-    type: z.enum(['command', 'applied', 'rejected', 'expired', 'rule', 'safety']),
+    type: z.enum(['command', 'applied', 'rejected', 'expired', 'rule', 'safety', 'topology']),
     message: z.string().min(1).max(500),
     commandId: z.string().uuid().nullable(),
   })
@@ -176,6 +204,8 @@ export const systemStateSchema: z.ZodType<SystemState> = z
   .superRefine((state, context) => {
     const zoneIds = new Set<string>();
     const deviceIds = new Set<string>();
+    const sensorIds = new Set<string>();
+    const valveIds = new Set<string>();
     for (const [index, zone] of state.zones.entries()) {
       if (zoneIds.has(zone.id))
         context.addIssue({ code: 'custom', path: ['zones', index, 'id'], message: 'Área duplicada.' });
@@ -187,6 +217,14 @@ export const systemStateSchema: z.ZodType<SystemState> = z
         });
       zoneIds.add(zone.id);
       deviceIds.add(zone.deviceId);
+      if (sensorIds.has(zone.sensorId) || valveIds.has(zone.valveId))
+        context.addIssue({
+          code: 'custom',
+          path: ['zones', index],
+          message: 'Sensor ou válvula vinculados a mais de uma área.',
+        });
+      sensorIds.add(zone.sensorId);
+      valveIds.add(zone.valveId);
       if (zone.latest && (zone.latest.zoneId !== zone.id || zone.latest.deviceId !== zone.deviceId))
         context.addIssue({
           code: 'custom',
@@ -217,3 +255,21 @@ export const systemStateSchema: z.ZodType<SystemState> = z
         context.addIssue({ code: 'custom', path: ['events', index], message: 'Evento sem área válida.' });
     }
   });
+
+export const sessionLoginSchema = z
+  .object({ email: z.string().trim().email().max(200), password: z.string().min(1).max(200) })
+  .strict();
+
+export type SessionLogin = z.infer<typeof sessionLoginSchema>;
+
+export interface SessionUser {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface SessionInfo {
+  token: string;
+  expiresAt: number;
+  user: SessionUser;
+}

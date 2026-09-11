@@ -4,10 +4,12 @@ import { ZodError } from 'zod';
 import { IrrigationControl, ControlError } from '../shared/control.ts';
 import { runExperiment } from '../experiments/run.ts';
 import { openApiDocument } from './openapi.ts';
+import type { SessionAuth } from './auth.ts';
 
 interface Options {
   deviceToken: string;
   persist: () => Promise<void>;
+  sessionAuth: SessionAuth;
 }
 
 async function jsonBody(request: IncomingMessage) {
@@ -65,13 +67,23 @@ export function createApi(control: IrrigationControl, options: Options) {
             throw new ControlError(423, 'Outro simulador controla esta sessão.');
           lease = { holder, expiresAt: Date.now() + 6000 };
         }
+        const publicOperatorPath = path === '/api/v1/session' || path === '/api/v1/openapi.json';
+        const sessionToken = (request.headers.authorization ?? '').replace(/^Bearer /, '');
+        const user =
+          path.startsWith('/api/') && !publicOperatorPath ? options.sessionAuth.resolve(sessionToken) : null;
+        if (path.startsWith('/api/') && !publicOperatorPath && !user)
+          throw new ControlError(401, 'Sessão ausente ou expirada. Entre novamente.');
         let result: unknown;
         let status = 200;
-        if (request.method === 'GET' && path === '/api/v1/openapi.json') result = openApiDocument;
-        else if (request.method === 'GET' && path === '/api/v1/state') result = control.snapshot();
+        if (request.method === 'POST' && path === '/api/v1/session') {
+          result = options.sessionAuth.login(await jsonBody(request));
+          if (!result) throw new ControlError(401, 'E-mail ou senha inválidos.');
+        } else if (request.method === 'GET' && path === '/api/v1/openapi.json') result = openApiDocument;
+        else if (request.method === 'GET' && path === '/api/v1/state')
+          result = control.snapshotForOwner(user!.id);
         else if (request.method === 'GET' && path === '/api/v1/report')
           result = {
-            ...control.snapshot(),
+            ...control.snapshotForOwner(user!.id),
             exportedAt: Date.now(),
             reportVersion: '1.0',
             limitation:
@@ -79,6 +91,11 @@ export function createApi(control: IrrigationControl, options: Options) {
           };
         else if (request.method === 'POST' && path === '/api/v1/experiments')
           result = runExperiment(await jsonBody(request));
+        else if (request.method === 'POST' && path === '/api/v1/zones') {
+          result = control.createZone(user!.id, await jsonBody(request));
+          status = 201;
+        } else if (request.method === 'GET' && path === '/device/v1/config')
+          result = control.snapshot().zones.map(({ id, deviceId, latest }) => ({ id, deviceId, latest }));
         else if (request.method === 'GET' && path.startsWith('/device/v1/commands/'))
           result = control.pending(decodeURIComponent(path.split('/').at(-1)!));
         else if (request.method === 'POST' && path === '/device/v1/telemetry')
@@ -86,13 +103,18 @@ export function createApi(control: IrrigationControl, options: Options) {
         else if (request.method === 'POST' && path === '/device/v1/ack')
           result = control.acknowledge(await jsonBody(request));
         else {
+          const zonePath = path.match(/^\/api\/v1\/zones\/([^/]+)$/);
           const match = path.match(/^\/api\/v1\/zones\/([^/]+)\/(commands|rule)$/);
-          if (match && request.method === 'POST' && match[2] === 'commands') {
+          if (zonePath && request.method === 'PUT')
+            result = control.updateZone(decodeURIComponent(zonePath[1]), user!.id, await jsonBody(request));
+          else if (match && request.method === 'POST' && match[2] === 'commands') {
+            control.assertOwner(decodeURIComponent(match[1]), user!.id);
             result = control.command(decodeURIComponent(match[1]), await jsonBody(request));
             status = 202;
-          } else if (match && request.method === 'PUT' && match[2] === 'rule')
+          } else if (match && request.method === 'PUT' && match[2] === 'rule') {
+            control.assertOwner(decodeURIComponent(match[1]), user!.id);
             result = control.configure(decodeURIComponent(match[1]), await jsonBody(request));
-          else throw new ControlError(404, 'Operação não encontrada.');
+          } else throw new ControlError(404, 'Operação não encontrada.');
         }
         if (JSON.stringify(before) !== JSON.stringify(control.exportState())) await options.persist();
         send(response, status, result);

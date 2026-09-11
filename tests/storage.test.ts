@@ -11,6 +11,27 @@ afterEach(async () => {
 });
 
 describe('Armazenamento local validado', () => {
+  it('atribui a conta demonstrativa ao carregar um estado local anterior', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'irrint-storage-'));
+    directories.push(directory);
+    const path = join(directory, 'state.json');
+    const legacy = structuredClone(initialState(1_800_000_000_000));
+    for (const zone of legacy.zones) {
+      delete (zone as Partial<typeof zone>).ownerId;
+      delete (zone as Partial<typeof zone>).sensorId;
+      delete (zone as Partial<typeof zone>).valveId;
+    }
+    await writeFile(path, JSON.stringify(legacy), 'utf8');
+
+    const loaded = await new JsonFileStateStore(path).load(initialState(0));
+    expect(
+      loaded.state.zones.map(({ id, ownerId, sensorId, valveId }) => ({ id, ownerId, sensorId, valveId })),
+    ).toEqual([
+      { id: 'north', ownerId: 'demo-producer', sensorId: 'soil-north', valveId: 'valve-north' },
+      { id: 'south', ownerId: 'demo-producer', sensorId: 'soil-south', valveId: 'valve-south' },
+    ]);
+  });
+
   it('preserva o estado válido, rejeita vínculos inválidos e recupera a cópia de segurança', async () => {
     const directory = await mkdtemp(join(tmpdir(), 'irrint-storage-'));
     directories.push(directory);

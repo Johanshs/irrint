@@ -1,5 +1,12 @@
 import { randomUUID } from 'node:crypto';
-import { ackSchema, commandSchema, ruleSchema, telemetrySchema } from './contracts.ts';
+import {
+  ackSchema,
+  commandSchema,
+  ruleSchema,
+  telemetrySchema,
+  zoneCreateSchema,
+  zoneUpdateSchema,
+} from './contracts.ts';
 import type {
   Ack,
   Command,
@@ -10,6 +17,8 @@ import type {
   SystemState,
   Telemetry,
   Zone,
+  ZoneCreate,
+  ZoneUpdate,
 } from './contracts.ts';
 
 export const OFFLINE_AFTER_MS = 10_000;
@@ -32,8 +41,24 @@ export function initialState(now: number): SystemState {
     readings: [],
     events: [],
     zones: [
-      { id: 'north', name: 'Horta norte', crop: 'Hortaliças', deviceId: 'sim-north' },
-      { id: 'south', name: 'Canteiro sul', crop: 'Mudas', deviceId: 'sim-south' },
+      {
+        id: 'north',
+        ownerId: 'demo-producer',
+        name: 'Horta norte',
+        crop: 'Hortaliças',
+        deviceId: 'sim-north',
+        sensorId: 'soil-north',
+        valveId: 'valve-north',
+      },
+      {
+        id: 'south',
+        ownerId: 'demo-producer',
+        name: 'Canteiro sul',
+        crop: 'Mudas',
+        deviceId: 'sim-south',
+        sensorId: 'soil-south',
+        valveId: 'valve-south',
+      },
     ].map((zone) => ({
       ...zone,
       automaticPaused: false,
@@ -84,6 +109,85 @@ export class IrrigationControl {
       environment: 'local-simulation',
       offlineAfterMs: OFFLINE_AFTER_MS,
     };
+  }
+
+  snapshotForOwner(ownerId: string): Snapshot {
+    const snapshot = this.snapshot();
+    const zoneIds = new Set(snapshot.zones.filter((zone) => zone.ownerId === ownerId).map((zone) => zone.id));
+    return {
+      ...snapshot,
+      zones: snapshot.zones.filter((zone) => zoneIds.has(zone.id)),
+      commands: snapshot.commands.filter((command) => zoneIds.has(command.zoneId)),
+      readings: snapshot.readings.filter((reading) => zoneIds.has(reading.zoneId)),
+      events: snapshot.events.filter((event) => zoneIds.has(event.zoneId)),
+    };
+  }
+
+  assertOwner(zoneId: string, ownerId: string) {
+    if (this.zone(zoneId).ownerId !== ownerId)
+      throw new ControlError(403, 'Esta área pertence a outra conta.');
+  }
+
+  createZone(ownerId: string, input: ZoneCreate): Zone {
+    const value = zoneCreateSchema.parse(input);
+    if (this.state.zones.filter((zone) => zone.ownerId === ownerId).length >= 12)
+      throw new ControlError(409, 'Limite de 12 áreas por conta atingido.');
+    const stem = value.id ?? this.availableZoneId(value.name);
+    const identifiers = {
+      id: stem,
+      deviceId: value.deviceId ?? `sim-${stem}`,
+      sensorId: value.sensorId ?? `soil-${stem}`,
+      valveId: value.valveId ?? `valve-${stem}`,
+    };
+    this.assertAvailableIdentifiers(identifiers);
+    const zone: Zone = {
+      ...identifiers,
+      ownerId,
+      name: value.name,
+      crop: value.crop,
+      automaticPaused: false,
+      latest: null,
+      activeCommandId: null,
+      rule: { mode: 'manual', startBelow: 35, stopAt: 45, maxDurationSeconds: 60 },
+    };
+    this.state.zones.push(zone);
+    this.event(zone, 'topology', 'Área cadastrada com sensor e válvula vinculados.');
+    return structuredClone(zone);
+  }
+
+  updateZone(zoneId: string, ownerId: string, input: ZoneUpdate): Zone {
+    const value = zoneUpdateSchema.parse(input);
+    this.assertOwner(zoneId, ownerId);
+    const zone = this.zone(zoneId);
+    zone.name = value.name;
+    zone.crop = value.crop;
+    this.event(zone, 'topology', 'Identificação da área atualizada.');
+    return structuredClone(zone);
+  }
+
+  private availableZoneId(name: string) {
+    const base =
+      name
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '') || 'area';
+    let candidate = base;
+    for (let suffix = 2; this.state.zones.some((zone) => zone.id === candidate); suffix++)
+      candidate = `${base}-${suffix}`;
+    return candidate;
+  }
+
+  private assertAvailableIdentifiers(identifiers: Pick<Zone, 'id' | 'deviceId' | 'sensorId' | 'valveId'>) {
+    if (this.state.zones.some((zone) => zone.id === identifiers.id))
+      throw new ControlError(409, 'Já existe uma área com este identificador.');
+    if (this.state.zones.some((zone) => zone.deviceId === identifiers.deviceId))
+      throw new ControlError(409, 'Este dispositivo já está vinculado.');
+    if (this.state.zones.some((zone) => zone.sensorId === identifiers.sensorId))
+      throw new ControlError(409, 'Este sensor já está vinculado.');
+    if (this.state.zones.some((zone) => zone.valveId === identifiers.valveId))
+      throw new ControlError(409, 'Esta válvula já está vinculada.');
   }
 
   exportState(): SystemState {

@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import { resolve } from 'node:path';
 import { SimulatedDevice } from './device.ts';
-import type { Command, Snapshot } from '../shared/contracts.ts';
+import type { Command, Reading } from '../shared/contracts.ts';
 
 const api = 'http://127.0.0.1:8787';
 const token = (await readFile(resolve('.local/device-token'), 'utf8')).trim();
@@ -21,21 +21,34 @@ async function request<T>(path: string, body?: unknown): Promise<T> {
   if (!response.ok) throw new Error(`API retornou ${response.status} em ${path}`);
   return response.json() as Promise<T>;
 }
-const snapshot = await request<Snapshot>('/api/v1/state');
-const devices = snapshot.zones.map(
-  (zone, index) =>
-    new SimulatedDevice(
+interface DeviceConfig {
+  id: string;
+  deviceId: string;
+  latest: Reading | null;
+}
+const devices = new Map<string, SimulatedDevice>();
+async function syncConfiguration() {
+  const configuration = await request<DeviceConfig[]>('/device/v1/config');
+  for (const [index, zone] of configuration.entries()) {
+    if (devices.has(zone.deviceId)) continue;
+    devices.set(
       zone.deviceId,
-      zone.latest?.moisture ?? (index === 0 ? 38 : 55),
-      2026 + index,
-      zone.latest?.sequence ?? 0,
-      zone.latest?.water,
-    ),
-);
-console.log('Dois dispositivos simulados iniciados; passo de 1 segundo, seeds 2026 e 2027.');
+      new SimulatedDevice(
+        zone.deviceId,
+        zone.latest?.moisture ?? (index === 0 ? 38 : 55),
+        2026 + index,
+        zone.latest?.sequence ?? 0,
+        zone.latest?.water,
+      ),
+    );
+    console.log(`Dispositivo simulado vinculado: ${zone.deviceId}.`);
+  }
+}
+await syncConfiguration();
+console.log('Runner iniciado; passo de 1 segundo e descoberta de novas áreas a cada 5 segundos.');
 const sending = new Set<string>();
 const tick = () => {
-  for (const device of devices) {
+  for (const device of devices.values()) {
     // This fixed timer advances the watchdog even while a network request is waiting.
     const reading = device.step(1, Date.now());
     if (sending.has(device.deviceId)) continue;
@@ -62,5 +75,14 @@ const tick = () => {
   }
 };
 const timer = setInterval(tick, 1000);
+const configurationTimer = setInterval(() => {
+  void syncConfiguration().catch((error) =>
+    console.error(error instanceof Error ? error.message : 'Falha ao atualizar vínculos.'),
+  );
+}, 5000);
 tick();
-for (const signal of ['SIGINT', 'SIGTERM'] as const) process.on(signal, () => clearInterval(timer));
+for (const signal of ['SIGINT', 'SIGTERM'] as const)
+  process.on(signal, () => {
+    clearInterval(timer);
+    clearInterval(configurationTimer);
+  });

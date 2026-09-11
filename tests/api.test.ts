@@ -6,6 +6,7 @@ import { createApi } from '../server/api.ts';
 import { IrrigationControl, initialState } from '../shared/control.ts';
 import { SimulatedDevice } from '../simulator/device.ts';
 import type { Command, Snapshot } from '../shared/contracts.ts';
+import { LocalSessionAuth } from '../server/auth.ts';
 
 const servers: Server[] = [];
 afterEach(async () => {
@@ -15,9 +16,18 @@ afterEach(async () => {
 async function setup() {
   let now = 1_800_000_000_000;
   const control = new IrrigationControl(initialState(now), () => now);
+  const sessionAuth = new LocalSessionAuth(
+    [
+      { id: 'demo-producer', name: 'Produtor A', email: 'a@demo.local', password: 'senha-a' },
+      { id: 'other-producer', name: 'Produtor B', email: 'b@demo.local', password: 'senha-b' },
+    ],
+    () => now,
+  );
+  const session = sessionAuth.login({ email: 'a@demo.local', password: 'senha-a' })!;
   let persisted = control.exportState();
   const server = createApi(control, {
     deviceToken: 'test-device-token',
+    sessionAuth,
     persist: async () => {
       persisted = control.exportState();
     },
@@ -25,12 +35,18 @@ async function setup() {
   servers.push(server);
   await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
   const url = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
-  const request = async (path: string, method = 'GET', body?: unknown, token = 'test-device-token') =>
+  const request = async (
+    path: string,
+    method = 'GET',
+    body?: unknown,
+    deviceToken = 'test-device-token',
+    sessionToken = session.token,
+  ) =>
     fetch(`${url}${path}`, {
       method,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${path.startsWith('/device/') ? deviceToken : sessionToken}`,
         'X-Runner-Id': 'test-runner',
       },
       body: body === undefined ? undefined : JSON.stringify(body),
@@ -39,9 +55,11 @@ async function setup() {
     request,
     url,
     control,
+    sessionAuth,
+    sessionToken: session.token,
     persisted: () => persisted,
-    advance: () => {
-      now += 1000;
+    advance: (milliseconds = 1000) => {
+      now += milliseconds;
     },
     time: () => now,
   };
@@ -68,6 +86,33 @@ describe('API HTTP com cliente de dispositivo independente', () => {
       operations: ['requestCommand', 'sendTelemetry', 'acknowledgeCommand'],
       telemetrySources: ['simulated', 'device'],
     });
+  });
+
+  it('CT13: autentica a sessão e isola as áreas de outra conta', async () => {
+    const { request, control, advance } = await setup();
+    const login = await request('/api/v1/session', 'POST', { email: 'b@demo.local', password: 'senha-b' });
+    expect(login.status).toBe(200);
+    const session = await login.json();
+    const state = await request('/api/v1/state', 'GET', undefined, 'test-device-token', session.token);
+    expect(((await state.json()) as Snapshot).zones).toEqual([]);
+
+    const before = control.exportState();
+    const forbidden = await request(
+      '/api/v1/zones/north/commands',
+      'POST',
+      { action: 'close', idempotencyKey: randomUUID() },
+      'test-device-token',
+      session.token,
+    );
+    expect(forbidden.status).toBe(403);
+    expect(control.exportState()).toEqual(before);
+    expect(
+      (await request('/api/v1/session', 'POST', { email: 'b@demo.local', password: 'incorreta' })).status,
+    ).toBe(401);
+    advance(30 * 60 * 1000);
+    expect(
+      (await request('/api/v1/state', 'GET', undefined, 'test-device-token', session.token)).status,
+    ).toBe(401);
   });
 
   it('irriga e para o canteiro sul por HTTP sem acionar o norte', async () => {
@@ -204,6 +249,42 @@ describe('API HTTP com cliente de dispositivo independente', () => {
     expect(control.snapshot().readings).toEqual([]);
   });
 
+  it('entrega ao runner somente a configuração necessária dos dispositivos', async () => {
+    const { request } = await setup();
+    expect(await (await request('/device/v1/config')).json()).toEqual([
+      { id: 'north', deviceId: 'sim-north', latest: null },
+      { id: 'south', deviceId: 'sim-south', latest: null },
+    ]);
+  });
+
+  it('RF01: cadastra e edita uma área com vínculos persistidos', async () => {
+    const { request, persisted } = await setup();
+    const create = await request('/api/v1/zones', 'POST', { name: 'Talhão leste', crop: 'Feijão' });
+    expect(create.status).toBe(201);
+    const zone = await create.json();
+    expect(zone).toMatchObject({
+      id: 'talhao-leste',
+      ownerId: 'demo-producer',
+      name: 'Talhão leste',
+      crop: 'Feijão',
+      deviceId: 'sim-talhao-leste',
+      sensorId: 'soil-talhao-leste',
+      valveId: 'valve-talhao-leste',
+    });
+    const update = await request(`/api/v1/zones/${zone.id}`, 'PUT', {
+      name: 'Talhão leste 1',
+      crop: 'Feijão-caupi',
+    });
+    expect(update.status).toBe(200);
+    expect(await update.json()).toMatchObject({ name: 'Talhão leste 1', crop: 'Feijão-caupi' });
+    expect(persisted().zones.at(-1)).toMatchObject({
+      id: 'talhao-leste',
+      name: 'Talhão leste 1',
+      sensorId: 'soil-talhao-leste',
+      valveId: 'valve-talhao-leste',
+    });
+  });
+
   it('serializa comandos concorrentes e respeita a mesma chave de idempotência', async () => {
     const { request } = await setup();
     const device = new SimulatedDevice('sim-north', 40, 1);
@@ -219,7 +300,7 @@ describe('API HTTP com cliente de dispositivo independente', () => {
   });
 
   it('bloqueia origem externa e corpo excessivo na API local', async () => {
-    const { url } = await setup();
+    const { url, sessionToken } = await setup();
     expect(
       (await fetch(`${url}/api/v1/state`, { headers: { Origin: 'https://unrelated.example' } })).status,
     ).toBe(403);
@@ -227,7 +308,7 @@ describe('API HTTP com cliente de dispositivo independente', () => {
       (
         await fetch(`${url}/api/v1/zones/north/commands`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionToken}` },
           body: JSON.stringify({ text: 'x'.repeat(66000) }),
         })
       ).status,
@@ -246,8 +327,13 @@ describe('API HTTP com cliente de dispositivo independente', () => {
   it('CT19: erro de persistência não mantém mutação apenas na memória', async () => {
     const control = new IrrigationControl(initialState(Date.now()));
     const before = control.exportState();
+    const sessionAuth = new LocalSessionAuth([
+      { id: 'demo-producer', name: 'Produtor', email: 'produtor@demo.local', password: 'senha' },
+    ]);
+    const token = sessionAuth.login({ email: 'produtor@demo.local', password: 'senha' })!.token;
     const server = createApi(control, {
       deviceToken: 'unused',
+      sessionAuth,
       persist: async () => {
         throw new Error('simulated disk failure');
       },
@@ -258,7 +344,7 @@ describe('API HTTP com cliente de dispositivo independente', () => {
       `http://127.0.0.1:${(server.address() as AddressInfo).port}/api/v1/zones/north/rule`,
       {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ mode: 'automatic', startBelow: 35, stopAt: 45, maxDurationSeconds: 60 }),
       },
     );

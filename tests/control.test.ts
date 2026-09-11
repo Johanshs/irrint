@@ -33,6 +33,38 @@ const open = (): CommandInput => ({ action: 'open', durationSeconds: 60, idempot
 const rule = { mode: 'automatic' as const, startBelow: 35, stopAt: 45, maxDurationSeconds: 60 };
 
 describe('Contrato e controle de irrigação', () => {
+  it('RF01: cadastra área com vínculos únicos e permite editar somente pelo proprietário', () => {
+    const { control } = fixture();
+    const first = control.createZone('demo-producer', { name: 'Talhão de milho', crop: 'Milho' });
+    const second = control.createZone('demo-producer', { name: 'Talhão de milho', crop: 'Feijão' });
+    expect(
+      [first, second].map(({ id, deviceId, sensorId, valveId }) => ({ id, deviceId, sensorId, valveId })),
+    ).toEqual([
+      {
+        id: 'talhao-de-milho',
+        deviceId: 'sim-talhao-de-milho',
+        sensorId: 'soil-talhao-de-milho',
+        valveId: 'valve-talhao-de-milho',
+      },
+      {
+        id: 'talhao-de-milho-2',
+        deviceId: 'sim-talhao-de-milho-2',
+        sensorId: 'soil-talhao-de-milho-2',
+        valveId: 'valve-talhao-de-milho-2',
+      },
+    ]);
+    expect(() => control.updateZone(first.id, 'other-producer', { name: 'Outro', crop: 'Outro' })).toThrow(
+      'Esta área pertence a outra conta.',
+    );
+    expect(
+      control.updateZone(first.id, 'demo-producer', { name: 'Milho leste', crop: 'Milho verde' }),
+    ).toEqual({
+      ...first,
+      name: 'Milho leste',
+      crop: 'Milho verde',
+    });
+  });
+
   it('uma leitura nova de válvula fechada após reinício supera a confirmação antiga de abertura', () => {
     const { control, reading, advance } = fixture();
     control.configure('north', rule);

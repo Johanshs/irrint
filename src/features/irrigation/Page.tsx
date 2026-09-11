@@ -1,10 +1,10 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import { Droplets, FlaskConical } from 'lucide-react';
+import { Droplets, FlaskConical, LogOut } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useSession } from './session';
 
 export function Page({ title, children }: { title: string; children: ReactNode }) {
-  const { state, error, connected, refresh } = useSession();
+  const { state, error, connected, refresh, user, logout } = useSession();
   return (
     <IonPage>
       <IonHeader className="ion-no-border">
@@ -14,6 +14,15 @@ export function Page({ title, children }: { title: string; children: ReactNode }
               <Droplets size={24} aria-hidden="true" /> irrint<span className="brand-caption">{title}</span>
             </span>
           </IonTitle>
+          <button
+            slot="end"
+            className="account-button"
+            onClick={logout}
+            aria-label={`Sair da conta de ${user?.name}`}
+          >
+            <span>{user?.name}</span>
+            <LogOut size={18} aria-hidden="true" />
+          </button>
         </IonToolbar>
       </IonHeader>
       <IonContent>

@@ -7,17 +7,17 @@ Marco atual **v0.3.0 + fundação da próxima etapa**: laboratório demonstrativ
 | Etapa                | Entregue                                                                                                                                                | Restante                                                                                      |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | E0 — Base            | React 18, Ionic 9, Router 6 e Capacitor 8; build web                                                                                                    | Validação da experiência atual em aparelho                                                    |
-| E1 — Contrato        | Zod 1.0 para controle/telemetria; OpenAPI 3.1; relatório de experimentos 1.1; sequência, prazos, ACK e idempotência                                     | Propriedade e autenticação                                                                    |
+| E1 — Contrato        | Zod 1.0; OpenAPI 3.1; sessão local de 30 min; isolamento por proprietário; sequência, prazos, ACK e idempotência                                        | Firebase Auth e regras de produção                                                            |
 | E2 — API/dispositivo | API local, estado integralmente validado, gravação atômica, backup recuperável, regras fora da UI, dispositivos em processo separado e ensaios isolados | Adaptador de nuvem, armazenamento transacional multiusuário e migrações entre futuras versões |
-| E3 — Mobile          | Início, Áreas, Histórico, Ajustes; estados conhecidos, pendentes e incertos                                                                             | CRUD da topologia, contas, acessibilidade formal e avaliação com usuários                     |
-| E4 — Evidências      | 57 testes; 14 ensaios (7 × N/S), 42 critérios; CSV/JSON/HTML, gráficos, cronologia e comparação                                                         | Matriz completa do TCC, E2E automatizado, testes de contas e desempenho                       |
+| E3 — Mobile          | Login, criação/edição de áreas com vínculos automáticos, Histórico, Ajustes e estados conhecidos/pendentes/incertos                                     | Remoção/revinculação, gestão de contas, acessibilidade formal e avaliação com usuários        |
+| E4 — Evidências      | 62 testes; 14 ensaios (7 × N/S), 42 critérios; CT13 e RF01 locais; CSV/JSON/HTML, gráficos, cronologia e comparação                                     | Matriz completa do TCC, E2E automatizado, regras Firebase e desempenho                        |
 | E5 — 3D              | Laboratório simplificado, peças identificáveis, inspeção, nomes opcionais, corte do solo e água nominal                                                 | Medição em celular e ajustes decorrentes de avaliação de uso                                  |
 | E6 — Distribuição    | Código atual no GitHub; APK de depuração compilado no marco inicial                                                                                     | API hospedada, APK atual em aparelho e substituição controlada do site Vercel                 |
 | E7 — TCC             | Escopo e limites documentados, relatórios reproduzíveis                                                                                                 | Aplicação de TAM e análise de resultados com participantes                                    |
 
 ## Validação deste marco
 
-- **57/57 testes**: controlador/dispositivo (16), cálculo de água (7), cenários/repetibilidade/exportação (23), integração HTTP (10) e recuperação do armazenamento (1).
+- **62/62 testes**: controlador/dispositivo (17), cálculo de água (7), cenários/repetibilidade/exportação (23), integração HTTP (13) e armazenamento/migração local (2).
 - **42/42 critérios em 14 ensaios**, seed 2026: sete cenários executados tanto no norte quanto no sul. Comparação canônica confirma as mesmas séries e métricas sob condições equivalentes.
 - **Build web e TypeScript** verificados. Permanecem avisos de chunks grandes de Ionic/Three.js; não são uma medição de desempenho.
 - Navegador: acionamento do sul pelo seletor único; perda de contato em 20 s com 0,030 L recebidos versus 0,120 L internos; cronologia, resultados e inspeção do microcontrolador. Modal inspecionado a 390 px, sem transbordamento horizontal.
@@ -40,17 +40,16 @@ Roteiro, tabela de resultados e mapeamento de requisitos: **[DEMONSTRACAO-3D.md]
 
 ## Limites mantidos
 
-Duas áreas fixas; um sensor e uma válvula por área. Sem IA, clima, calibração agronômica, economia real de água, integração física ou compatibilidade universal comprovada. O volume é nominal e a divisão por planta não mede absorção.
+O fluxo operacional aceita novas áreas com um sensor e uma válvula por área; o laboratório 3D e sua matriz continuam deliberadamente fixos nos sistemas N/S para manter relatórios comparáveis. Sem IA, clima, calibração agronômica, economia real de água, integração física ou compatibilidade universal comprovada. O volume é nominal e a divisão por planta não mede absorção.
 
-A API local não possui contas de usuário nem persistência em nuvem. A trava de build Vercel permanece: publicar o frontend isolado deixaria a nova experiência sem backend acessível. A comparação de experimentos mantém no máximo sete execuções em memória; para preservar, exporte os relatórios.
+A API local possui uma conta sintética e comprova isolamento por proprietário, mas ainda não usa Firebase Auth nem persistência em nuvem. A trava de build Vercel permanece: publicar o frontend isolado deixaria a nova experiência sem backend acessível. A comparação de experimentos mantém no máximo sete execuções em memória; para preservar, exporte os relatórios.
 
 A sessão ao vivo retém as últimas 2.000 leituras, 1.000 eventos e limita novos inícios depois de 500 comandos. O laboratório começa do zero e não depende desse histórico. O estado local agora é validado integralmente e tem recuperação por backup; a migração entre futuras versões do schema ainda pertence à próxima etapa.
 
 ## Próxima sequência
 
-1. Autenticação e isolamento por usuário/dispositivo em emuladores.
-2. CRUD de áreas, sensores e vínculos.
-3. Matriz restante, E2E da interface e latência HTTP medida fora do relógio virtual.
-4. API acessível ao APK, instalação Android, desempenho, acessibilidade e retomada de conexão.
-5. Backend e simulador hospedados; preview integrado antes de atualizar a Vercel.
-6. Instrumento de avaliação com produtores e redação dos resultados, restritos à evidência observada.
+1. Adaptadores Firebase Auth/Firestore em emuladores, com regras de isolamento.
+2. Matriz restante, E2E da interface e latência HTTP medida fora do relógio virtual.
+3. API acessível ao APK, instalação Android, desempenho, acessibilidade e retomada de conexão.
+4. Backend e simulador hospedados; preview integrado antes de atualizar a Vercel.
+5. Instrumento de avaliação com produtores e redação dos resultados, restritos à evidência observada.
