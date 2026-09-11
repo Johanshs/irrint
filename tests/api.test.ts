@@ -30,6 +30,7 @@ async function setup(networkAccess: 'loopback' | 'lan' = 'loopback') {
     deviceToken: 'test-device-token',
     sessionAuth,
     networkAccess,
+    now: () => now,
     persist: async () => {
       persisted = control.exportState();
     },
@@ -82,11 +83,16 @@ describe('API HTTP com cliente de dispositivo independente', () => {
         document.paths['/device/v1/ack'].post.operationId,
       ],
       telemetrySources: document.components.schemas.Telemetry.properties.source.enum,
+      liveReport:
+        document.paths['/api/v1/report'].get.responses['200'].content['application/json'].schema.$ref,
+      measurementStatus: document.components.schemas.MeasurementSummary.properties.measurementStatus.enum,
     }).toEqual({
       openapi: '3.1.0',
       version: '1.0.0',
       operations: ['requestCommand', 'sendTelemetry', 'acknowledgeCommand'],
       telemetrySources: ['simulated', 'device'],
+      liveReport: '#/components/schemas/LiveReport',
+      measurementStatus: ['measured', 'not-measured'],
     });
   });
 
@@ -355,13 +361,61 @@ describe('API HTTP com cliente de dispositivo independente', () => {
     }).toEqual({ loopbackPrivate: false, lanPrivate: true, lanPublic: false });
   });
 
-  it('CT16: dois processos não podem alimentar a mesma sessão ao mesmo tempo', async () => {
-    const { request, url } = await setup();
+  it('CT16/CT22: somente o holder alimenta a sessão e o lease vencido permite substituição', async () => {
+    const { request, url, advance } = await setup();
     await request('/device/v1/commands/sim-north');
-    const second = await fetch(`${url}/device/v1/commands/sim-north`, {
-      headers: { Authorization: 'Bearer test-device-token', 'X-Runner-Id': 'second-runner' },
+    const fromSecondRunner = () =>
+      fetch(`${url}/device/v1/commands/sim-north`, {
+        headers: { Authorization: 'Bearer test-device-token', 'X-Runner-Id': 'second-runner' },
+      });
+    expect((await fromSecondRunner()).status).toBe(423);
+    advance(6001);
+    expect((await fromSecondRunner()).status).toBe(200);
+    const formerHolder = await fetch(`${url}/device/v1/commands/sim-north`, {
+      headers: { Authorization: 'Bearer test-device-token', 'X-Runner-Id': 'test-runner' },
     });
-    expect(second.status).toBe(423);
+    expect(formerHolder.status).toBe(423);
+  });
+
+  it('CT22: relatório vazio diferencia ausência de medição de um valor igual a zero', async () => {
+    const { request, time } = await setup();
+    const empty = await (await request('/api/v1/report')).json();
+    expect({
+      reportVersion: empty.reportVersion,
+      readings: empty.readings,
+      commands: empty.commands,
+      measurements: empty.measurements,
+    }).toEqual({
+      reportVersion: '1.1',
+      readings: [],
+      commands: [],
+      measurements: [
+        {
+          zoneId: 'north',
+          measurementStatus: 'not-measured',
+          moisturePercent: null,
+          totalLiters: null,
+          measuredAt: null,
+        },
+        {
+          zoneId: 'south',
+          measurementStatus: 'not-measured',
+          moisturePercent: null,
+          totalLiters: null,
+          measuredAt: null,
+        },
+      ],
+    });
+
+    const device = new SimulatedDevice('sim-north', 0, 2026);
+    expect((await request('/device/v1/telemetry', 'POST', device.step(1, time()))).status).toBe(200);
+    const measured = await (await request('/api/v1/report')).json();
+    expect(measured.measurements[0]).toMatchObject({
+      zoneId: 'north',
+      measurementStatus: 'measured',
+      moisturePercent: 0,
+      totalLiters: 0,
+    });
   });
 
   it('CT19: erro de persistência não mantém mutação apenas na memória', async () => {

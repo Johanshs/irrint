@@ -88,7 +88,7 @@ npm run demo:evidence
 npm run build
 ```
 
-O gerador cria 16 JSONs, 16 CSVs, 16 relatórios HTML e **RESUMO.md** em uma pasta nova de `.local/reports/<data>/`. Os JSONs da matriz incluem SHA-256 das fontes do modelo. A suíte de 68 testes gera `.local/test-results.json`; compreende controlador/dispositivo (17), água (7), experimentos/exportação (26), API HTTP (14), armazenamento/reinício (3) e cliente OpenAPI (1). O caso de falha de disco emite uma mensagem intencional para verificar rollback.
+O gerador cria 16 JSONs, 16 CSVs, 16 relatórios HTML e **RESUMO.md** em uma pasta nova de `.local/reports/<data>/`. Os JSONs da matriz incluem SHA-256 das fontes do modelo. A suíte de 69 testes gera `.local/test-results.json`; compreende controlador/dispositivo (17), água (7), experimentos/exportação (26), API HTTP (15), armazenamento/reinício (3) e cliente OpenAPI (1). Três fluxos Playwright geram o relatório navegável `.local/playwright-report/index.html`. O caso de falha de disco emite uma mensagem intencional para verificar rollback.
 
 ## Relação com o planejamento
 
@@ -98,11 +98,11 @@ O gerador cria 16 JSONs, 16 CSVs, 16 relatórios HTML e **RESUMO.md** em uma pas
 | RF03/RF04 — controlar / CT02, CT04, CT10 | Ciclo automático, prioridade da parada e repetição idempotente                                | Duração e taxas didáticas; a suíte de domínio cobre fronteiras              |
 | RF06 — falhas / CT05, CT07, CT09, CT21   | Perda de rede, ausência de ACK, watchdog, comando vencido e válvula simulada travada          | Não comprova segurança hidráulica física                                    |
 | RF01 — vínculo / CT11                    | Isolamento N/S no domínio e por HTTP; criação/edição e vínculos automáticos na sessão ao vivo | Maquete comparável permanece fixa em N/S                                    |
-| RF07 — demonstrar / CT12, CT17           | Mesma seed, escolha N/S, replay sem comandos e fontes de estado distintas                     | E2E automatizado e avaliação com usuários pendentes                         |
+| RF07 — demonstrar / CT12, CT17, CT22     | Mesma seed, escolha N/S, replay sem comandos, pausa/10×/reinício e execuções isoladas         | Validação de uso com participantes pendente                                 |
 | RF08 — evidenciar                        | CSV, JSON, relatório imprimível e comparação de execuções                                     | Comparação apenas durante a visita; sem arquivo de experimentos no servidor |
 | RF09 / CT13                              | Sessão local de 30 min e isolamento por proprietário na API                                   | Não substitui autenticação e regras de produção                             |
 
-O plano original e sua matriz continuam sendo referências históricas de escopo, não laudos de execução de todos os casos. Esta entrega **conclui o laboratório demonstrativo local**, não todas as etapas do projeto. Android físico, desempenho, acessibilidade formal, E2E, implantação multiusuário e TAM continuam em [PROGRESSO.md](PROGRESSO.md).
+O plano original e sua matriz continuam sendo referências históricas de escopo, não laudos de execução de todos os casos. Esta entrega **conclui o laboratório demonstrativo local**, não todas as etapas do projeto. Android físico, desempenho, acessibilidade em aparelho, implantação multiusuário e TAM continuam em [PROGRESSO.md](PROGRESSO.md).
 
 ## Modelos e limites
 

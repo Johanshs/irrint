@@ -47,9 +47,12 @@ IA, recomendações preditivas, clima fixo e SSO com outra aplicação foram rem
 
 ## Testes e evidências
 
+Na primeira execução dos testes de interface, instale o Chromium compatível com a versão fixada do Playwright: `npx playwright install chromium`.
+
 ```sh
 npm test
 npm run test:report
+npm run test:e2e
 npm run demo:evidence
 npm run measure:latency
 npm run build
@@ -57,11 +60,12 @@ npm run build
 
 - `npm test`: testes do contrato, controlador, dispositivo, API HTTP e experimentos.
 - `test:report`: a mesma suíte e um relatório em `.local/test-results.json`.
+- `test:e2e`: abre o aplicativo no Chromium e valida teclado, 360/390/430 px com fonte ampliada, alternativa sem WebGL e reprodução/isolamento do CT22. Gera `.local/playwright-report/index.html` e `.local/playwright-results.json`.
 - `demo:evidence`: executa os oito cenários em ambos os sistemas; cria 16 JSONs, 16 CSVs, 16 relatórios HTML, resumo Markdown e impressão SHA-256 das fontes em `.local/reports/<data>/`.
 - `measure:latency`: com a demonstração ativa, alterna 30 aberturas/fechamentos e mede do pedido até ACK mais telemetria coerente; grava JSON e resumo em `.local/latency/<data>/`.
 - `build`: valida TypeScript e produz a aplicação web em `dist/`.
 
-Validação deste marco: **68 testes e 48 critérios em 16 ensaios**. Os critérios dos cenários não representam toda a matriz do TCC. A instalação em aparelho físico, a avaliação com produtores e a implantação multiusuário continuam pendentes.
+Validação deste marco: **69 testes, 3 fluxos E2E e 48 critérios em 16 ensaios**. Os critérios dos cenários não representam toda a matriz do TCC. A instalação em aparelho físico, a avaliação com produtores e a implantação multiusuário continuam pendentes.
 
 ## Dados locais
 

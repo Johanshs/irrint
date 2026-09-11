@@ -13,10 +13,12 @@ Os schemas executáveis em `shared/contracts.ts` e `shared/experiments.ts` valid
 | PUT    | `/api/v1/zones/:id`          | Atualiza o nome e o cultivo sem perder o histórico ou os vínculos                     |
 | POST   | `/api/v1/zones/:id/commands` | `action`, `idempotencyKey`; `durationSeconds` obrigatório somente para `open`         |
 | PUT    | `/api/v1/zones/:id/rule`     | `mode`, `startBelow`, `stopAt`, `maxDurationSeconds`                                  |
-| GET    | `/api/v1/report`             | Estado ao vivo retido e limites da evidência                                          |
+| GET    | `/api/v1/report`             | Estado retido, resumo explícito das medições e limites da evidência                   |
 | POST   | `/api/v1/experiments`        | `scenario`, `seed`, `zoneId` opcional; retorna relatório completo de execução isolada |
 
 `north` e `south` são as áreas iniciais da conta demonstrativa. As demais rotas de operador exigem `Authorization: Bearer <token da sessão>` e retornam somente áreas, comandos, leituras e eventos da conta autenticada. Um `POST` de comando retorna HTTP 202 com estado `pending`: isso confirma recebimento, não execução física. A interface aguarda `applied` ou uma leitura coerente com `lastCommandId`.
+
+O relatório ao vivo `1.1` inclui `measurements` por área. `measurementStatus: "not-measured"` acompanha valores `null`, para que ausência de telemetria não seja confundida com umidade ou volume realmente igual a zero. Uma leitura aceita muda o estado para `measured`. A forma completa está publicada como `LiveReport` no OpenAPI.
 
 Ao cadastrar uma área pela interface, a API cria identificadores únicos para dispositivo, sensor de umidade e válvula. Clientes de integração podem informar `id`, `deviceId`, `sensorId` e `valveId` no cadastro. O runner consulta `/device/v1/config` a cada 5 s e inicia um dispositivo simulado para vínculos novos. Esta etapa permite criar e editar; remoção e troca de componentes com histórico permanecem fora do fluxo atual.
 
@@ -29,7 +31,7 @@ Ao cadastrar uma área pela interface, a API cria identificadores únicos para d
 | POST   | `/device/v1/telemetry`          | Leitura com sequência crescente, estado da válvula e último comando aplicado |
 | POST   | `/device/v1/ack`                | `deviceId`, `commandId`, `status` (`applied`/`rejected`), `valve`            |
 
-Rotas de dispositivo exigem `Authorization: Bearer <token local>` e `X-Runner-Id`. O token é gerado no início da API e armazenado em `.local/device-token`. Não deve ir para o frontend ou Git. Um lease de 6 s impede dois processos simultâneos usando a sessão. As credenciais por dispositivo/usuário de produção são trabalho futuro; esse token é apenas do processo local de demonstração.
+Rotas de dispositivo exigem `Authorization: Bearer <token local>` e `X-Runner-Id`. O token é gerado no início da API e armazenado em `.local/device-token`. Não deve ir para o frontend ou Git. Um lease de 6 s impede dois processos simultâneos usando a sessão; depois do vencimento, outro runner pode assumir e o antigo passa a receber HTTP 423. As credenciais por dispositivo/usuário de produção são trabalho futuro; esse token é apenas do processo local de demonstração.
 
 Telemetria:
 

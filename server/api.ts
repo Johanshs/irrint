@@ -12,6 +12,7 @@ interface Options {
   persist: () => Promise<void>;
   sessionAuth: SessionAuth;
   networkAccess?: NetworkAccess;
+  now?: () => number;
 }
 
 async function jsonBody(request: IncomingMessage) {
@@ -51,6 +52,7 @@ export function createApi(control: IrrigationControl, options: Options) {
   // Serialize reads and writes, including persistence, so concurrent commands cannot interleave.
   let queue = Promise.resolve();
   let lease: { holder: string; expiresAt: number } | null = null;
+  const now = options.now ?? Date.now;
   return createServer((request, response) => {
     const operation = async () => {
       const before = control.exportState();
@@ -89,9 +91,9 @@ export function createApi(control: IrrigationControl, options: Options) {
           const holder = request.headers['x-runner-id'];
           if (typeof holder !== 'string' || !/^[a-zA-Z0-9-]{1,80}$/.test(holder))
             throw new ControlError(401, 'Identifique o processo do simulador.');
-          if (lease && lease.holder !== holder && lease.expiresAt > Date.now())
+          if (lease && lease.holder !== holder && lease.expiresAt > now())
             throw new ControlError(423, 'Outro simulador controla esta sessão.');
-          lease = { holder, expiresAt: Date.now() + 6000 };
+          lease = { holder, expiresAt: now() + 6000 };
         }
         const publicOperatorPath = path === '/api/v1/session' || path === '/api/v1/openapi.json';
         const sessionToken = (request.headers.authorization ?? '').replace(/^Bearer /, '');
@@ -107,15 +109,23 @@ export function createApi(control: IrrigationControl, options: Options) {
         } else if (request.method === 'GET' && path === '/api/v1/openapi.json') result = openApiDocument;
         else if (request.method === 'GET' && path === '/api/v1/state')
           result = control.snapshotForOwner(user!.id);
-        else if (request.method === 'GET' && path === '/api/v1/report')
+        else if (request.method === 'GET' && path === '/api/v1/report') {
+          const snapshot = control.snapshotForOwner(user!.id);
           result = {
-            ...control.snapshotForOwner(user!.id),
-            exportedAt: Date.now(),
-            reportVersion: '1.0',
+            ...snapshot,
+            exportedAt: now(),
+            reportVersion: '1.1',
+            measurements: snapshot.zones.map((zone) => ({
+              zoneId: zone.id,
+              measurementStatus: zone.latest ? 'measured' : 'not-measured',
+              moisturePercent: zone.latest?.moisture ?? null,
+              totalLiters: zone.latest?.water?.totalLiters ?? null,
+              measuredAt: zone.latest?.receivedAt ?? null,
+            })),
             limitation:
               'Dados simulados. Esta execução não comprova desempenho de hardware ou economia de água.',
           };
-        else if (request.method === 'POST' && path === '/api/v1/experiments')
+        } else if (request.method === 'POST' && path === '/api/v1/experiments')
           result = runExperiment(await jsonBody(request));
         else if (request.method === 'POST' && path === '/api/v1/zones') {
           result = control.createZone(user!.id, await jsonBody(request));

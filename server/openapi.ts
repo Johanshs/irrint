@@ -38,7 +38,7 @@ export const openApiDocument = {
         operationId: 'exportLiveReport',
         summary: 'Exporta o estado retido da sessão ao vivo',
         security: [{ operatorSession: [] }],
-        responses: { '200': response('Relatório da sessão', { type: 'object' }) },
+        responses: { '200': response('Relatório da sessão', ref('LiveReport')) },
       },
     },
     '/api/v1/experiments': {
@@ -401,6 +401,33 @@ export const openApiDocument = {
           environment: { const: 'local-simulation' },
           offlineAfterMs: { type: 'integer' },
         },
+      },
+      MeasurementSummary: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['zoneId', 'measurementStatus', 'moisturePercent', 'totalLiters', 'measuredAt'],
+        properties: {
+          zoneId: { type: 'string' },
+          measurementStatus: { type: 'string', enum: ['measured', 'not-measured'] },
+          moisturePercent: { type: ['number', 'null'], minimum: 0, maximum: 100 },
+          totalLiters: { type: ['number', 'null'], minimum: 0 },
+          measuredAt: { type: ['integer', 'null'] },
+        },
+      },
+      LiveReport: {
+        allOf: [
+          ref('Snapshot'),
+          {
+            type: 'object',
+            required: ['exportedAt', 'reportVersion', 'measurements', 'limitation'],
+            properties: {
+              exportedAt: { type: 'integer' },
+              reportVersion: { const: '1.1' },
+              measurements: { type: 'array', items: ref('MeasurementSummary') },
+              limitation: { type: 'string' },
+            },
+          },
+        ],
       },
       ExperimentInput: {
         type: 'object',

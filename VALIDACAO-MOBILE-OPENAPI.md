@@ -8,10 +8,12 @@ Este marco prepara a demonstração Android em rede local e comprova uma segunda
 | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
 | CT14 — reinício             | Estado JSON recarregado com vínculos, leitura e evento confirmado; comando pendente reaparece vencido e sua expiração é persistida                              | Atendido por teste automatizado                     |
 | CT18 — transporte mobile    | Preflight de `capacitor://localhost`, host LAN privado, manifesto debug com Network Security Config e APK com endpoint configurado                              | Atendido até a compilação; aparelho físico pendente |
+| CT18 — usabilidade web      | Playwright: teclado, fonte 125%, 360/390/430 px sem corte horizontal e fallback forçado de WebGL com diretório/descrições acessíveis                            | Atendido no Chromium; Android físico pendente       |
 | CT20 — cliente independente | `clients/openapi-device.ts` descobre quatro operações por `operationId`, executa abertura/fechamento e envia `source: device` sem importar domínio ou simulador | Atendido por teste e execução LAN                   |
 | CT21 — válvula travada      | Fechamento rejeitado, estado incerto, válvula interna aberta e volume crescente durante 89 s contabilizados                                                     | Atendido em N e S                                   |
+| CT22 — execução/relatório   | Lease com substituição após vencimento; `not-measured` no relatório vazio; replay pausado com runner ativo, 10×, reinício e dois resultados isolados            | Atendido por integração e E2E                       |
 
-Resultados agregados: **68/68 testes** e **48/48 critérios em 16 ensaios**. A pasta local mais recente é criada por `npm run demo:evidence` e contém JSON, CSV, HTML, `RESUMO.md` e a impressão SHA-256 das fontes usadas.
+Resultados agregados: **69/69 testes**, **3/3 fluxos E2E** e **48/48 critérios em 16 ensaios**. A pasta local mais recente é criada por `npm run demo:evidence` e contém JSON, CSV, HTML, `RESUMO.md` e a impressão SHA-256 das fontes usadas.
 
 O ensaio `npm run measure:latency` executou 30 comandos alternados no cliente OpenAPI: 30 aplicados, nenhum erro e nenhum timeout. Mediana **2015,44 ms**, p95 **2040,57 ms** e máxima **2048,97 ms**, medidos do pedido até ACK e telemetria coerente. O runner usava polling de 1000 ms e ambos os processos estavam aquecidos na mesma máquina; o resultado não representa ESP32, Internet ou campo.
 
@@ -51,12 +53,22 @@ adb devices -l
 adb install -r android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
-Na execução deste marco, `adb devices -l` retornou a lista vazia. Portanto ainda faltam instalação, login, comandos, reconexão, 360/390/430 px, fonte ampliada, foco/teclado, perda de WebGL, FPS e memória em dispositivo real.
+Na execução deste marco, `adb devices -l` retornou a lista vazia. O Chromium cobriu 360/390/430 px, fonte ampliada, foco/teclado e perda forçada de WebGL, mas emulação web não equivale a aparelho. Ainda faltam instalação, login, Voltar, comandos, reconexão, orientação, essas mesmas condições de interface, FPS e memória em Android real.
+
+## Evidência E2E reproduzível
+
+```powershell
+npx playwright install chromium
+npm run test:e2e
+```
+
+O Playwright usa um único worker porque a API/runner são compartilhados. Ele conserva trace e captura somente quando há falha, grava o resultado estruturado em `.local/playwright-results.json` e produz um relatório navegável em `.local/playwright-report/index.html`. O CT22 correlaciona as respostas reais de `/api/v1/experiments` com a interface e verifica IDs distintos e métricas próprias para duas execuções.
 
 ## Repetição das evidências
 
 ```powershell
 npm run test:report
+npm run test:e2e
 npm run demo:evidence
 npm run measure:latency
 npm run build
