@@ -4,7 +4,7 @@ Protótipo acadêmico com interface mobile em Ionic React, contrato HTTP, contro
 
 **Estado desta versão:** demonstração local funcional. Autenticação, persistência em nuvem e integração com o site publicado ainda são etapas seguintes. A versão local não acessa as contas nem os dados Firebase existentes. Consulte [PROGRESSO.md](PROGRESSO.md) para ver a execução do plano.
 
-**Versões:** `main` / `v0.2.0` é a versão atual. A versão anterior está preservada em `legacy` / `v0.1.0-legacy`. Veja [VERSOES.md](VERSOES.md) para consultar o histórico e a separação entre publicação no GitHub e implantação na Vercel.
+**Versões:** `main` / `v0.3.0` é a versão atual. A versão anterior está preservada em `legacy` / `v0.1.0-legacy`; a tag `v0.2.0` conserva o primeiro marco da nova arquitetura. Veja [VERSOES.md](VERSOES.md) para consultar o histórico e a separação entre GitHub e implantação na Vercel.
 
 ## Começar
 
@@ -23,14 +23,14 @@ Abra **http://127.0.0.1:5173** no mesmo computador. Um único comando inicia a A
 
 1. **Início:** selecione Horta norte. Inicie e pare a irrigação manual. Observe a solicitação, a confirmação e a mudança da umidade.
 2. **Ajustes:** escolha Automático e salve. O controlador inicia abaixo de 35% e solicita parada em 45%. São valores didáticos, configuráveis por área.
-3. **Histórico → Abrir laboratório 3D:** execute “Solo seco e recuperação”, seed 2026. Pause o replay, use **Ver corte do solo** e **Aproximar área**. Alterne os nomes e toque em um componente para examinar seu modelo e papel no sistema. Acompanhe o volume da área, os mL por planta e o consumo total. Veja o [roteiro detalhado e as referências](DEMONSTRACAO-3D.md).
-4. Execute “Perda de comunicação”. No segundo 19, o operador vê um estado incerto. O gráfico do modelo permite mostrar que o dispositivo já fechou a válvula pelo prazo máximo de 12 s, mesmo sem contato.
-5. Execute “Comando repetido”. Quatro solicitações com a mesma chave produzem um comando e não prolongam a irrigação.
-6. Exporte **JSON** para preservar o experimento completo ou **CSV** para analisar a série em uma planilha. Abra os detalhes do modelo para explicar os parâmetros e as limitações.
+3. **Histórico → laboratório:** escolha **Sistema: Canteiro sul (S)**, **Teste: Solo seco e recuperação** e use **Executar teste**. O mesmo fluxo funciona no norte. Pause e explore nomes, peças e corte do solo em **Visualização e componentes**.
+4. Execute **Perda de comunicação**. Em **Entender o teste**, vá a 20 s: a API mantém 0,030 L recebidos e estado incerto, enquanto o simulador já fechou e acumulou 0,120 L. Toque na reconexão de 30 s para ver a atualização.
+5. Compare **Confirmação perdida** (água liberada sem ACK) com **Comando não entregue** (nenhuma água). Os critérios explicam por que ausência de confirmação não prova ausência de efeito.
+6. Em **Resultados**, confira as verificações e baixe **Relatório para impressão**, **Dados CSV** ou **Execução JSON**. Consulte o [guia completo, cenários e limites](DEMONSTRACAO-3D.md).
 
-Os experimentos são isolados: não alteram as áreas da demonstração ao vivo. A área norte fica no canteiro ao fundo da maquete; a área sul, à frente na posição inicial. Toque no solo ou nos cartões para selecionar uma área. Os cartões e o gráfico continuam disponíveis quando o aparelho não suporta WebGL.
+Os experimentos são isolados: não alteram as áreas da demonstração ao vivo. N fica ao fundo da maquete; S, à frente. O seletor **Sistema** define o alvo do teste; tocar em uma peça abre sua descrição. Indicadores, gráficos, cronologia e resultados não dependem do WebGL.
 
-**Para irrigar o canteiro sul:** no laboratório, use **Controlar ao vivo** se estiver em replay; em **Canteiro na maquete**, selecione **S · Canteiro sul**, escolha a duração e pressione **Irrigar Canteiro sul**. Ative **Animar água** para movimentar as gotas. **Parar Canteiro sul** encerra o acionamento. Os três cenários predefinidos irrigam apenas N para verificar que S permanece independente; selecionar S no replay apenas muda a área observada.
+O laboratório tem um único acionamento de teste, sem controles ao vivo duplicados. Início e Áreas mantêm a operação manual. Se o sistema prefere movimento reduzido, use **Visualização e componentes → Animar água** para habilitar os efeitos.
 
 ## O que funciona
 
@@ -41,7 +41,7 @@ Os experimentos são isolados: não alteram as áreas da demonstração ao vivo.
 - Processo de simulação separado da interface; fechar a aba não interrompe o controlador nem o dispositivo.
 - Maquete em Three.js com reservatório, bomba, tubulações e dois conjuntos de microcontrolador/relé, válvula e sensor capacitivo. Etiquetas, inspeção 3D, corte do solo e gotejamento acompanham os dados; não geram decisões.
 - Volume nominal por área, aplicação média por planta e consumo acumulado; registrados no dispositivo e exportados com os cenários.
-- Três cenários de 90 s, com relógio virtual, seed, replay, verificações calculadas e gráficos.
+- Sete cenários de 90 s, selecionáveis em N/S: automático, parada manual, perda de comunicação, confirmação perdida, comando vencido, repetição e leituras inválidas. Replay, dois gráficos, cronologia, critérios e comparação de até sete resultados nesta visita.
 
 IA, recomendações preditivas, clima fixo e SSO com outra aplicação foram removidos desta versão. Não há chamadas pagas nem dependência de serviços externos em execução local.
 
@@ -56,10 +56,10 @@ npm run build
 
 - `npm test`: testes do contrato, controlador, dispositivo, API HTTP e experimentos.
 - `test:report`: a mesma suíte e um relatório em `.local/test-results.json`.
-- `demo:evidence`: executa os três cenários sem precisar abrir o navegador; cria JSONs, um resumo Markdown e a impressão SHA-256 das fontes do modelo em `.local/reports/<data>/`.
+- `demo:evidence`: executa os sete cenários em ambos os sistemas; cria 14 JSONs, 14 CSVs, 14 relatórios HTML, resumo Markdown e impressão SHA-256 das fontes em `.local/reports/<data>/`.
 - `build`: valida TypeScript e produz a aplicação web em `dist/`.
 
-Os três critérios por cenário não representam toda a suíte nem toda a matriz de testes do TCC. Testes de usuários, hardware físico, isolamento por conta, dispositivos móveis reais e implantação continuam pendentes.
+Validação deste marco: **55 testes e 42 critérios em 14 ensaios**. Os critérios dos cenários não representam toda a matriz do TCC. Usuários, hardware físico, isolamento por conta, dispositivos móveis reais e implantação continuam pendentes.
 
 ## Dados locais
 

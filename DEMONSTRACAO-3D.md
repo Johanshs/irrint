@@ -1,47 +1,113 @@
-# Demonstração 3D · guia de apresentação
+# Laboratório 3D — guia de apresentação e evidências
 
-Abra **Histórico → Laboratório** na demonstração local. A maquete é uma representação didática da arquitetura atual: duas áreas, dois dispositivos simulados, sensores, válvulas e regras independentes. Reservatório e bomba explicam o abastecimento; não são recursos controlados pelo contrato atual.
+Entrega v0.3.0 · 10/09/2026. O laboratório demonstra o **controle de irrigação por software com contrato independente do hardware**. Não exige equipamento físico nem usa IA. A maquete observa uma execução; não toma decisões e não calcula água pelo número de gotas desenhadas.
 
-## Explorar o campo
+## Fluxo único
 
-1. Use **Mostrar/Ocultar nomes** para alternar etiquetas com linhas apontando para as peças. No celular, as etiquetas apresentam o abastecimento e a área selecionada; toque no outro canteiro ou em seu cartão para mudar a seleção.
-2. Passe o mouse sobre uma peça ou etiqueta: ela recebe destaque. Toque/clique para abrir o modelo ampliado, a descrição e o papel possível de diferentes componentes na integração. Todos os gotejadores respondem ao clique.
-3. No inspetor, arraste para examinar, aproxime com pinça/roda do mouse e controle a rotação. A preferência do aparelho por movimento reduzido inicia a rotação pausada. Escape ou o botão de fechar retornam ao campo e preservam o foco.
-4. **Ver corte do solo** revela raízes e regiões de umidade na face frontal dos canteiros. Cor do solo, manchas superficiais e bulbos acompanham a última leitura recebida.
-5. **Aproximar área** enquadra o canteiro selecionado; **Recentrar** recupera a vista geral. Os emissores têm gotas descendentes e anéis no ponto de aplicação. As gotas são ampliadas para ficar visíveis. **Animar água/Pausar efeitos** controla o movimento visual; em aparelhos com movimento reduzido, ele inicia pausado. Um replay pausado também mantém os efeitos congelados.
-6. A lista **Explorar componentes** oferece os mesmos objetos por teclado e toque, inclusive quando as etiquetas estão ocultas ou WebGL está indisponível.
+1. Abra **Histórico → laboratório**.
+2. Em **Sistema**, escolha **Horta norte (N)** ou **Canteiro sul (S)**.
+3. Em **Teste**, escolha o cenário e pressione **Executar teste**.
+4. Acompanhe a maquete; pause, mova o cursor de tempo ou altere a velocidade para 1×, 5× ou 10×.
+5. Use **Entender o teste** para comparar aplicativo e simulador, ler os gráficos e tocar nos acontecimentos da linha do tempo.
+6. Em **Resultados**, confira os critérios calculados, as medidas finais e exporte o ensaio.
 
-## Demonstrar e mensurar
+Há um único acionamento de teste. Os antigos botões de irrigar/parar ao vivo foram retirados do laboratório; o controle operacional continua em **Início/Áreas**. Todos os sete cenários funcionam no sistema selecionado. O outro permanece como controle de isolamento, sem comandos nem consumo.
 
-Para acionar **S**, use a demonstração **ao vivo**: selecione **S · Canteiro sul** no campo **Canteiro na maquete**, escolha a duração e pressione **Irrigar Canteiro sul**. Ative **Animar água** se os efeitos estiverem pausados. Para encerrar, use **Parar Canteiro sul**. Os três replays predefinidos mantêm S desligado para testar independência; selecionar S durante replay apenas muda a observação. O botão **Controlar ao vivo** permite sair do replay antes de enviar comandos.
+A tela inicial mostra apenas uma maquete preparada. Não apresenta a sessão ao vivo como se fosse um experimento. Mudar sistema, teste ou seed prepara um novo ensaio e limpa o replay exibido. Os últimos sete resultados permanecem na comparação **durante esta visita**, sem promessa de armazenamento permanente.
 
-Execute **Solo seco e recuperação**, seed **2026**. Pause perto do segundo 10: explique o sensor, a decisão na API, a confirmação do dispositivo e a válvula liberando água. Abrir uma ficha pausa o replay; use Reproduzir para continuar. Velocidades 1×, 5× e 10× mudam somente a reprodução.
+## Maquete sem excesso de controles
 
-Os cartões acompanham o instante selecionado: índice do solo, aplicação média em mL por planta, volume na área e soma das áreas. Os resultados abaixo mostram a execução completa. São duas janelas de observação diferentes, identificadas na interface.
+Os nomes começam ocultos. Em **Visualização e componentes** ficam:
+- Mostrar/ocultar nomes, animar/pausar efeitos e corte do solo;
+- recentrar e aproximar o sistema selecionado;
+- lista de peças acessível por toque e teclado.
 
-| Cenário de 90 s | Tempo norte efetivamente aberto | Volume total nominal | Verificações |
-| --- | ---: | ---: | ---: |
-| Solo seco e recuperação | 21 s | 0,210 L | 3/3 |
-| Perda de comunicação | 12 s | 0,120 L | 3/3 |
-| Comando repetido | 12 s | 0,120 L | 3/3 |
+Arraste a maquete para girar e use pinça/roda para aproximar. Hover destaca a peça; clique ou toque abre seu modelo 3D e a descrição da integração. Inspecionar uma peça pausa o replay e não troca o sistema do teste. Escape fecha o modal e devolve o foco.
 
-Parâmetros: **18 plantas e 18 emissores por área**, **2 L/h por emissor**, **36 L/h por área**. Volume = vazão × segundos abertos / 3600. Água por planta = volume da área / 18. A segunda área permanece sem comandos nesses três cenários.
+O sistema N fica ao fundo e S à frente, na posição inicial. No celular, etiquetas mostram os componentes comuns e os do sistema selecionado. Se o aparelho prefere movimento reduzido, os efeitos começam pausados: habilite **Animar água** para apresentar o gotejamento.
 
-Em **Perda de comunicação**, compare o instante 20 s com 30 s. Sem contato, os cartões preservam a última telemetria: não adivinham o fechamento ou o volume. O dispositivo simulado continua contabilizando até o watchdog fechar. A reconexão atualiza o acumulado. Os JSONs/CSVs distinguem esses valores internos dos recebidos pela API.
+O corte revela raízes e regiões ilustrativas de umidade. Cor do solo, gotas e fluxo acompanham a informação recebida. Sem confirmação, a cena não inventa irrigação. Quando WebGL não está disponível, as descrições, indicadores, gráficos, cronologia e resultados continuam utilizáveis; a avaliação formal dessa contingência em aparelhos está pendente.
 
-Exporte **CSV** para analisar a série e **JSON** para preservar parâmetros, leituras, comandos, eventos, verificações e métricas. `npm run demo:evidence` gera os três relatórios e a impressão SHA-256 das fontes em `.local/reports/`.
+## Sete testes, dois sistemas
 
-## Como os efeitos foram construídos
+Todos duram 90 s, em passos virtuais de 1 s. Os resultados abaixo foram executados com seed 2026 em N e em S, com os mesmos valores.
 
-Modelos procedurais originais em Three.js, sem modelos baixados ou serviços pagos. Geometrias estáticas de uma peça são agrupadas por material. Folhas, gotas, anéis e regiões de umidade usam instâncias. A cena limita resolução e desenho, suspende quando oculta e libera recursos ao desmontar. O campo pausa o desenho durante a inspeção de um objeto. O desempenho em aparelho físico ainda precisa ser medido.
+| Teste | Intervenção e comportamento observado | Tempo aberto | Volume nominal | Comandos confirmados |
+| --- | --- | ---: | ---: | ---: |
+| Solo seco e recuperação | Abre em 1 s, fecha em 19 s e inicia novo ciclo em 87 s, depois de o solo voltar a secar | 21 s | 0,210 L | 3/3 |
+| Parada manual prioritária | Interrompe o automático em 4 s, ainda abaixo de 35%; permanece suspenso | 3 s | 0,030 L | 2/2 |
+| Perda de comunicação | Contato interrompido em 5 s, fechamento local em 13 s e reconexão em 30 s | 12 s | 0,120 L | 1/1 |
+| Confirmação perdida | A abertura chega, mas o ACK e as leituras seguintes se perdem; a API mantém incerteza e o comando expira | 12 s | 0,120 L | 0/1 |
+| Comando não entregue | Pedido expira em 9 s; tentativa tardia de entrega em 12 s é recusada pelo dispositivo | 0 s | 0 L | 0/1 |
+| Comando repetido | Quatro solicitações com a mesma chave produzem uma aplicação, sem estender duração | 12 s | 0,120 L | 1/1 |
+| Leituras inválidas e antigas | Rejeita 130%, -10%, unidade errada, valor ausente e sequência repetida entre 5–9 s; recebe leitura válida em 10 s | 0 s | 0 L | 0/0 |
 
-A queda usa uma trajetória acelerada visual, os anéis se expandem e as manchas variam com a leitura normalizada. A renderização não avança o dispositivo nem soma volume. Não há simulação de fluidos, absorção radicular, pressão, perdas, esgotamento do tanque ou calibração agronômica. O modelo de umidade e a estimativa de volume são modelos didáticos separados.
+**Zero consumo ou zero confirmações pode significar teste atendido.** Cada cenário possui três critérios calculados a partir de leituras, comandos, eventos e estado interno. O indicador não é um sucesso fixo por nome do cenário. São **42 critérios em 14 ensaios**, além da suíte de testes automatizados.
 
-## Referências consultadas
+A janela automática termina com a válvula do modelo aberta, no segundo ciclo. Os 21 s somam somente os intervalos dentro dos 90 s: 18 s no primeiro ciclo e 3 s no segundo. A execução isolada termina ali; não continua irrigando a sessão ao vivo.
 
-- [DFRobot — SEN0193](https://wiki.dfrobot.com/sen0193): formato alongado, circuito superior e conector de três vias orientaram a ilustração da sonda capacitiva.
-- [Espressif — ESP32 DevKitC V4](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32/esp32-devkitc/user_guide.html): fileiras de pinos, módulo RF, USB e botões orientaram a representação do controlador. A placa é um exemplo visual, não uma integração já implementada.
-- [Smart Garden IoT — projeto com Wokwi](https://github.com/hkhuang07/smart-garden-iot): documenta nós ESP32 simulados, umidade e acionamento por relé, com visualização em aplicação. Serviu como referência para separar dispositivo, comunicação e interface; não como fonte de uma simulação 3D de fluidos.
-- [Three.js — InstancedMesh](https://threejs.org/docs/pages/InstancedMesh.html) e [exemplo de partículas](https://threejs.org/examples/webgl_points_waves.html): referências técnicas para elementos repetidos e animação de partículas. O gotejamento e o corte do solo foram construídos especificamente para o Irrint.
+## Como explicar uma falha em dois minutos
 
-O propósito demonstrado é um software capaz de organizar o controle de irrigação através de um contrato. Outro sensor, microcontrolador ou atuador dependeria de adaptação, calibração e validação; a maquete não comprova compatibilidade universal.
+Escolha **S → Perda de comunicação → Executar teste**. Pause e vá a **20 s**. Em **Entender o teste**:
+- aplicativo: última válvula recebida aberta, leitura com 16 s de idade e 0,030 L recebidos; estado atual sem confirmação;
+- observação interna: válvula fechada, vazão zero e 0,120 L acumulados;
+- gráfico: curva recebida interrompida quando a leitura fica desatualizada; estado interno continua registrado.
+
+Toque no acontecimento **Contato restabelecido · 30 s**: a leitura volta a chegar, o volume recebido passa a 0,120 L e o automático fica suspenso após a parada local.
+
+Depois execute **Confirmação perdida**: aos 5 s, a válvula interna está aberta, mas o aplicativo ainda aguarda confirmação. Aos 9 s, o comando expira. Mesmo com reconexão, ele não ganha um ACK retroativo. Essa distinção demonstra por que enviar um comando não comprova sua aplicação.
+
+## Três maneiras de visualizar
+
+- **Maquete 3D:** estado confirmado ao operador, leitura de solo, volume recebido e estimativa por planta no instante do replay. Etiquetas e inspeção são opcionais.
+- **Entender o teste:** painéis lado a lado (empilhados no celular), curva de umidade, curva de água e cronologia com origem de cada acontecimento. O cursor acompanha os gráficos completos; tocar na cronologia pausa naquele instante.
+- **Resultados:** ensaio completo, tempo aberto, litros nominais, mL por planta, confirmações e critérios com evidência. Comparação de até sete execuções da visita.
+
+A cronologia agrupa acontecimentos do mesmo segundo por etapa de apresentação. Ela não mede ordem ou latência de subsegundos. O comando possui ID para correlação no JSON.
+
+## Medir, exportar e apresentar
+
+Em **Resultados**:
+- **Relatório para impressão:** HTML independente com parâmetros, métricas, critérios, cronologia e limites. Abra no navegador e use Imprimir para salvar em PDF.
+- **Dados CSV:** 180 linhas, uma por sistema/segundo; distingue valores recebidos, idade da leitura, estado de comando, umidade interna, válvula, comunicação, volume e vazão.
+- **Execução JSON:** relatório completo, parâmetros normalizados, frames, leituras, eventos, acontecimentos e verificações.
+
+Para gerar a matriz inteira sem navegador:
+
+```sh
+npm run test:report
+npm run demo:evidence
+npm run build
+```
+
+O gerador cria 14 JSONs, 14 CSVs, 14 relatórios HTML e **RESUMO.md** em uma pasta nova de `.local/reports/<data>/`. Os JSONs da matriz incluem SHA-256 das fontes do modelo. A suíte de 55 testes gera `.local/test-results.json`; compreende controlador/dispositivo (16), água (7), experimentos/exportação (23) e HTTP (9). O caso de falha de disco emite uma mensagem intencional para verificar rollback.
+
+## Relação com o planejamento
+
+| Requisito / casos da matriz inicial | Evidência desta entrega | Limite |
+| --- | --- | --- |
+| RF02 — leituras / CT08 | Rejeição de amostras inválidas, idade, sequência e recuperação | Sem calibração física |
+| RF03/RF04 — controlar / CT02, CT04, CT10 | Ciclo automático, prioridade da parada e repetição idempotente | Duração e taxas didáticas; a suíte de domínio cobre fronteiras |
+| RF06 — falhas / CT05, CT07, CT09 | Perda de rede, ausência de ACK, watchdog e recusa de comando vencido | Não comprova válvula física travada nem segurança hidráulica |
+| RF01 — vínculo / CT11 | Isolamento N/S no domínio e por HTTP | Topologia fixa; CRUD ainda pendente |
+| RF07 — demonstrar / CT12, CT17 | Mesma seed, escolha N/S, replay sem comandos e fontes de estado distintas | E2E automatizado e avaliação com usuários pendentes |
+| RF08 — evidenciar | CSV, JSON, relatório imprimível e comparação de execuções | Comparação apenas durante a visita; sem arquivo de experimentos no servidor |
+| RF09 / CT13 | Fora deste marco | Autenticação e isolamento por usuário ainda não implementados |
+
+O plano original e sua matriz continuam sendo referências históricas de escopo, não laudos de execução de todos os casos. Esta entrega **conclui o laboratório demonstrativo local**, não todas as etapas do projeto. Hospedagem de API, contas, persistência em nuvem, dispositivos dinâmicos, Android físico, desempenho, acessibilidade formal, matriz restante e TAM continuam em [PROGRESSO.md](PROGRESSO.md).
+
+## Modelos e limites
+
+Há 18 plantas e 18 emissores por sistema, a 2 L/h cada: **36 L/h**. Litros = vazão × tempo aberto / 3600. A divisão por 18 é uma distribuição nominal uniforme, não água absorvida pela planta.
+
+Umidade é um índice normalizado: +0,85 ponto/s aberto, -0,15 parado, com ruído de até 0,02 ponto por passo. O índice e o volume são modelos didáticos separados. Não calculamos infiltração física, pressão, perdas, esgotamento do tanque, demanda por cultura ou produtividade. Nenhum resultado demonstra economia real de água.
+
+Modelos procedurais em Three.js, com instâncias para elementos repetidos e agrupamento de geometrias estáticas por material. Sem ativos 3D baixados ou chamadas pagas. Desenho limitado e suspenso fora da tela; recursos liberados ao desmontar. A renderização não avança o dispositivo nem contabiliza volume. FPS, memória e bateria em aparelho ainda precisam de medição.
+
+Referências visuais e técnicas consultadas no refinamento anterior:
+- [DFRobot — SEN0193](https://wiki.dfrobot.com/sen0193): forma da sonda capacitiva.
+- [Espressif — ESP32 DevKitC V4](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32/esp32-devkitc/user_guide.html): placa, pinos, módulo RF, USB e botões.
+- [Smart Garden IoT com Wokwi](https://github.com/hkhuang07/smart-garden-iot): separação entre dispositivo simulado e aplicação; não é fonte de física 3D.
+- [Three.js — InstancedMesh](https://threejs.org/docs/pages/InstancedMesh.html) e [partículas](https://threejs.org/examples/webgl_points_waves.html): repetição de elementos e efeitos visuais.
+
+As placas, sondas, válvulas e bomba são exemplos identificáveis. Outros componentes exigem adaptador/firmware, calibração e validação do contrato; a maquete não promete compatibilidade universal.

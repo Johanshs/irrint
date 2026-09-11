@@ -100,25 +100,39 @@ describe('API HTTP com cliente de dispositivo independente', () => {
     ]);
     expect(persisted().zones).toEqual(snapshot.zones);
   });
-  it('executa e exporta um experimento isolado pela API, sem alterar as áreas ao vivo', async () => {
-    const { request, control } = await setup();
-    const before = control.exportState();
-    const response = await request('/api/v1/experiments', 'POST', {
-      scenario: 'connection-loss',
-      seed: 2026,
-    });
-    expect(response.status).toBe(200);
-    const report = await response.json();
-    expect(report).toMatchObject({
-      model: 'linear-educational-v2',
-      metrics: { openSeconds: 12, totalCommands: 1 },
-    });
-    expect(report.checks.every((check: { passed: boolean }) => check.passed)).toBe(true);
-    expect(control.exportState()).toEqual(before);
-    expect((await request('/api/v1/experiments', 'POST', { scenario: 'unknown', seed: 2026 })).status).toBe(
-      422,
-    );
-  });
+  it.each(['north', 'south'])(
+    '%s: executa e exporta um experimento isolado pela API, sem alterar as áreas ao vivo',
+    async (zoneId) => {
+      const { request, control } = await setup();
+      const before = control.exportState();
+      const response = await request('/api/v1/experiments', 'POST', {
+        scenario: 'connection-loss',
+        seed: 2026,
+        zoneId,
+      });
+      expect(response.status).toBe(200);
+      const report = await response.json();
+      expect(report).toMatchObject({
+        model: 'linear-educational-v3',
+        input: { zoneId },
+        metrics: { openSeconds: 12, totalCommands: 1 },
+      });
+      expect(report.checks.every((check: { passed: boolean }) => check.passed)).toBe(true);
+      expect(control.exportState()).toEqual(before);
+      expect((await request('/api/v1/experiments', 'POST', { scenario: 'unknown', seed: 2026 })).status).toBe(
+        422,
+      );
+      expect(
+        (
+          await request('/api/v1/experiments', 'POST', {
+            scenario: 'automatic',
+            seed: 2026,
+            zoneId: 'missing',
+          })
+        ).status,
+      ).toBe(422);
+    },
+  );
   it('executa um ciclo automático completo por HTTP, persistindo leituras e confirmações', async () => {
     const { request, advance, time, persisted } = await setup();
     expect(

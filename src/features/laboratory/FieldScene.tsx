@@ -7,14 +7,12 @@ import { createField } from './field-model';
 import { disposeScene } from './models';
 import { fieldComponents, type FieldComponent } from './components';
 import { ComponentInspector } from './ComponentInspector';
-import { WaterPanel } from './WaterPanel';
 import './laboratory.css';
 
 interface Props {
   state: Snapshot;
   connected: boolean;
   selectedId: string;
-  onSelect: (id: string) => void;
   replay?: { second: number; playing: boolean; speed: number };
   onInspect?: () => void;
 }
@@ -24,7 +22,7 @@ export default function FieldScene(props: Props) {
   const container = useRef<HTMLDivElement>(null),
     labels = useRef(new Map<string, HTMLButtonElement>());
   const leaders = useRef(new Map<string, SVGLineElement>());
-  const [names, setNames] = useState(true),
+  const [names, setNames] = useState(false),
     [section, setSection] = useState(false);
   const [motion, setMotion] = useState(() => !matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [inspected, setInspected] = useState<FieldComponent | null>(null),
@@ -33,11 +31,9 @@ export default function FieldScene(props: Props) {
   latest.current = { ...props, names, section, inspected, motion };
   const reset = useRef(() => {}),
     focusZone = useRef(() => {}),
-    rotate = useRef((_: number) => {}),
     hover = useRef((_: string | null) => {});
   const open = (part: FieldComponent) => {
     props.onInspect?.();
-    if (part.zoneId) props.onSelect(part.zoneId);
     setInspected(part);
   };
   const openRef = useRef(open);
@@ -53,7 +49,7 @@ export default function FieldScene(props: Props) {
     }
     renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = T.PCFSoftShadowMap;
+    renderer.shadowMap.type = T.PCFShadowMap;
     renderer.outputColorSpace = T.SRGBColorSpace;
     renderer.domElement.setAttribute('role', 'img');
     renderer.domElement.setAttribute(
@@ -72,12 +68,6 @@ export default function FieldScene(props: Props) {
     reset.current = () => {
       camera.position.set(9, 10, 12);
       controls.target.set(-0.4, 0.1, 0);
-      controls.update();
-    };
-    rotate.current = (direction) => {
-      const offset = camera.position.clone().sub(controls.target);
-      offset.applyAxisAngle(new T.Vector3(0, 1, 0), (direction * Math.PI) / 8);
-      camera.position.copy(controls.target).add(offset);
       controls.update();
     };
     reset.current();
@@ -136,7 +126,6 @@ export default function FieldScene(props: Props) {
       const object = hit(e),
         part = fieldComponents.find((p) => p.id === object?.userData.componentId);
       if (part) openRef.current(part);
-      else if (object?.userData.zoneId) latest.current.onSelect(object.userData.zoneId);
     };
     const canvas = renderer.domElement;
     canvas.addEventListener('pointerdown', pointerDown);
@@ -259,11 +248,8 @@ export default function FieldScene(props: Props) {
   return (
     <>
       <section className="field-experience" aria-label="Demonstração interativa de irrigação">
-        <div className="field-toolbar">
-          <div>
-            <span className="eyebrow">EXPLORE O SISTEMA</span>
-            <h2>Do sensor à água no solo</h2>
-          </div>
+        <details className="scene-options">
+          <summary>Visualização e componentes</summary>
           <div className="field-toggles">
             <button aria-pressed={motion} onClick={() => setMotion(!motion)}>
               {motion ? 'Pausar efeitos' : 'Animar água'}
@@ -274,8 +260,17 @@ export default function FieldScene(props: Props) {
             <button aria-pressed={section} onClick={() => setSection(!section)}>
               {section ? 'Fechar corte do solo' : 'Ver corte do solo'}
             </button>
+            <button onClick={() => reset.current()}>Recentrar</button>
+            <button onClick={() => focusZone.current()}>Aproximar sistema selecionado</button>
           </div>
-        </div>
+          <div className="component-directory">
+            {fieldComponents.map((part) => (
+              <button key={part.id} onClick={() => open(part)}>
+                {part.label}
+              </button>
+            ))}
+          </div>
+        </details>
         <div className="scene-shell refined-scene">
           <div className="field-stage">
             <div ref={container} className="field-scene" hidden={unavailable} />
@@ -300,6 +295,7 @@ export default function FieldScene(props: Props) {
                       else labels.current.delete(part.id);
                     }}
                     className="component-tag"
+                    hidden={!names}
                     onClick={() => open(part)}
                     onMouseEnter={() => hover.current(part.id)}
                     onMouseLeave={() => hover.current(null)}
@@ -317,58 +313,14 @@ export default function FieldScene(props: Props) {
             <p className="scene-fallback">
               3D indisponível neste aparelho. Explore os componentes e as medições nos botões abaixo.
             </p>
-          ) : (
-            <div className="field-camera">
-              <button onClick={() => rotate.current(-1)} aria-label="Girar maquete para a esquerda">
-                ↶
-              </button>
-              <button onClick={() => reset.current()}>Recentrar</button>
-              <button onClick={() => focusZone.current()}>Aproximar área</button>
-              <button onClick={() => rotate.current(1)} aria-label="Girar maquete para a direita">
-                ↷
-              </button>
-            </div>
-          )}
+          ) : null}
           <p className="scene-caption">
             Arraste para girar · pinça para aproximar · toque em um componente para explorar
             {section ? ' · raízes e bulbos de umidade ilustrativos' : ''}
+            {!motion ? ' · efeitos pausados; ative em Visualização' : ''}
             <span className="mobile-label-note">No celular, os nomes destacam a área selecionada.</span>
           </p>
         </div>
-        <WaterPanel
-          state={props.state}
-          connected={props.connected}
-          selectedId={props.selectedId}
-          replay={!!props.replay}
-        />
-        <details className="component-directory">
-          <summary>Explorar componentes · acessível por toque e teclado</summary>
-          <div>
-            {fieldComponents.map((part) => (
-              <button key={part.id} onClick={() => open(part)}>
-                {part.label} <span aria-hidden="true">↗</span>
-              </button>
-            ))}
-          </div>
-        </details>
-        <ol className="system-path">
-          <li>
-            <b>01 · Medir</b>
-            <span>Sensor envia o índice do solo</span>
-          </li>
-          <li>
-            <b>02 · Decidir</b>
-            <span>API aplica os limites da área</span>
-          </li>
-          <li>
-            <b>03 · Confirmar</b>
-            <span>Dispositivo executa o comando</span>
-          </li>
-          <li>
-            <b>04 · Irrigar</b>
-            <span>Válvula libera o gotejamento</span>
-          </li>
-        </ol>
       </section>
       {inspected && <ComponentInspector part={inspected} onClose={() => setInspected(null)} />}
     </>

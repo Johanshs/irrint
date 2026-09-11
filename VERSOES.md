@@ -1,8 +1,10 @@
 # Versões do Irrint
 
-## Atual: v0.2.0
+## Atual: v0.3.0
 
-A branch [`main`](https://github.com/Johanshs/irrint/tree/main) é a linha atual de desenvolvimento: interface Ionic/Capacitor, API HTTP local, dispositivos simulados separados do navegador, controle de duas áreas, testes e laboratório 3D. A tag [`v0.2.0`](https://github.com/Johanshs/irrint/tree/v0.2.0) identifica este marco.
+A branch [`main`](https://github.com/Johanshs/irrint/tree/main) é a linha atual: interface Ionic/Capacitor, API HTTP local e dispositivos simulados separados do navegador. A tag [`v0.3.0`](https://github.com/Johanshs/irrint/tree/v0.3.0) fecha o laboratório com seletor N/S, um acionamento de teste, sete cenários, explicação de falhas e relatórios.
+
+A tag [`v0.2.0`](https://github.com/Johanshs/irrint/tree/v0.2.0) preserva o marco anterior da nova arquitetura, inclusive os controles ao vivo que existiam no laboratório. Nenhuma tag anterior foi movida.
 
 Para executar: `npm ci` e `npm run demo:start`. Os próximos itens estão em [PROGRESSO.md](PROGRESSO.md).
 
@@ -20,7 +22,7 @@ git worktree add ../irrint-legacy v0.1.0-legacy
 
 ## GitHub e site publicado
 
-Código atual no GitHub e implantação pública são etapas diferentes. A v0.2.0 depende da API e do runner locais; o frontend estático isolado não substitui a demonstração completa.
+Código atual no GitHub e implantação pública são etapas diferentes. A v0.3.0 depende da API e do runner locais; o frontend estático isolado não substitui a demonstração completa.
 
 O `vercel.json` executa `scripts/vercel-ignore-build.mjs`, que retorna 0 para a [etapa de ignorar build da Vercel](https://vercel.com/docs/project-configuration/vercel-json#ignorecommand). Isso impede que este envio promova automaticamente uma interface sem backend e mantém o deployment existente. A hospedagem do backend, autenticação, transporte do APK e publicação da nova experiência continuam no plano.
 

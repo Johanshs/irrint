@@ -2,56 +2,6 @@
   margin: 20px 0;
   color: #244d40;
 }
-.lab-live-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  align-items: end;
-  background: #fff;
-  border: 1px solid #d4e1d8;
-  border-radius: 14px;
-  padding: 18px;
-  margin: 14px 0;
-}
-.lab-live-controls .field {
-  flex: 1;
-  min-width: 170px;
-  margin: 0;
-}
-.lab-live-controls > .small-note {
-  width: 100%;
-  margin: 0;
-}
-.lab-live-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-}
-.lab-live-actions ion-button {
-  margin: 0;
-}
-.lab-replay-notice {
-  flex: 2;
-  min-width: 210px;
-}
-.lab-replay-notice p {
-  font-size: 0.82rem;
-  line-height: 1.6;
-  margin: 0 0 6px;
-  color: #617868;
-}
-.field-toolbar {
-  display: flex;
-  justify-content: space-between;
-  gap: 18px;
-  align-items: center;
-  margin: 22px 0 14px;
-}
-.field-toolbar h2 {
-  font-size: 1.4rem;
-  margin: 5px 0 0;
-  letter-spacing: -0.035em;
-}
 .field-toggles {
   display: flex;
   gap: 8px;
@@ -63,10 +13,9 @@
   cursor: pointer;
 }
 .field-toggles button,
-.field-camera button,
 .component-directory button,
 .object-tools button {
-  min-height: 44px;
+  min-height: 48px;
   border: 1px solid #bfd0c6;
   border-radius: 10px;
   padding: 9px 13px;
@@ -143,104 +92,12 @@
   background: #d6f1e4;
   box-shadow: 0 0 0 2px #439e7f;
 }
-.field-camera {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  padding: 4px 12px;
-}
 .mobile-label-note {
   display: none;
-}
-.field-camera button {
-  min-width: 44px;
-  background: #f8fcf6;
 }
 .refined-scene .scene-caption {
   padding: 8px 15px 15px;
   margin: 0;
-}
-.water-panel {
-  background: #fff;
-  border: 1px solid #d4e1d8;
-  border-radius: 16px;
-  margin-top: 14px;
-  padding: 20px 22px;
-}
-.water-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-.water-heading h3 {
-  font-size: 1.15rem;
-  margin: 5px 0 0;
-}
-.water-state {
-  font-size: 0.74rem;
-  border: 1px solid #d4dfd6;
-  border-radius: 20px;
-  padding: 6px 10px;
-  background: #f1f5ef;
-  text-align: center;
-}
-.water-state.flowing {
-  color: #096d81;
-  background: #e4f6fa;
-  border-color: #b5dee8;
-}
-.water-metrics {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 20px;
-}
-.water-metrics > div {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-.water-metrics > div > span {
-  font-size: 0.78rem;
-  color: #637d6e;
-}
-.water-metrics strong {
-  font-size: 1.8rem;
-  letter-spacing: -0.045em;
-  color: #1d5341;
-  font-variant-numeric: tabular-nums;
-}
-.water-metrics strong small {
-  font-size: 0.85rem;
-  font-weight: 500;
-  letter-spacing: 0;
-  margin-left: 5px;
-}
-.water-metrics small {
-  font-size: 0.68rem;
-  line-height: 1.4;
-  color: #6c8074;
-}
-.moisture-bar {
-  height: 4px;
-  border-radius: 4px;
-  background: #ebdfc3;
-  overflow: hidden;
-}
-.moisture-bar i {
-  display: block;
-  height: 100%;
-  background: #378f79;
-  transition: width 0.2s;
-}
-.water-assumption {
-  font-size: 0.73rem;
-  line-height: 1.6;
-  color: #6b7e70;
-  margin: 18px 0 0;
-  padding-top: 14px;
-  border-top: 1px solid #e7eee7;
 }
 .component-directory {
   margin: 16px 0;
@@ -256,26 +113,6 @@
   flex-wrap: wrap;
   gap: 8px;
   padding: 8px 0;
-}
-.system-path {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  list-style: none;
-  padding: 17px 0;
-  margin: 0;
-  border-top: 1px solid #d5e2d7;
-}
-.system-path li {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 0.75rem;
-  color: #647c6d;
-}
-.system-path b {
-  color: #2a624c;
-  font-size: 0.82rem;
 }
 .component-inspector {
   color: #244d40;
@@ -405,18 +242,6 @@
     display: block;
     margin-top: 6px;
   }
-  .field-camera button {
-    padding: 8px 9px;
-    font-size: 0.73rem;
-  }
-  .field-toolbar {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .field-toolbar h2 {
-    font-size: 1.25rem;
-  }
   .field-toggles {
     width: 100%;
   }
@@ -433,23 +258,6 @@
     font-size: 10px !important;
     padding: 5px 7px;
     gap: 4px;
-  }
-  .water-panel {
-    padding: 16px;
-  }
-  .water-heading {
-    margin-bottom: 18px;
-  }
-  .water-metrics {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 22px 14px;
-  }
-  .water-metrics strong {
-    font-size: 1.65rem;
-  }
-  .system-path {
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
   }
   .component-inspector {
     width: calc(100vw - 16px);
@@ -482,8 +290,4 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .moisture-bar i,
-  .component-tag {
-    transition: none;
-  }
 }

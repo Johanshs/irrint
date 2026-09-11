@@ -10,7 +10,7 @@ Os schemas executáveis em `shared/contracts.ts` e `shared/experiments.ts` são 
 | POST | `/api/v1/zones/:id/commands` | `action`, `idempotencyKey`; `durationSeconds` obrigatório somente para `open` |
 | PUT | `/api/v1/zones/:id/rule` | `mode`, `startBelow`, `stopAt`, `maxDurationSeconds` |
 | GET | `/api/v1/report` | Estado ao vivo retido e limites da evidência |
-| POST | `/api/v1/experiments` | `scenario`, `seed`; retorna relatório completo de execução isolada |
+| POST | `/api/v1/experiments` | `scenario`, `seed`, `zoneId` opcional; retorna relatório completo de execução isolada |
 
 `north` e `south` são as áreas iniciais. IDs são strings. Um `POST` de comando retorna HTTP 202 com estado `pending`: isso confirma recebimento, não execução física. A interface aguarda `applied` ou uma leitura coerente com `lastCommandId`.
 
@@ -66,7 +66,11 @@ Somente loopback; origens web locais nas portas 5173 e 4173. JSON com limite de 
 
 ## Experimentos
 
-`automatic`, `connection-loss` e `duplicate`, seed inteira de 1 a 2147483646. Cada execução usa novas instâncias de controlador e dois dispositivos, sem alterar o estado ao vivo.
+Aceita `automatic`, `manual-stop`, `connection-loss`, `unconfirmed`, `command-timeout`, `duplicate` e `invalid-reading`. Seed inteira de 1 a 2147483646. `zoneId` aceita `north` ou `south`; a omissão mantém `north` por compatibilidade. Um identificador desconhecido retorna 422. Cada execução usa novas instâncias de controlador e dois dispositivos, sem alterar o estado ao vivo.
+
+Exemplo: `{"scenario":"connection-loss","seed":2026,"zoneId":"south"}`. O relatório de experimentos tem `version: "1.1"` e modelo `linear-educational-v3`; isso não altera a versão 1.0 da telemetria/controle. `input` retorna os parâmetros normalizados, incluindo o sistema. `moments` registra instante, origem (teste/controlador/dispositivo), tipo, descrição e, quando existe, ID do comando. Instantes dentro do mesmo segundo são agrupados por etapa de apresentação, sem resolução de latência.
+
+`deviceMoisture`, `deviceOpen` e `deviceWater` são observações internas por sistema; `zones[].latest` continua sendo exclusivamente a última informação recebida. `communication` descreve o canal do sistema sob teste; o outro sistema mantém comunicação. A API retorna as duas áreas em cada frame. Métricas de tempo e água referem-se ao sistema selecionado.
 
 O experimento chama o domínio diretamente com relógio virtual de 1 s; o teste de API usa HTTP real em loopback. São camadas diferentes de evidência. O relatório informa a versão do modelo, os estímulos, as séries e as verificações. A reprodução visual não recalcula resultados e a posição do replay não altera a simulação ao vivo.
 
