@@ -1,4 +1,4 @@
-import { access, copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { access, copyFile, cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { homedir } from 'node:os';
@@ -41,19 +41,39 @@ function run(command, args, env = process.env, cwd) {
   });
 }
 
+async function syncAndroidAssets(environment) {
+  try {
+    await run('npx', ['cap', 'sync', 'android'], environment);
+  } catch (error) {
+    console.warn(`Capacitor CLI indisponível (${error.message}). Aplicando sincronização local do bundle.`);
+    const assetsDirectory = resolve('android', 'app', 'src', 'main', 'assets');
+    const publicDirectory = resolve(assetsDirectory, 'public');
+    await rm(publicDirectory, { recursive: true, force: true });
+    await cp(resolve('dist'), publicDirectory, { recursive: true });
+    await writeFile(
+      resolve(assetsDirectory, 'capacitor.config.json'),
+      `${JSON.stringify(JSON.parse(await readFile(resolve('capacitor.config.json'), 'utf8')), null, '\t')}\n`,
+      'utf8',
+    );
+    await writeFile(resolve(assetsDirectory, 'capacitor.plugins.json'), '{}\n', 'utf8');
+  }
+}
+
 const sdk = await androidSdk();
 const buildEnvironment = {
   ...process.env,
   ANDROID_HOME: sdk,
   ANDROID_SDK_ROOT: sdk,
+  GRADLE_USER_HOME:
+    process.env.GRADLE_USER_HOME ?? resolve(process.env.USERPROFILE ?? homedir(), '.gradle'),
   VITE_ALLOW_API_OVERRIDE: 'true',
   VITE_API_BASE_URL: endpoint.replace(/\/$/, ''),
 };
 await run('npm', ['run', 'build'], buildEnvironment);
-await run('npx', ['cap', 'sync', 'android'], buildEnvironment);
+await syncAndroidAssets(buildEnvironment);
 await run(
   process.platform === 'win32' ? 'gradlew.bat' : './gradlew',
-  [':app:assembleDebug'],
+  [':app:assembleDebug', '-PirrintContingency=true'],
   buildEnvironment,
   resolve('android'),
 );

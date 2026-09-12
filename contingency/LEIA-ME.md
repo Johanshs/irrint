@@ -20,4 +20,4 @@ Este modo mantém o aplicativo operacional quando a internet externa não estive
 
 Credenciais: `produtor@demo.local` / `irrigacao`.
 
-O APK é de depuração e permite HTTP apenas para a bancada privada. A versão pública deve usar a API hospedada em HTTPS.
+O APK é exibido como **Irrint Contingência**, usa o pacote `br.com.irrint.contingency` e permite HTTP apenas para a bancada privada. Ele pode permanecer instalado ao lado do aplicativo público, que usa a API hospedada em HTTPS.

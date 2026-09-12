@@ -9,6 +9,18 @@ A distribuição possui dois caminhos complementares:
 
 Os dois caminhos preservam o mesmo contrato HTTP. O ambiente público cria duas áreas exclusivas a cada login, assina a sessão por 30 minutos e remove os dados expirados quando uma nova sessão é aberta. O limite padrão é de 12 sessões ativas.
 
+## APK público
+
+`npm run android:public` gera `distribution/Irrint-0.4.1-publico.apk` com:
+
+- pacote `br.com.irrint.app` e nome **Irriga Inteligente**;
+- API Heroku HTTPS incorporada ao bundle;
+- configuração de IP local removida da interface;
+- assinatura de release RSA 4096, preservada localmente para atualizações;
+- ícone e splash próprios do Irrint.
+
+O primeiro build cria `android/irrint-release.jks` e `android/keystore.properties`. Esses arquivos não entram no Git e devem ser guardados juntos em backup privado, conforme [android/ASSINATURA-APK.md](android/ASSINATURA-APK.md).
+
 ## Serviço hospedado
 
 O processo `npm run start:hosted` supervisiona:
@@ -96,7 +108,7 @@ O endpoint inicial é `http://192.168.137.1:8787`, endereço comum do ponto de a
 npm run contingency:build -- --api=http://192.168.1.20:8787
 ```
 
-O arquivo fica em `contingency/Irrint-contingencia-debug.apk`, acompanhado por um SHA-256. No aparelho, a seção **Conexão local de contingência** permite trocar o endereço sem recompilar.
+O arquivo fica em `contingency/Irrint-contingencia-debug.apk`, acompanhado por um SHA-256. No aparelho, a seção **Conexão local de contingência** permite trocar o endereço sem recompilar. Seu pacote é `br.com.irrint.contingency`, permitindo instalação simultânea com o APK público.
 
 No dia da apresentação, execute:
 

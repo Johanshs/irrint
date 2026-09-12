@@ -1,7 +1,7 @@
 {
   "name": "irrint",
   "private": true,
-  "version": "0.4.0",
+  "version": "0.4.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -28,6 +28,7 @@
     "start:hosted": "node scripts/hosted.mjs",
     "contingency:start": "powershell -ExecutionPolicy Bypass -File contingency/Iniciar-Irrint.ps1",
     "contingency:build": "node scripts/contingency-build.mjs",
+    "android:public": "node scripts/public-apk-build.mjs",
     "test:report": "vitest run --reporter=default --reporter=json --outputFile=.local/test-results.json"
   },
   "dependencies": {

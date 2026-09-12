@@ -1,18 +1,18 @@
 # Execução do plano · 11 de setembro de 2026
 
-Marco atual: aplicação `0.4.0` publicada, laboratório demonstrativo concluído, PostgreSQL hospedado, API acessível por HTTPS e LAN, APK configurável, segundo cliente sobre OpenAPI e E2E web automatizado. A base v0.2.0 e a versão legacy permanecem consultáveis; veja [VERSOES.md](VERSOES.md).
+Marco atual: aplicação Android `0.4.1` distribuível, aplicação web publicada, laboratório demonstrativo concluído, PostgreSQL hospedado, API acessível por HTTPS e LAN, APK público assinado, APK local configurável, segundo cliente sobre OpenAPI e E2E web automatizado. A base v0.2.0 e a versão legacy permanecem consultáveis; veja [VERSOES.md](VERSOES.md).
 
 ## Etapas e situação
 
 | Etapa                | Entregue                                                                                                    | Restante                                                                       |
 | -------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| E0 — Base            | React 18, Ionic 9, Router 6, Capacitor 8, build web, APK debug instalado e execução no Galaxy S25 Ultra     | Assinatura de uma versão pública distribuível                                  |
+| E0 — Base            | React 18, Ionic 9, Router 6, Capacitor 8, build web, identidade visual e APK público assinado               | Regressão física da compilação 0.4.1 no Galaxy S25 Ultra                       |
 | E1 — Contrato        | Zod 1.0, OpenAPI 3.1, sessões locais e hospedadas, isolamento, sequência, prazos, ACK e idempotência        | Gestão de contas reais, caso o protótipo evolua além da demonstração           |
 | E2 — API/dispositivo | API local/hospedável, JSON recuperável local, PostgreSQL hospedado, runner e cliente OpenAPI independente   | Transações distribuídas, caso seja necessária escala com mais de uma instância |
 | E3 — Mobile          | Login, áreas, vínculos, histórico, ajustes, estados operacionais e fluxo principal revisado em Android real | Remoção/revinculação, gestão de contas e regressão física de acessibilidade    |
 | E4 — Evidências      | 73 testes; 4 E2E; 16 ensaios, 48 critérios; CT13/14/18/19/20/21/22; latência; relatórios e bancada Android  | Voltar, rotação, reconexão, fonte e métricas instrumentadas no aparelho        |
 | E5 — 3D              | Peças, inspeção, etiquetas, corte, gotejamento e oito falhas; maquete e fluidez revisadas no S25 Ultra      | Avaliação de uso com participantes e métricas instrumentadas opcionais         |
-| E6 — Distribuição    | Heroku Basic/Postgres, Vercel atual, HTTPS, E2E público, launcher local e APK configurável                  | Reinstalar o APK `0.4.0` e preparar assinatura pública                         |
+| E6 — Distribuição    | Heroku Basic/Postgres, Vercel, HTTPS, E2E público, APK release e contingência em pacote Android separado    | Publicar o APK 0.4.1 no GitHub Releases e instalá-lo no aparelho                |
 | E7 — TCC             | Escopo, limites, contrato e relatórios reproduzíveis documentados                                           | Instrumento, aplicação com produtores, análise e capítulos de resultados       |
 
 ## Validação deste marco
@@ -27,7 +27,7 @@ Marco atual: aplicação `0.4.0` publicada, laboratório demonstrativo concluíd
 - **CT22**: lease impede dois produtores simultâneos e permite substituição após 6 s; relatório vazio usa `not-measured` e `null`; o E2E confirma que pausar o replay não pausa o runner, aceleração/reinício funcionam e o segundo ensaio não altera o primeiro.
 - **Execução LAN**: contrato 1.0.0 consultado pelo IPv4 do computador, CORS para `capacitor://localhost`, duas áreas com origem `device` e abertura/fechamento do sul confirmados pelo cliente alternativo.
 - **Latência local de confirmação**: 30/30 comandos aplicados, sem erros ou timeouts; mediana 2015,44 ms, p95 2040,57 ms e máxima 2048,97 ms. A medição termina após ACK e telemetria coerente, com polling de 1000 ms, em processos aquecidos na mesma máquina.
-- **Build web/TypeScript e APK debug** concluídos. O responsável revisou a fluidez no aparelho e a considerou adequada; o aviso de chunks grandes de Ionic/Three.js e essa revisão visual não equivalem a uma medição instrumentada de desempenho.
+- **Build web/TypeScript, APK público assinado e APK de contingência** concluídos. O responsável revisou anteriormente a fluidez no aparelho e a considerou adequada; o aviso de chunks grandes de Ionic/Three.js e essa revisão visual não equivalem a uma medição instrumentada de desempenho.
 
 A mensagem de falha de disco no CT19 é intencional: valida HTTP 500 e reversão do estado. Os cenários visuais chamam o domínio com relógio virtual; os testes HTTP e a passagem LAN exercitam o adaptador real. Nenhuma dessas camadas equivale a hardware agrícola.
 
@@ -53,7 +53,7 @@ A sessão ao vivo retém as últimas 2.000 leituras e 1.000 eventos e bloqueia n
 
 ## Próxima sequência
 
-1. Instalar o APK `0.4.0` de contingência no Galaxy.
-2. Preparar uma versão assinada e repetir Voltar, rotação, reconexão, escala de fonte, FPS/memória e latência como regressão física de distribuição.
+1. Instalar os APKs `0.4.1` público e de contingência no Galaxy.
+2. Repetir Voltar, rotação, reconexão, escala de fonte, FPS/memória e latência como regressão física de distribuição.
 3. Preparar e pilotar tarefas, TCLE e questionário de facilidade/utilidade com produtores.
 4. Executar a avaliação e redigir método realizado, resultados, discussão e conclusão somente com as evidências coletadas.

@@ -1,6 +1,6 @@
 # Irrint — Irrigação Inteligente
 
-[![Versão](https://img.shields.io/badge/versão-0.4.0-2f855a)](package.json)
+[![Versão](https://img.shields.io/badge/versão-0.4.1-2f855a)](package.json)
 [![Node.js](https://img.shields.io/badge/Node.js-22-339933?logo=nodedotjs&logoColor=white)](package.json)
 [![Ionic React](https://img.shields.io/badge/Ionic_React-9-3880ff?logo=ionic&logoColor=white)](https://ionicframework.com/docs/react)
 [![Capacitor](https://img.shields.io/badge/Capacitor-8-119eff?logo=capacitor&logoColor=white)](https://capacitorjs.com/docs)
@@ -8,7 +8,7 @@
 
 Aplicativo híbrido, API e ambiente de simulação para monitorar e controlar sistemas de irrigação. O projeto foi desenvolvido como protótipo de TCC e demonstra, sem exigir hardware físico, como um produtor poderia acompanhar a umidade, configurar regras, acionar válvulas e analisar falhas por uma interface mobile.
 
-> **Situação atual:** a versão `0.4.0` está publicada em [irrigacao-int.vercel.app](https://irrigacao-int.vercel.app/) com API HTTPS, cliente de dispositivo OpenAPI e PostgreSQL na Heroku. O mesmo sistema funciona localmente e possui um APK de contingência compilado e verificado. O fluxo móvel anterior foi exercitado em um Galaxy S25 Ultra; a reinstalação física do APK `0.4.0` ainda está pendente.
+> **Situação atual:** a versão `0.4.1` possui APK público assinado, ligado à API HTTPS hospedada e sem configuração de IP. A Vercel continua em [irrigacao-int.vercel.app](https://irrigacao-int.vercel.app/). Um segundo APK, identificado como **Irrint Contingência**, mantém a operação em rede local e pode coexistir no mesmo Android.
 
 <p align="center">
   <img src="evidencias/android-s25-ultra/02-irrigacao-sul.png" width="30%" alt="Controle da irrigação no Android" />
@@ -26,6 +26,7 @@ Aplicativo híbrido, API e ambiente de simulação para monitorar e controlar si
 - [Como usar o sistema](#como-usar-o-sistema)
 - [Laboratório 3D e testes simulados](#laboratório-3d-e-testes-simulados)
 - [Modos de execução](#modos-de-execução)
+- [APK público](#apk-público)
 - [Contingência local com APK](#contingência-local-com-apk)
 - [Contrato HTTP e integração de dispositivos](#contrato-http-e-integração-de-dispositivos)
 - [Configuração por variáveis de ambiente](#configuração-por-variáveis-de-ambiente)
@@ -272,6 +273,7 @@ O roteiro detalhado, os valores de referência e a explicação das falhas estã
 | `npm run demo:start:lan`       | Demonstração acessível na rede privada para o APK Android.                 |
 | `npm run demo:start:reference` | Troca o simulador pelo cliente independente derivado do OpenAPI.           |
 | `npm run contingency:start`    | Inicia o modo LAN e mostra os endereços que o APK pode usar.               |
+| `npm run android:public`       | Gera o APK público assinado com a API HTTPS fixa.                          |
 | `npm run start:hosted`         | API pública, armazenamento configurado e runner OpenAPI sob um supervisor. |
 | `npm run dev`                  | Somente a interface; pressupõe uma API já ativa.                           |
 | `npm run demo:api`             | Somente a API local.                                                       |
@@ -279,6 +281,18 @@ O roteiro detalhado, os valores de referência e a explicação das falhas estã
 | `npm run client:device`        | Somente o cliente OpenAPI de referência.                                   |
 
 `demo:start` é a opção indicada para desenvolvimento e apresentação no notebook. O modo LAN precisa ser ativado explicitamente.
+
+## APK público
+
+O APK público usa a API hospedada declarada em `.env.production`. Ele não exibe a seção de configuração de IP e recusa endpoints sem HTTPS durante a compilação.
+
+```powershell
+npm run android:public
+```
+
+O artefato é gravado em `distribution/Irrint-0.4.1-publico.apk`, acompanhado pelo SHA-256. No primeiro build, o comando cria uma identidade de assinatura local. Preserve juntos, em backup privado, `android/irrint-release.jks` e `android/keystore.properties`: futuras atualizações do aplicativo público precisam da mesma chave.
+
+Identificador Android: `br.com.irrint.app`. Credenciais da demonstração: `produtor@demo.local` / `irrigacao`.
 
 ## Contingência local com APK
 
@@ -307,7 +321,7 @@ O endereço inicial é `http://192.168.137.1:8787`, comum ao ponto de acesso mó
 npm run contingency:build -- --api=http://192.168.1.20:8787
 ```
 
-O endereço continua editável na tela de login do APK.
+O endereço continua editável na tela de login do APK. Esta variante usa o identificador `br.com.irrint.contingency` e o nome **Irrint Contingência**, portanto pode ficar instalada ao lado da versão pública.
 
 ### Usar no dia
 
@@ -452,9 +466,9 @@ Em outro terminal, execute `npm run demo:start:lan`. O APK é gerado em:
 android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
-O identificador do aplicativo é `br.com.irrint.app`. HTTP sem TLS é aceito somente no build Android de depuração, para a bancada privada. Uma distribuição pública deve usar HTTPS e assinatura de release.
+O aplicativo público usa `br.com.irrint.app`; a contingência usa `br.com.irrint.contingency`. HTTP sem TLS é aceito somente no APK de contingência, para a bancada privada. A distribuição pública usa HTTPS e assinatura de release.
 
-O fluxo foi exercitado em Galaxy S25 Ultra com Android 16/API 36. A compilação de contingência `0.4.0` foi verificada estruturalmente e por assinatura, mas sua reinstalação física final permanece registrada como pendência em [VALIDACAO-DISTRIBUICAO.md](VALIDACAO-DISTRIBUICAO.md).
+O fluxo foi exercitado em Galaxy S25 Ultra com Android 16/API 36. Os APKs `0.4.1` foram verificados estruturalmente e por assinatura; esta compilação ainda não foi instalada porque não havia aparelho conectado por ADB. Veja [VALIDACAO-DISTRIBUICAO.md](VALIDACAO-DISTRIBUICAO.md).
 
 ## Publicação
 
@@ -531,6 +545,7 @@ irrint/
 ├── android/                    projeto Android gerenciado pelo Capacitor
 ├── clients/                    cliente de dispositivo baseado somente no OpenAPI
 ├── contingency/               APK, checksum, launcher e instruções offline
+├── distribution/              APK público assinado e notas da versão
 ├── evidencias/                 capturas selecionadas e versionadas
 ├── experiments/               cenários, relógio virtual, métricas e relatórios
 ├── scripts/                    supervisores, builds e geração de evidências

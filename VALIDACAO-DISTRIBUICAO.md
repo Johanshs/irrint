@@ -1,6 +1,20 @@
-# Validação da distribuição 0.4.0
+# Validação da distribuição 0.4.1
 
-Data: 11 de setembro de 2026.
+Data: 12 de setembro de 2026.
+
+## APK público assinado
+
+`npm run android:public` concluiu o build de release com Android SDK 36. O artefato `distribution/Irrint-0.4.1-publico.apk` apresentou:
+
+- pacote `br.com.irrint.app`, versão `0.4.1`, `versionCode 5`, `minSdk 24` e `targetSdk 36`;
+- nome **Irriga Inteligente**;
+- assinatura APK v2 válida, certificado RSA 4096 próprio do projeto;
+- SHA-256 `efc490252ce06dc935c81e6a95296116d11bd2691f3dce73863895bf93557361`;
+- API fixa `https://irrint-2026-7f93a1-42d8a0dfb354.herokuapp.com` no bundle;
+- ausência do texto e do endpoint da interface de contingência no bundle público;
+- launcher adaptativo, ícones legados, splash e favicon derivados da nova marca.
+
+A chave e suas credenciais permanecem somente no ambiente local, ignoradas pelo Git. Não havia aparelho conectado por ADB; a validação desta compilação foi estrutural, de conteúdo e assinatura.
 
 ## Serviço hospedável
 
@@ -58,14 +72,16 @@ Foram validados:
 - build TypeScript/Vite;
 - sincronização do Capacitor;
 - `:app:assembleDebug` com Android SDK 36;
-- APK com pacote `br.com.irrint.app`, versão `0.4.0`, `minSdk 24` e `targetSdk 36`;
+- APK com pacote `br.com.irrint.contingency`, versão `0.4.1-contingency`, `versionCode 5`, `minSdk 24` e `targetSdk 36`;
 - assinatura Android Debug válida pelo esquema APK Signature v2;
 - inclusão da tela para configurar o endpoint LAN;
 - permissão HTTP restrita ao build de depuração.
 
 O artefato fica em `contingency/Irrint-contingencia-debug.apk`. A compilação produz também `Irrint-contingencia-debug.apk.sha256`.
 
-Não havia aparelho conectado por ADB nesta validação. O APK novo foi verificado estruturalmente e pela assinatura, mas a instalação física desta compilação 0.4.0 ainda deve ser repetida no Galaxy S25 Ultra. A versão anterior do fluxo já havia sido instalada e exercitada nesse aparelho.
+O SHA-256 observado foi `6340fd65dd377bc8a4a5df78b76fc82f37c195d0aa223d98ae4f319fff2fe563`. A extração do bundle confirmou a presença de **Conexão local de contingência** e do endpoint inicial `http://192.168.137.1:8787`.
+
+Não havia aparelho conectado por ADB nesta validação. Os dois APKs novos foram verificados estruturalmente e pela assinatura, mas a instalação física da compilação 0.4.1 ainda deve ser repetida no Galaxy S25 Ultra. A versão anterior do fluxo já havia sido instalada e exercitada nesse aparelho.
 
 ## Suíte
 
@@ -73,6 +89,6 @@ Não havia aparelho conectado por ADB nesta validação. O APK novo foi verifica
 - 3/3 E2E anteriores do aplicativo;
 - 1/1 E2E novo da distribuição hospedada;
 - build web concluído;
-- APK de contingência concluído.
+- APK público de release e APK de contingência concluídos.
 
 O aviso de chunks grandes de Ionic e Three.js permanece informativo. Ele não impediu build, execução ou o teste Android anterior.

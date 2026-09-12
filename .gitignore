@@ -20,6 +20,9 @@ build/
 # Binaries & Archives
 *.apk
 *.zip
+android/irrint-release.jks
+android/keystore.properties
+distribution/*.sha256
 
 # Logs
 npm-debug.log*
