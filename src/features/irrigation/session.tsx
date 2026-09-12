@@ -10,7 +10,8 @@ import type {
   ZoneUpdate,
 } from '../../../shared/contracts';
 
-const base = import.meta.env.VITE_API_BASE_URL ?? '';
+const configuredBase = import.meta.env.VITE_API_BASE_URL ?? '';
+const apiOverrideKey = 'irrint-api-base-url';
 const tokenKey = 'irrint-session-token';
 const userKey = 'irrint-session-user';
 
@@ -42,6 +43,10 @@ export async function request<T>(
   body?: unknown,
   authenticated = true,
 ): Promise<T> {
+  const base =
+    import.meta.env.VITE_ALLOW_API_OVERRIDE === 'true'
+      ? localStorage.getItem(apiOverrideKey) || configuredBase
+      : configuredBase;
   const token = authenticated ? localStorage.getItem(tokenKey) : null;
   const response = await fetch(`${base}${path}`, {
     method,
@@ -91,6 +96,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       if (next.schemaVersion !== '1.0' || !Array.isArray(next.zones))
         throw new Error('Contrato de comunicação incompatível.');
       setState(next);
+      select((current) =>
+        next.zones.some((zone) => zone.id === current) ? current : (next.zones[0]?.id ?? ''),
+      );
       setConnected(true);
     } catch (error) {
       setConnected(false);
@@ -201,6 +209,21 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       {children}
     </Context.Provider>
   );
+}
+
+export function configurableApi() {
+  return import.meta.env.VITE_ALLOW_API_OVERRIDE === 'true';
+}
+
+export function currentApiBaseUrl() {
+  return localStorage.getItem(apiOverrideKey) || configuredBase;
+}
+
+export function configureApiBaseUrl(value: string) {
+  const normalized = value.trim().replace(/\/$/, '');
+  const parsed = new URL(normalized);
+  if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('Use um endereço HTTP ou HTTPS.');
+  localStorage.setItem(apiOverrideKey, normalized);
 }
 export function useSession() {
   const context = useContext(Context);

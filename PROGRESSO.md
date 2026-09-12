@@ -4,21 +4,21 @@ Marco atual: laboratório demonstrativo concluído, contrato/persistência refor
 
 ## Etapas e situação
 
-| Etapa                | Entregue                                                                                                         | Restante                                                                    |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| E0 — Base            | React 18, Ionic 9, Router 6, Capacitor 8, build web, APK debug instalado e execução no Galaxy S25 Ultra          | Assinatura e pipeline de uma versão distribuível                            |
-| E1 — Contrato        | Zod 1.0, OpenAPI 3.1, sessão local de 30 min, isolamento por proprietário, sequência, prazos, ACK e idempotência | Autenticação e regras persistentes para produção                            |
-| E2 — API/dispositivo | API local, gravação atômica, backup, reinício validado, processo simulado e cliente OpenAPI independente         | Adaptador de nuvem, credenciais por dispositivo e migrações futuras         |
-| E3 — Mobile          | Login, áreas, vínculos, histórico, ajustes, estados operacionais e fluxo principal revisado em Android real      | Remoção/revinculação, gestão de contas e regressão física de acessibilidade |
-| E4 — Evidências      | 69 testes; 3 E2E; 16 ensaios, 48 critérios; CT13/14/18/19/20/21/22; latência; relatórios e bancada Android       | Voltar, rotação, reconexão, fonte e métricas instrumentadas no aparelho     |
-| E5 — 3D              | Peças, inspeção, etiquetas, corte, gotejamento e oito falhas; maquete e fluidez revisadas no S25 Ultra           | Avaliação de uso com participantes e métricas instrumentadas opcionais      |
-| E6 — Distribuição    | Código atual no GitHub; LAN opt-in; APK debug instalado e conectado em aparelho real                             | API HTTPS hospedada, versão assinada e troca controlada do Vercel           |
-| E7 — TCC             | Escopo, limites, contrato e relatórios reproduzíveis documentados                                                | Instrumento, aplicação com produtores, análise e capítulos de resultados    |
+| Etapa                | Entregue                                                                                                    | Restante                                                                      |
+| -------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| E0 — Base            | React 18, Ionic 9, Router 6, Capacitor 8, build web, APK debug instalado e execução no Galaxy S25 Ultra     | Assinatura de uma versão pública distribuível                                 |
+| E1 — Contrato        | Zod 1.0, OpenAPI 3.1, sessões locais e hospedadas, isolamento, sequência, prazos, ACK e idempotência        | Gestão de contas reais, caso o protótipo evolua além da demonstração          |
+| E2 — API/dispositivo | API local/hospedável, arquivo recuperável em volume, runner supervisionado e cliente OpenAPI independente   | Migração para banco multi-instância, caso seja necessária escala futura       |
+| E3 — Mobile          | Login, áreas, vínculos, histórico, ajustes, estados operacionais e fluxo principal revisado em Android real | Remoção/revinculação, gestão de contas e regressão física de acessibilidade   |
+| E4 — Evidências      | 72 testes; 4 E2E; 16 ensaios, 48 critérios; CT13/14/18/19/20/21/22; latência; relatórios e bancada Android  | Voltar, rotação, reconexão, fonte e métricas instrumentadas no aparelho       |
+| E5 — 3D              | Peças, inspeção, etiquetas, corte, gotejamento e oito falhas; maquete e fluidez revisadas no S25 Ultra      | Avaliação de uso com participantes e métricas instrumentadas opcionais        |
+| E6 — Distribuição    | Modo hospedado isolado, Docker/Render, health check, E2E multiusuário, launcher local e APK configurável    | Criar o serviço externo, obter HTTPS, cortar a Vercel e reinstalar o APK novo |
+| E7 — TCC             | Escopo, limites, contrato e relatórios reproduzíveis documentados                                           | Instrumento, aplicação com produtores, análise e capítulos de resultados      |
 
 ## Validação deste marco
 
-- **69/69 testes**: controlador/dispositivo (17), água (7), cenários/repetibilidade/exportação (26), API HTTP (15), armazenamento/reinício (3) e cliente OpenAPI (1).
-- **3/3 fluxos E2E no Chromium**: teclado e larguras 360/390/430 px com fonte a 125%; contingência WebGL; pausa, 10×, reinício e duas execuções isoladas.
+- **72/72 testes**: controlador/dispositivo (17), água (7), cenários/repetibilidade/exportação (26), API HTTP (15), armazenamento/reinício (3), cliente OpenAPI (1) e distribuição hospedada (3).
+- **4/4 fluxos E2E no Chromium**: teclado e larguras 360/390/430 px com fonte a 125%; contingência WebGL; pausa, 10×, reinício; e dois visitantes isolados no modo hospedado.
 - **48/48 critérios em 16 ensaios**, seed 2026: oito cenários executados em N e S com séries equivalentes sob os mesmos parâmetros.
 - **CT14**: vínculos, leitura, confirmação e eventos persistem após reinício; um comando pendente reaparece vencido e a expiração é gravada.
 - **CT18, web e bancada Android**: CORS/preflight, host LAN privado, configuração HTTP exclusiva de debug, endpoint incorporado, foco por teclado, 360/390/430 px, fonte ampliada e contingência WebGL foram automatizados. O APK foi instalado no Galaxy S25 Ultra; login, API, acionamento/parada do sul, áreas, ajustes, histórico e laboratório WebGL 2.0 funcionaram. Voltar, rotação, reconexão, fonte e FPS/memória ainda não têm coleta física instrumentada.
@@ -39,19 +39,22 @@ O laboratório usa **Sistema → Teste → Executar teste**. As visualizações 
 
 O cliente OpenAPI alternativo demonstra que outro processo pode integrar-se sem reutilizar a implementação do simulador. O resultado sustenta viabilidade arquitetural para o protótipo; não sustenta compatibilidade universal com qualquer hardware.
 
-Roteiros e detalhes: [DEMONSTRACAO-3D.md](DEMONSTRACAO-3D.md), [VALIDACAO-MOBILE-OPENAPI.md](VALIDACAO-MOBILE-OPENAPI.md) e [VALIDACAO-ANDROID-S25-ULTRA.md](VALIDACAO-ANDROID-S25-ULTRA.md).
+Roteiros e detalhes: [DEMONSTRACAO-3D.md](DEMONSTRACAO-3D.md), [VALIDACAO-MOBILE-OPENAPI.md](VALIDACAO-MOBILE-OPENAPI.md), [VALIDACAO-ANDROID-S25-ULTRA.md](VALIDACAO-ANDROID-S25-ULTRA.md) e [VALIDACAO-DISTRIBUICAO.md](VALIDACAO-DISTRIBUICAO.md).
 
 ## Limites mantidos
 
 O fluxo aceita novas áreas, mas a matriz 3D permanece fixa em N/S para manter comparabilidade. Não há IA, clima, calibração agronômica, economia real de água ou integração física comprovada. Volume e divisão por planta são estimativas nominais.
 
-A conta e os tokens são locais; o modo LAN serve apenas à bancada na mesma rede. HTTP sem TLS é permitido somente no APK debug. A trava de build Vercel permanece porque o frontend atual precisa de backend persistente acessível.
+No modo LAN, a conta e os tokens permanecem somente na memória e o serviço serve apenas à bancada na mesma rede. HTTP sem TLS é permitido somente no APK debug. A trava de build Vercel permanece porque o frontend atual precisa do endereço HTTPS do backend.
+
+O adaptador hospedado usa tokens assinados que continuam válidos após reinício, cria duas áreas por visitante e persiste o estado em volume. Ele limita a 12 sessões ativas por padrão e remove áreas expiradas na abertura de uma nova sessão. A ativação externa permanece pendente para não criar cobrança ou trocar o site antes do teste de homologação.
 
 A sessão ao vivo retém as últimas 2.000 leituras e 1.000 eventos e bloqueia novos inícios depois de 500 comandos. A comparação conserva até oito ensaios na visita; exporte os arquivos para retenção. Migrações entre futuras versões de schema seguem pendentes.
 
 ## Próxima sequência
 
-1. Se a demonstração pública for necessária, implementar autenticação/banco persistentes e API HTTPS antes de substituir o Vercel legacy.
-2. Preparar uma versão assinada e repetir Voltar, rotação, reconexão, escala de fonte, FPS/memória e latência como regressão física de distribuição.
-3. Preparar e pilotar tarefas, TCLE e questionário de facilidade/utilidade com produtores.
-4. Executar a avaliação e redigir método realizado, resultados, discussão e conclusão somente com as evidências coletadas.
+1. Criar o serviço persistente descrito em `render.yaml`, validar o HTTPS e configurar `VITE_API_BASE_URL` na Vercel.
+2. Executar o corte controlado da Vercel e instalar o novo APK de contingência no Galaxy.
+3. Preparar uma versão assinada e repetir Voltar, rotação, reconexão, escala de fonte, FPS/memória e latência como regressão física de distribuição.
+4. Preparar e pilotar tarefas, TCLE e questionário de facilidade/utilidade com produtores.
+5. Executar a avaliação e redigir método realizado, resultados, discussão e conclusão somente com as evidências coletadas.

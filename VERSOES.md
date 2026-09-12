@@ -6,6 +6,8 @@ A branch [`main`](https://github.com/Johanshs/irrint/tree/main) é a linha atual
 
 A tag [`v0.3.0`](https://github.com/Johanshs/irrint/tree/v0.3.0) preserva o marco que simplificou o laboratório para um acionamento de teste e sete cenários. Os avanços posteriores permanecem na `main` até o próximo marco versionado.
 
+A `main` está preparada como `0.4.0`: acrescenta o modo hospedado com sessões isoladas, runner supervisionado, implantação por contêiner, teste E2E multiusuário e o APK local de contingência. O marco só deve receber tag após o backend HTTPS e o corte da Vercel serem validados nas contas externas.
+
 A tag [`v0.2.0`](https://github.com/Johanshs/irrint/tree/v0.2.0) preserva o marco anterior da nova arquitetura, inclusive os controles ao vivo que existiam no laboratório. Nenhuma tag anterior foi movida.
 
 Para executar: `npm ci` e `npm run demo:start`. Os próximos itens estão em [PROGRESSO.md](PROGRESSO.md).
@@ -26,6 +28,6 @@ git worktree add ../irrint-legacy v0.1.0-legacy
 
 Código atual no GitHub e implantação pública são etapas diferentes. A `main` depende da API e do runner locais; o frontend estático isolado não substitui a demonstração completa.
 
-O `vercel.json` executa `scripts/vercel-ignore-build.mjs`, que retorna 0 para a [etapa de ignorar build da Vercel](https://vercel.com/docs/project-configuration/vercel-json#ignorecommand). Isso impede que este envio promova automaticamente uma interface sem backend e mantém o deployment existente. A hospedagem do backend, autenticação, transporte do APK e publicação da nova experiência continuam no plano.
+O `vercel.json` executa `scripts/vercel-ignore-build.mjs`, que retorna 0 para a [etapa de ignorar build da Vercel](https://vercel.com/docs/project-configuration/vercel-json#ignorecommand). Isso impede que este envio promova automaticamente uma interface sem backend e mantém o deployment existente. O código do backend hospedável e o APK de contingência já existem; a criação do serviço externo e a publicação da nova experiência continuam pendentes.
 
 Ao preparar a implantação, configure e valide a API hospedada, ajuste `VITE_API_BASE_URL`, CORS e autenticação, e remova a trava de build de forma deliberada. Nenhuma configuração de domínio ou conta Vercel foi alterada nesta entrega.

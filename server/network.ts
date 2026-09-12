@@ -1,6 +1,6 @@
 import { isIP } from 'node:net';
 
-export type NetworkAccess = 'loopback' | 'lan';
+export type NetworkAccess = 'loopback' | 'lan' | 'public';
 
 function hostname(value: string) {
   try {
@@ -31,10 +31,20 @@ function isPrivateAddress(value: string) {
 
 export function isAllowedRequestHost(host: string, access: NetworkAccess) {
   const value = hostname(host);
-  return isLoopback(value) || (access === 'lan' && isPrivateAddress(value));
+  return access === 'public'
+    ? value.length > 0
+    : isLoopback(value) || (access === 'lan' && isPrivateAddress(value));
 }
 
-export function isAllowedOrigin(origin: string, access: NetworkAccess) {
+export function isAllowedOrigin(
+  origin: string,
+  access: NetworkAccess,
+  allowedOrigins: readonly string[] = [],
+) {
+  if (access === 'public') {
+    const normalized = origin.replace(/\/$/, '');
+    return allowedOrigins.some((allowed) => allowed.replace(/\/$/, '') === normalized);
+  }
   try {
     const url = new URL(origin);
     if ((url.protocol === 'capacitor:' || url.protocol === 'ionic:') && url.hostname === 'localhost')

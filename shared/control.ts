@@ -69,11 +69,23 @@ export function initialState(now: number): SystemState {
   };
 }
 
+export function emptyState(now: number): SystemState {
+  return {
+    schemaVersion: '1.0',
+    createdAt: now,
+    commands: [],
+    readings: [],
+    events: [],
+    zones: [],
+  };
+}
+
 /** Owns control decisions. The clock and storage are supplied by the host, never by the UI. */
 export class IrrigationControl {
   constructor(
     private state: SystemState,
     private clock: () => number = Date.now,
+    private readonly environment: Snapshot['environment'] = 'local-simulation',
   ) {}
 
   private zone(id: string): Zone {
@@ -106,7 +118,7 @@ export class IrrigationControl {
     return {
       ...structuredClone(this.state),
       serverTime: this.clock(),
-      environment: 'local-simulation',
+      environment: this.environment,
       offlineAfterMs: OFFLINE_AFTER_MS,
     };
   }
@@ -126,6 +138,36 @@ export class IrrigationControl {
   assertOwner(zoneId: string, ownerId: string) {
     if (this.zone(zoneId).ownerId !== ownerId)
       throw new ControlError(403, 'Esta área pertence a outra conta.');
+  }
+
+  seedDemoOwner(ownerId: string) {
+    if (this.state.zones.some((zone) => zone.ownerId === ownerId)) return;
+    for (const zone of [
+      { key: 'north', name: 'Horta norte', crop: 'Hortaliças' },
+      { key: 'south', name: 'Canteiro sul', crop: 'Mudas' },
+    ]) {
+      const stem = `${ownerId}-${zone.key}`;
+      this.createZone(ownerId, {
+        id: stem,
+        name: zone.name,
+        crop: zone.crop,
+        deviceId: `sim-${stem}`,
+        sensorId: `soil-${stem}`,
+        valveId: `valve-${stem}`,
+      });
+    }
+  }
+
+  removeOwner(ownerId: string) {
+    const zoneIds = new Set(
+      this.state.zones.filter((zone) => zone.ownerId === ownerId).map((zone) => zone.id),
+    );
+    if (zoneIds.size === 0) return false;
+    this.state.zones = this.state.zones.filter((zone) => !zoneIds.has(zone.id));
+    this.state.commands = this.state.commands.filter((command) => !zoneIds.has(command.zoneId));
+    this.state.readings = this.state.readings.filter((reading) => !zoneIds.has(reading.zoneId));
+    this.state.events = this.state.events.filter((event) => !zoneIds.has(event.zoneId));
+    return true;
   }
 
   createZone(ownerId: string, input: ZoneCreate): Zone {
@@ -229,7 +271,11 @@ export class IrrigationControl {
       }
       return structuredClone(previous);
     }
-    if (this.state.commands.length >= 500 && value.action === 'open')
+    const ownerZoneIds = new Set(
+      this.state.zones.filter((item) => item.ownerId === zone.ownerId).map((item) => item.id),
+    );
+    const ownerCommandCount = this.state.commands.filter((item) => ownerZoneIds.has(item.zoneId)).length;
+    if (ownerCommandCount >= 500 && value.action === 'open')
       throw new ControlError(
         429,
         'Limite da sessão atingido. Exporte os resultados e inicie outra sessão. A parada continua disponível.',

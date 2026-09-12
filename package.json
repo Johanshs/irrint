@@ -1,7 +1,7 @@
 {
   "name": "irrint",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,6 +12,7 @@
     "test": "vitest run",
     "test:integration": "vitest run tests/api.test.ts",
     "test:e2e": "playwright test",
+    "test:e2e:hosted": "playwright test --config playwright.hosted.config.ts",
     "demo:start": "node scripts/demo.mjs",
     "demo:start:lan": "node scripts/demo.mjs --lan",
     "demo:start:reference": "node scripts/demo.mjs --reference-device",
@@ -23,6 +24,9 @@
     "demo:evidence": "tsx scripts/evidence.ts",
     "measure:latency": "tsx scripts/measure-latency.ts",
     "demo:new-session": "tsx scripts/new-session.ts",
+    "start:hosted": "node scripts/hosted.mjs",
+    "contingency:start": "powershell -ExecutionPolicy Bypass -File contingency/Iniciar-Irrint.ps1",
+    "contingency:build": "node scripts/contingency-build.mjs",
     "test:report": "vitest run --reporter=default --reporter=json --outputFile=.local/test-results.json"
   },
   "dependencies": {

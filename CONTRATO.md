@@ -77,6 +77,8 @@ A API serializa operações e grava apenas alterações de estado. Antes de acei
 
 Por padrão, o adaptador aceita somente loopback e origens web locais nas portas 5173 e 4173. `npm run demo:start:lan` ativa explicitamente a bancada móvel: Host limitado a endereços privados/locais, CORS para frontend local e `capacitor://localhost`, com preflight de `Authorization`, `Content-Type` e `X-Runner-Id`. JSON permanece limitado a 64 KiB. A conta é sintética, configurável por `DEMO_USER_EMAIL` e `DEMO_USER_PASSWORD`, e as sessões permanecem apenas na memória do processo. Esse mecanismo comprova o isolamento da API local, mas não substitui TLS, Firebase Auth, regras de banco ou gestão de contas de produção. Não expor este adaptador por túnel ou publicar como backend de produção.
 
+O adaptador hospedado é iniciado separadamente por `npm run start:hosted`. Ele exige origens explícitas, segredo de sessão e token do dispositivo; cria um proprietário aleatório por login, assina a sessão por 30 minutos e grava todas as mutações em um volume persistente. O mesmo processo supervisor mantém um cliente de dispositivo derivado do OpenAPI. Esse modo sustenta a demonstração pública isolada, mas não representa cadastro permanente de produtores nem autorização de hardware físico.
+
 ## Experimentos
 
 Aceita `automatic`, `manual-stop`, `connection-loss`, `unconfirmed`, `command-timeout`, `duplicate`, `invalid-reading` e `stuck-valve`. Seed inteira de 1 a 2147483646. `zoneId` aceita `north` ou `south`; a omissão mantém `north` por compatibilidade. Um identificador desconhecido retorna 422. Cada execução usa novas instâncias de controlador e dois dispositivos, sem alterar o estado ao vivo.

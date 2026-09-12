@@ -398,7 +398,7 @@ export const openApiDocument = {
           readings: { type: 'array', items: ref('Reading') },
           events: { type: 'array', items: { type: 'object' } },
           serverTime: { type: 'integer' },
-          environment: { const: 'local-simulation' },
+          environment: { type: 'string', enum: ['local-simulation', 'hosted-demo'] },
           offlineAfterMs: { type: 'integer' },
         },
       },

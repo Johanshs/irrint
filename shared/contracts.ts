@@ -117,7 +117,7 @@ export interface SystemState {
 
 export interface Snapshot extends SystemState {
   serverTime: number;
-  environment: 'local-simulation';
+  environment: 'local-simulation' | 'hosted-demo';
   offlineAfterMs: number;
 }
 
@@ -195,7 +195,7 @@ export const systemStateSchema: z.ZodType<SystemState> = z
   .object({
     schemaVersion: z.literal('1.0'),
     createdAt: z.number().int().nonnegative(),
-    zones: z.array(zoneSchema).min(1),
+    zones: z.array(zoneSchema),
     commands: z.array(persistedCommandSchema),
     readings: z.array(readingSchema).max(2000),
     events: z.array(irrigationEventSchema).max(1000),

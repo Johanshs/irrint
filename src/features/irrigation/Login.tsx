@@ -1,15 +1,28 @@
 import { useState, type FormEvent } from 'react';
 import { IonButton, IonContent, IonPage } from '@ionic/react';
 import { Droplets, FlaskConical } from 'lucide-react';
-import { useSession } from './session';
+import { configurableApi, configureApiBaseUrl, currentApiBaseUrl, useSession } from './session';
 
 export function Login() {
   const { login, busy, error } = useSession();
   const [email, setEmail] = useState('produtor@demo.local');
   const [password, setPassword] = useState('irrigacao');
+  const [apiUrl, setApiUrl] = useState(currentApiBaseUrl);
+  const [configurationError, setConfigurationError] = useState('');
 
   async function submit(event: FormEvent) {
     event.preventDefault();
+    if (configurableApi()) {
+      try {
+        configureApiBaseUrl(apiUrl);
+        setConfigurationError('');
+      } catch (error) {
+        setConfigurationError(
+          error instanceof Error ? error.message : 'Informe o endereço completo da API local.',
+        );
+        return;
+      }
+    }
     try {
       await login(email, password);
     } catch {
@@ -44,6 +57,28 @@ export function Login() {
                   required
                 />
               </label>
+              {configurableApi() && (
+                <details className="connection-settings">
+                  <summary>Conexão local de contingência</summary>
+                  <label className="field">
+                    <span>Endereço da API no notebook</span>
+                    <input
+                      type="url"
+                      inputMode="url"
+                      value={apiUrl}
+                      onChange={(event) => setApiUrl(event.target.value)}
+                      placeholder="http://192.168.137.1:8787"
+                      required
+                    />
+                  </label>
+                  <p className="small-note">Use o endereço exibido pelo inicializador no notebook.</p>
+                </details>
+              )}
+              {configurationError && (
+                <p className="error-message" role="alert">
+                  {configurationError}
+                </p>
+              )}
               <label className="field">
                 <span>Senha</span>
                 <input
@@ -64,7 +99,7 @@ export function Login() {
               </IonButton>
             </form>
             <p className="small-note">
-              Conta local sintética. Ela não acessa usuários nem dados da versão legacy.
+              Cada acesso demonstrativo é temporário e não consulta usuários nem dados da versão legacy.
             </p>
           </section>
         </main>

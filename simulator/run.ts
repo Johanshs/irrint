@@ -29,14 +29,18 @@ interface DeviceConfig {
 const devices = new Map<string, SimulatedDevice>();
 async function syncConfiguration() {
   const configuration = await request<DeviceConfig[]>('/device/v1/config');
-  for (const [index, zone] of configuration.entries()) {
+  const configured = new Set(configuration.map((zone) => zone.deviceId));
+  for (const deviceId of devices.keys()) {
+    if (!configured.has(deviceId)) devices.delete(deviceId);
+  }
+  for (const zone of configuration) {
     if (devices.has(zone.deviceId)) continue;
     devices.set(
       zone.deviceId,
       new SimulatedDevice(
         zone.deviceId,
-        zone.latest?.moisture ?? (index === 0 ? 38 : 55),
-        2026 + index,
+        zone.latest?.moisture ?? (zone.id === 'north' || zone.id.endsWith('-north') ? 38 : 55),
+        zone.id === 'north' || zone.id.endsWith('-north') ? 2026 : 2027,
         zone.latest?.sequence ?? 0,
         zone.latest?.water,
       ),

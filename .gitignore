@@ -35,6 +35,9 @@ Thumbs.db
 
 # Isolated demonstration state and local test artifacts
 .local/
+.hosted*/
+contingency/endpoint-padrao.txt
+contingency/*.sha256
 test-results/
 playwright-report/
 coverage/

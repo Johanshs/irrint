@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: irrint-api
+    runtime: docker
+    plan: 0.5c-512mb
+    healthCheckPath: /healthz
+    maxShutdownDelaySeconds: 30
+    envVars:
+      - key: IRRINT_SESSION_SECRET
+        generateValue: true
+      - key: IRRINT_DEVICE_TOKEN
+        generateValue: true
+      - key: IRRINT_ALLOWED_ORIGINS
+        value: https://irrigacao-int.vercel.app,capacitor://localhost
+      - key: IRRINT_DATA_DIR
+        value: /data
+      - key: IRRINT_MAX_ACTIVE_SESSIONS
+        value: 12
+    disk:
+      name: irrint-data
+      mountPath: /data
+      sizeGB: 1

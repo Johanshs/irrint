@@ -5,6 +5,7 @@ import { IrrigationControl, ControlError } from '../shared/control.ts';
 import { runExperiment } from '../experiments/run.ts';
 import { openApiDocument } from './openapi.ts';
 import type { SessionAuth } from './auth.ts';
+import type { SessionInfo } from '../shared/contracts.ts';
 import { isAllowedOrigin, isAllowedRequestHost, type NetworkAccess } from './network.ts';
 
 interface Options {
@@ -12,6 +13,8 @@ interface Options {
   persist: () => Promise<void>;
   sessionAuth: SessionAuth;
   networkAccess?: NetworkAccess;
+  allowedOrigins?: readonly string[];
+  onSessionCreated?: (session: SessionInfo) => Promise<void> | void;
   now?: () => number;
 }
 
@@ -60,7 +63,7 @@ export function createApi(control: IrrigationControl, options: Options) {
       let responseHeaders: Record<string, string> = {};
       try {
         const origin = request.headers.origin;
-        if (origin && !isAllowedOrigin(origin, access)) {
+        if (origin && !isAllowedOrigin(origin, access, options.allowedOrigins)) {
           throw new ControlError(403, 'Origem não autorizada para a demonstração local.');
         }
         if (origin) responseHeaders = { 'Access-Control-Allow-Origin': origin, Vary: 'Origin' };
@@ -95,7 +98,8 @@ export function createApi(control: IrrigationControl, options: Options) {
             throw new ControlError(423, 'Outro simulador controla esta sessão.');
           lease = { holder, expiresAt: now() + 6000 };
         }
-        const publicOperatorPath = path === '/api/v1/session' || path === '/api/v1/openapi.json';
+        const publicOperatorPath =
+          path === '/api/v1/session' || path === '/api/v1/openapi.json' || path === '/healthz';
         const sessionToken = (request.headers.authorization ?? '').replace(/^Bearer /, '');
         const user =
           path.startsWith('/api/') && !publicOperatorPath ? options.sessionAuth.resolve(sessionToken) : null;
@@ -103,9 +107,12 @@ export function createApi(control: IrrigationControl, options: Options) {
           throw new ControlError(401, 'Sessão ausente ou expirada. Entre novamente.');
         let result: unknown;
         let status = 200;
-        if (request.method === 'POST' && path === '/api/v1/session') {
+        if (request.method === 'GET' && path === '/healthz') {
+          result = { status: 'ok', time: now() };
+        } else if (request.method === 'POST' && path === '/api/v1/session') {
           result = options.sessionAuth.login(await jsonBody(request));
           if (!result) throw new ControlError(401, 'E-mail ou senha inválidos.');
+          await options.onSessionCreated?.(result as SessionInfo);
         } else if (request.method === 'GET' && path === '/api/v1/openapi.json') result = openApiDocument;
         else if (request.method === 'GET' && path === '/api/v1/state')
           result = control.snapshotForOwner(user!.id);
@@ -166,11 +173,11 @@ export function createApi(control: IrrigationControl, options: Options) {
         else if (error instanceof ControlError)
           send(response, error.status, { error: error.message }, responseHeaders);
         else {
-          console.error('Falha na API local:', error instanceof Error ? error.message : 'erro interno');
+          console.error('Falha na API:', error instanceof Error ? error.message : 'erro interno');
           send(
             response,
             500,
-            { error: 'Não foi possível persistir a operação. Verifique o serviço local.' },
+            { error: 'Não foi possível persistir a operação. Verifique o serviço.' },
             responseHeaders,
           );
         }

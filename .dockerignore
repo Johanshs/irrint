@@ -1,0 +1,9 @@
+node_modules
+dist
+.local
+.hosted
+android/.gradle
+android/app/build
+contingency/*.apk
+.git
+.env*

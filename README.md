@@ -2,7 +2,7 @@
 
 Protótipo acadêmico com interface mobile em Ionic React, contrato HTTP, controlador de irrigação e dispositivos simulados executados fora do navegador. O laboratório oferece uma maquete 3D, experimentos reproduzíveis, replay e exportação de evidências.
 
-**Estado desta versão:** demonstração local funcional. Autenticação, persistência em nuvem e integração com o site publicado ainda são etapas seguintes. A versão local não acessa as contas nem os dados Firebase existentes. Consulte [PROGRESSO.md](PROGRESSO.md) para ver a execução do plano.
+**Estado desta versão:** demonstração local funcional e distribuição contínua preparada. O modo hospedado possui sessões temporárias isoladas, tokens assinados, armazenamento em volume, runner supervisionado, Docker e teste E2E próprio. A contratação do serviço, o endereço HTTPS e o corte da Vercel ainda dependem da configuração das contas externas. A versão atual não acessa as contas nem os dados Firebase existentes. Consulte [PROGRESSO.md](PROGRESSO.md) para ver a execução do plano.
 
 **Versões:** `main` é a linha atual. A versão anterior está preservada em `legacy` / `v0.1.0-legacy`; as tags `v0.2.0` e `v0.3.0` conservam marcos da nova arquitetura. Veja [VERSOES.md](VERSOES.md) para consultar o histórico e a separação entre GitHub e implantação na Vercel.
 
@@ -65,7 +65,7 @@ npm run build
 - `measure:latency`: com a demonstração ativa, alterna 30 aberturas/fechamentos e mede do pedido até ACK mais telemetria coerente; grava JSON e resumo em `.local/latency/<data>/`.
 - `build`: valida TypeScript e produz a aplicação web em `dist/`.
 
-Validação deste marco: **69 testes, 3 fluxos E2E e 48 critérios em 16 ensaios**, além de instalação e fluxo principal no Galaxy S25 Ultra. Os critérios dos cenários não representam toda a matriz do TCC. A avaliação com produtores e a implantação multiusuário continuam pendentes.
+Validação deste marco: **72 testes, 4 fluxos E2E e 48 critérios em 16 ensaios**, além de instalação e fluxo principal no Galaxy S25 Ultra. O quarto E2E abre dois navegadores contra o modo hospedado, comprova áreas diferentes e verifica que o comando de uma sessão não altera a outra. Os critérios dos cenários não representam toda a matriz do TCC. A avaliação com produtores e a ativação das contas de hospedagem continuam pendentes.
 
 ## Dados locais
 
@@ -141,11 +141,17 @@ Com Java 21, SDK Android 36 e `ANDROID_HOME` configurado, execute em `android/`:
 .\gradlew.bat assembleDebug
 ```
 
-Se o caminho tiver acentos no Windows, a verificação desta versão passou usando o argumento local `'-Pandroid.overridePathCheck=true'`. Prefira um checkout sem acentos para trabalho Android contínuo. O APK fica em `android/app/build/outputs/apk/debug/app-debug.apk`.
+O checkout oficial permanece no diretório `IRRIGAÇÃO AUTÔNOMA`; por isso, `android/gradle.properties` registra a exceção de caminho necessária no Windows. O APK fica em `android/app/build/outputs/apk/debug/app-debug.apk`.
 
 O APK atual foi instalado e conectado à API de bancada em um Galaxy S25 Ultra com Android 16. Login, acionamento/parada do Canteiro sul, Áreas, Ajustes, Histórico e laboratório WebGL 2.0 foram exercitados; o responsável considerou a apresentação e a fluidez adequadas. Voltar, rotação forçada, reconexão, escala de fonte e métricas de FPS/memória permanecem como regressão instrumentada de distribuição. Consulte [VALIDACAO-ANDROID-S25-ULTRA.md](VALIDACAO-ANDROID-S25-ULTRA.md).
 
-Esta versão não deve substituir o site Vercel enquanto a API de demonstração publicada não estiver pronta. `VITE_API_BASE_URL` é o ponto de configuração do cliente; só definir a variável não implementa CORS, autenticação nem hospedagem. O backend Node persistente não deve ser tratado como um processo em segundo plano dentro de uma função efêmera Vercel.
+Para preparar o modo offline da defesa, execute `npm run contingency:build` e depois `npm run contingency:start`. O APK gerado permite informar o endereço LAN mostrado pelo inicializador, sem nova compilação. Consulte [PUBLICACAO-E-CONTINGENCIA.md](PUBLICACAO-E-CONTINGENCIA.md).
+
+`npm run start:hosted` inicia a API pública e o cliente de dispositivo OpenAPI sob um único supervisor. O `Dockerfile` e o `render.yaml` fornecem a implantação de referência; `npm run test:e2e:hosted` valida duas sessões simultâneas.
+
+Os resultados desta etapa estão em [VALIDACAO-DISTRIBUICAO.md](VALIDACAO-DISTRIBUICAO.md).
+
+Esta versão não deve substituir o site Vercel enquanto a API de demonstração publicada não estiver pronta. `VITE_API_BASE_URL` é o ponto de configuração do cliente. O corte controlado está documentado em [PUBLICACAO-E-CONTINGENCIA.md](PUBLICACAO-E-CONTINGENCIA.md); o bloqueio atual evita publicar somente o frontend.
 
 ## Limites acadêmicos
 

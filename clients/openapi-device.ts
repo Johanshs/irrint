@@ -247,12 +247,17 @@ async function run() {
   const clients = new Map<string, OpenApiDeviceClient>();
   const sync = async () => {
     const discovery = await discoverDevices(connection);
-    for (const [index, config] of discovery.devices.entries()) {
+    const configured = new Set(discovery.devices.map((device) => device.deviceId));
+    for (const deviceId of clients.keys()) {
+      if (!configured.has(deviceId)) clients.delete(deviceId);
+    }
+    for (const config of discovery.devices) {
       if (clients.has(config.deviceId)) continue;
       const client = new OpenApiDeviceClient({
         ...connection,
         deviceId: config.deviceId,
-        initialMoisture: config.latest?.moisture ?? (index === 0 ? 34 : 52),
+        initialMoisture:
+          config.latest?.moisture ?? (config.id === 'north' || config.id.endsWith('-north') ? 34 : 52),
       });
       await client.connect();
       clients.set(config.deviceId, client);
