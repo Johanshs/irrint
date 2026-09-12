@@ -8,7 +8,7 @@
 
 Aplicativo híbrido, API e ambiente de simulação para monitorar e controlar sistemas de irrigação. O projeto foi desenvolvido como protótipo de TCC e demonstra, sem exigir hardware físico, como um produtor poderia acompanhar a umidade, configurar regras, acionar válvulas e analisar falhas por uma interface mobile.
 
-> **Situação atual:** a versão `0.4.0` funciona localmente no navegador e possui um APK de contingência compilado e verificado. O fluxo móvel anterior foi exercitado em um Galaxy S25 Ultra; a reinstalação física do APK `0.4.0` ainda está pendente. O backend hospedável, o isolamento entre visitantes e o adaptador PostgreSQL estão implementados e cobertos pela suíte local; a conexão com o banco externo, o serviço HTTPS e a promoção da interface atual na Vercel ainda dependem das contas de hospedagem. O [site existente](https://irrigacao-int.vercel.app/) permanece preservado até esse corte controlado.
+> **Situação atual:** a versão `0.4.0` está publicada em [irrigacao-int.vercel.app](https://irrigacao-int.vercel.app/) com API HTTPS, cliente de dispositivo OpenAPI e PostgreSQL na Heroku. O mesmo sistema funciona localmente e possui um APK de contingência compilado e verificado. O fluxo móvel anterior foi exercitado em um Galaxy S25 Ultra; a reinstalação física do APK `0.4.0` ainda está pendente.
 
 <p align="center">
   <img src="evidencias/android-s25-ultra/02-irrigacao-sul.png" width="30%" alt="Controle da irrigação no Android" />
@@ -462,6 +462,8 @@ O frontend e a API precisam ser publicados de forma coordenada. Implantar soment
 
 ### Backend
 
+Produção: `https://irrint-2026-7f93a1-42d8a0dfb354.herokuapp.com`. O endpoint `/healthz`, duas sessões isoladas, telemetria e o ciclo de abrir/parar foram validados em 11 de setembro de 2026.
+
 O comando de produção é:
 
 ```sh
@@ -479,18 +481,7 @@ O repositório inclui:
 
 ### Frontend
 
-Antes de publicar a interface atual:
-
-1. implante o backend HTTPS;
-2. confirme `/healthz`;
-3. valide dois logins isolados, telemetria e abertura/fechamento;
-4. configure `VITE_API_BASE_URL=https://SUA-API` na Vercel;
-5. inclua o domínio da interface em `IRRINT_ALLOWED_ORIGINS`;
-6. valide um Preview;
-7. remova deliberadamente o `ignoreCommand` de `vercel.json`;
-8. promova para produção mantendo a versão anterior como rollback.
-
-O bloqueio atual da Vercel é intencional e evita promover um frontend que ainda não tenha backend público. O procedimento completo está em [PUBLICACAO-E-CONTINGENCIA.md](PUBLICACAO-E-CONTINGENCIA.md).
+Produção: [https://irrigacao-int.vercel.app/](https://irrigacao-int.vercel.app/). `.env.production` incorpora o endereço da API e `vercel.json` permite os builds da branch `main`. O bundle publicado, login, telemetria, irrigação e parada foram verificados após o corte. O procedimento e o rollback estão em [PUBLICACAO-E-CONTINGENCIA.md](PUBLICACAO-E-CONTINGENCIA.md).
 
 ## Dados, autenticação e segurança
 
@@ -553,7 +544,7 @@ irrint/
 ├── app.json                    manifesto Heroku
 ├── Dockerfile                  imagem do serviço hospedado
 ├── render.yaml                 alternativa de implantação Render
-└── vercel.json                 trava do corte atual da interface
+└── vercel.json                 configuração da interface publicada
 ```
 
 ## Limites do protótipo

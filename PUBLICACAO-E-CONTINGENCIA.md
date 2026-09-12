@@ -16,7 +16,7 @@ O processo `npm run start:hosted` supervisiona:
 1. `server/hosted.ts`, que expõe a API, valida as origens, assina sessões e grava o estado;
 2. `clients/openapi-device.ts`, que descobre os dispositivos pelo OpenAPI, envia telemetria e confirma comandos.
 
-Variáveis obrigatórias:
+Variáveis do serviço hospedado:
 
 | Variável                 | Uso                                                                                             |
 | ------------------------ | ----------------------------------------------------------------------------------------------- |
@@ -55,18 +55,30 @@ O arquivo `app.json` declara o Basic, o banco Essential-0, os segredos e as orig
 
 O `Dockerfile` e o `render.yaml` permanecem como alternativa portável, mas o Render não é o caminho escolhido enquanto houver o crédito estudantil.
 
-## Corte controlado da Vercel
+### Implantação ativa
 
-O `vercel.json` continua impedindo a promoção automática da interface nova. Execute o corte somente após estes passos:
+- Aplicativo Heroku: `irrint-2026-7f93a1`;
+- API HTTPS: `https://irrint-2026-7f93a1-42d8a0dfb354.herokuapp.com`;
+- recursos: um dyno Basic e um Postgres Essential-0;
+- crédito confirmado antes da criação: US$ 312;
+- custo nominal dos recursos: US$ 12/mês, limitado aos produtos cobertos pelo benefício.
 
-1. implantar o backend e confirmar `GET https://API/healthz`;
-2. abrir duas sessões e confirmar que seus identificadores de área não se repetem;
-3. abrir e fechar uma válvula e observar `applied`, telemetria e histórico;
-4. configurar `VITE_API_BASE_URL=https://API` no projeto Vercel;
-5. incluir o domínio final em `IRRINT_ALLOWED_ORIGINS`;
-6. gerar um Preview da Vercel e executar o roteiro principal;
-7. remover `ignoreCommand` de `vercel.json` e promover para produção;
-8. conservar o deployment anterior e a branch `legacy` como rollback.
+A conexão automática Heroku–GitHub é opcional e ainda depende da autorização OAuth da conta. O serviço atual foi criado diretamente do repositório pelo `app.json`; atualizações de backend podem ser publicadas por implantação manual até essa autorização ser concluída.
+
+## Corte da Vercel concluído
+
+Em 11 de setembro de 2026:
+
+1. `/healthz` respondeu `ok` pela API HTTPS;
+2. dois visitantes receberam proprietários diferentes e quatro áreas sem identificadores repetidos;
+3. a telemetria pública informou `source: device`;
+4. abertura e fechamento chegaram a `applied` e a válvula terminou fechada;
+5. `.env.production` recebeu o endereço da API;
+6. `ignoreCommand` foi removido de `vercel.json`;
+7. o bundle novo foi promovido em `https://irrigacao-int.vercel.app/`;
+8. login, umidade conectada, irrigação e parada foram conferidos no site publicado.
+
+O deployment anterior e a branch `legacy` permanecem como rollback.
 
 O teste `npm run test:e2e:hosted` automatiza os passos de isolamento e comando antes do corte.
 

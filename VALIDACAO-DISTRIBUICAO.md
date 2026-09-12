@@ -20,6 +20,21 @@ Verificações observadas:
 
 O teste automatizado `tests/e2e-hosted/public-demo.spec.ts` repetiu o fluxo com dois contextos do Chromium e confirmou que irrigar na primeira sessão não abriu as válvulas da segunda.
 
+## Homologação pública
+
+Em 11 de setembro de 2026, a implantação `irrint-2026-7f93a1` foi criada depois de o Billing registrar US$ 312 em créditos do GitHub Education. O painel confirmou um dyno `web` Basic ativo, comando `npm start`, e um Heroku Postgres Essential-0.
+
+Na API `https://irrint-2026-7f93a1-42d8a0dfb354.herokuapp.com` foram observados:
+
+- `/healthz` com `status: ok`;
+- dois proprietários diferentes, duas áreas por proprietário e quatro IDs exclusivos;
+- telemetria com origem `device`;
+- abertura `applied` e evento de confirmação;
+- fechamento `applied`, válvula final `closed` e histórico de leituras;
+- ambiente informado como `hosted-demo`.
+
+Na interface [https://irrigacao-int.vercel.app/](https://irrigacao-int.vercel.app/), o bundle publicado continha o endereço da API. Login, conexão da área, atualização da umidade, início da irrigação e parada confirmada foram exercitados no navegador.
+
 ## Preparação para GitHub Education
 
 O armazenamento hospedado passou a selecionar PostgreSQL quando a Heroku fornece `DATABASE_URL`; sem essa variável, continua usando o arquivo JSON da contingência. O teste de armazenamento confirmou criação da tabela, carga inicial, atualização, nova carga e encerramento da conexão. A conexão real com o Heroku Postgres permanece parte da homologação externa.

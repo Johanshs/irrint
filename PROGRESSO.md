@@ -1,6 +1,6 @@
 # Execução do plano · 11 de setembro de 2026
 
-Marco atual: laboratório demonstrativo concluído, contrato/persistência reforçados, API acessível em rede local por opção explícita, APK configurável, segundo cliente sobre OpenAPI e E2E web automatizado. A base v0.2.0 e a versão legacy permanecem consultáveis; veja [VERSOES.md](VERSOES.md).
+Marco atual: aplicação `0.4.0` publicada, laboratório demonstrativo concluído, PostgreSQL hospedado, API acessível por HTTPS e LAN, APK configurável, segundo cliente sobre OpenAPI e E2E web automatizado. A base v0.2.0 e a versão legacy permanecem consultáveis; veja [VERSOES.md](VERSOES.md).
 
 ## Etapas e situação
 
@@ -12,7 +12,7 @@ Marco atual: laboratório demonstrativo concluído, contrato/persistência refor
 | E3 — Mobile          | Login, áreas, vínculos, histórico, ajustes, estados operacionais e fluxo principal revisado em Android real | Remoção/revinculação, gestão de contas e regressão física de acessibilidade    |
 | E4 — Evidências      | 73 testes; 4 E2E; 16 ensaios, 48 critérios; CT13/14/18/19/20/21/22; latência; relatórios e bancada Android  | Voltar, rotação, reconexão, fonte e métricas instrumentadas no aparelho        |
 | E5 — 3D              | Peças, inspeção, etiquetas, corte, gotejamento e oito falhas; maquete e fluidez revisadas no S25 Ultra      | Avaliação de uso com participantes e métricas instrumentadas opcionais         |
-| E6 — Distribuição    | Modo isolado, PostgreSQL, manifesto Heroku Education, Docker/Render, E2E, launcher local e APK configurável | Ativar o benefício, criar o serviço, cortar a Vercel e reinstalar o APK novo   |
+| E6 — Distribuição    | Heroku Basic/Postgres, Vercel atual, HTTPS, E2E público, launcher local e APK configurável                  | Reinstalar o APK `0.4.0` e preparar assinatura pública                         |
 | E7 — TCC             | Escopo, limites, contrato e relatórios reproduzíveis documentados                                           | Instrumento, aplicação com produtores, análise e capítulos de resultados       |
 
 ## Validação deste marco
@@ -45,7 +45,7 @@ Roteiros e detalhes: [DEMONSTRACAO-3D.md](DEMONSTRACAO-3D.md), [VALIDACAO-MOBILE
 
 O fluxo aceita novas áreas, mas a matriz 3D permanece fixa em N/S para manter comparabilidade. Não há IA, clima, calibração agronômica, economia real de água ou integração física comprovada. Volume e divisão por planta são estimativas nominais.
 
-No modo LAN, a conta e os tokens permanecem somente na memória e o serviço serve apenas à bancada na mesma rede. HTTP sem TLS é permitido somente no APK debug. A trava de build Vercel permanece porque o frontend atual precisa do endereço HTTPS do backend.
+No modo LAN, a conta e os tokens permanecem somente na memória e o serviço serve apenas à bancada na mesma rede. HTTP sem TLS é permitido somente no APK debug. Em produção, a Vercel usa a API HTTPS da Heroku declarada em `.env.production`.
 
 O adaptador hospedado usa tokens assinados que continuam válidos após reinício, cria duas áreas por visitante e persiste o estado em PostgreSQL quando `DATABASE_URL` existe. Ele limita a 12 sessões ativas por padrão e remove áreas expiradas na abertura de uma nova sessão. A configuração Heroku Basic + Essential-0 totaliza US$ 12/mês e cabe no crédito de US$ 13/mês do GitHub Education após o benefício ser ativado.
 
@@ -53,9 +53,7 @@ A sessão ao vivo retém as últimas 2.000 leituras e 1.000 eventos e bloqueia n
 
 ## Próxima sequência
 
-1. Ativar o benefício Heroku do GitHub Education e criar o serviço descrito em `app.json`.
-2. Validar o HTTPS e configurar `VITE_API_BASE_URL` na Vercel.
-3. Executar o corte controlado da Vercel e instalar o novo APK de contingência no Galaxy.
-4. Preparar uma versão assinada e repetir Voltar, rotação, reconexão, escala de fonte, FPS/memória e latência como regressão física de distribuição.
-5. Preparar e pilotar tarefas, TCLE e questionário de facilidade/utilidade com produtores.
-6. Executar a avaliação e redigir método realizado, resultados, discussão e conclusão somente com as evidências coletadas.
+1. Instalar o APK `0.4.0` de contingência no Galaxy.
+2. Preparar uma versão assinada e repetir Voltar, rotação, reconexão, escala de fonte, FPS/memória e latência como regressão física de distribuição.
+3. Preparar e pilotar tarefas, TCLE e questionário de facilidade/utilidade com produtores.
+4. Executar a avaliação e redigir método realizado, resultados, discussão e conclusão somente com as evidências coletadas.
