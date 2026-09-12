@@ -24,6 +24,7 @@
     "demo:evidence": "tsx scripts/evidence.ts",
     "measure:latency": "tsx scripts/measure-latency.ts",
     "demo:new-session": "tsx scripts/new-session.ts",
+    "start": "node scripts/hosted.mjs",
     "start:hosted": "node scripts/hosted.mjs",
     "contingency:start": "powershell -ExecutionPolicy Bypass -File contingency/Iniciar-Irrint.ps1",
     "contingency:build": "node scripts/contingency-build.mjs",
@@ -36,24 +37,26 @@
     "@ionic/react-router": "9.0.3",
     "ionicons": "8.1.0",
     "lucide-react": "0.487.0",
+    "pg": "^8.23.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-router": "6.30.6",
     "react-router-dom": "6.30.6",
     "recharts": "2.15.2",
     "three": "0.185.0",
+    "tsx": "^4.23.13",
     "zod": "3.25.76"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.4.1",
     "@playwright/test": "1.63.0",
     "@types/node": "22.20.1",
+    "@types/pg": "^8.23.1",
     "@types/react": "18.3.31",
     "@types/react-dom": "18.3.7",
     "@types/three": "0.185.4",
     "@vitejs/plugin-react": "4.7.0",
     "prettier": "3.9.6",
-    "tsx": "4.23.13",
     "typescript": "5.9.3",
     "vite": "6.3.5",
     "vitest": "3.2.7"
@@ -62,5 +65,8 @@
     "overrides": {
       "vite": "6.3.5"
     }
+  },
+  "engines": {
+    "node": "22.x"
   }
 }

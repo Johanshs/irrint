@@ -20,6 +20,20 @@ Verificações observadas:
 
 O teste automatizado `tests/e2e-hosted/public-demo.spec.ts` repetiu o fluxo com dois contextos do Chromium e confirmou que irrigar na primeira sessão não abriu as válvulas da segunda.
 
+## Preparação para GitHub Education
+
+O armazenamento hospedado passou a selecionar PostgreSQL quando a Heroku fornece `DATABASE_URL`; sem essa variável, continua usando o arquivo JSON da contingência. O teste de armazenamento confirmou criação da tabela, carga inicial, atualização, nova carga e encerramento da conexão. A conexão real com o Heroku Postgres permanece parte da homologação externa.
+
+Foram validados:
+
+- `app.json` sintaticamente válido, com um dyno Basic e `heroku-postgresql:essential-0`;
+- `Procfile` com um único processo `web`;
+- `pg` e `tsx` presentes nas dependências de produção;
+- Node 22 declarado para coincidir com o contêiner e a execução hospedada;
+- orçamento nominal de US$ 12/mês dentro do crédito estudantil de US$ 13/mês.
+
+`npm audit --omit=dev` não apontou alerta para a nova dependência PostgreSQL. Permanecem três alertas moderados no React Router 6; a correção automática exige React Router 8 e quebra a combinação atualmente suportada pelo Ionic Router. A atualização forçada não foi aplicada.
+
 ## Contingência local
 
 `npm run contingency:start` detectou os endereços IPv4 privados, iniciou a API em modo LAN, os dois dispositivos simulados e o Vite. Pela API iniciada, foram confirmados login, duas áreas, telemetria e `environment: local-simulation`.
@@ -40,7 +54,7 @@ Não havia aparelho conectado por ADB nesta validação. O APK novo foi verifica
 
 ## Suíte
 
-- 72/72 testes Vitest;
+- 73/73 testes Vitest;
 - 3/3 E2E anteriores do aplicativo;
 - 1/1 E2E novo da distribuição hospedada;
 - build web concluído;

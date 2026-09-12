@@ -1,8 +1,7 @@
-import { mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { createApi } from './api.ts';
 import { demoOwnerExpiresAt, SignedDemoSessionAuth } from './auth.ts';
-import { JsonFileStateStore } from './storage.ts';
+import { JsonFileStateStore, PostgresStateStore, type StateStore } from './storage.ts';
 import { ControlError, emptyState, IrrigationControl } from '../shared/control.ts';
 
 function required(name: string) {
@@ -24,9 +23,11 @@ function maximumSessions() {
   return value;
 }
 
+const databaseUrl = process.env.DATABASE_URL?.trim();
 const dataDirectory = resolve(process.env.IRRINT_DATA_DIR?.trim() || '.hosted');
-await mkdir(dataDirectory, { recursive: true });
-const store = new JsonFileStateStore(resolve(dataDirectory, 'state.json'));
+const store: StateStore = databaseUrl
+  ? new PostgresStateStore(databaseUrl)
+  : new JsonFileStateStore(resolve(dataDirectory, 'state.json'));
 const loaded = await store.load(emptyState(Date.now()));
 if (loaded.recoveredFromBackup)
   console.warn('Estado hospedado principal inválido; recuperação concluída pela cópia de segurança.');
@@ -70,7 +71,9 @@ const api = createApi(control, {
 });
 
 api.listen(port(), '0.0.0.0', () => {
-  console.log(`API demonstrativa hospedada na porta ${port()}; dados em ${dataDirectory}.`);
+  console.log(
+    `API demonstrativa hospedada na porta ${port()}; persistência em ${databaseUrl ? 'PostgreSQL' : dataDirectory}.`,
+  );
 });
 api.on('error', (error) => {
   console.error(error.message);
@@ -78,5 +81,8 @@ api.on('error', (error) => {
 });
 for (const signal of ['SIGINT', 'SIGTERM'] as const)
   process.on(signal, () => {
-    api.close(() => process.exit());
+    api.close(async () => {
+      await store.close?.();
+      process.exit();
+    });
   });

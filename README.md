@@ -2,7 +2,7 @@
 
 Protótipo acadêmico com interface mobile em Ionic React, contrato HTTP, controlador de irrigação e dispositivos simulados executados fora do navegador. O laboratório oferece uma maquete 3D, experimentos reproduzíveis, replay e exportação de evidências.
 
-**Estado desta versão:** demonstração local funcional e distribuição contínua preparada. O modo hospedado possui sessões temporárias isoladas, tokens assinados, armazenamento em volume, runner supervisionado, Docker e teste E2E próprio. A contratação do serviço, o endereço HTTPS e o corte da Vercel ainda dependem da configuração das contas externas. A versão atual não acessa as contas nem os dados Firebase existentes. Consulte [PROGRESSO.md](PROGRESSO.md) para ver a execução do plano.
+**Estado desta versão:** demonstração local funcional e distribuição contínua preparada. O modo hospedado possui sessões temporárias isoladas, tokens assinados, PostgreSQL, runner supervisionado, manifesto Heroku Education, Docker e teste E2E próprio. A ativação do benefício, o endereço HTTPS e o corte da Vercel ainda dependem da configuração das contas externas. A versão atual não acessa as contas nem os dados Firebase existentes. Consulte [PROGRESSO.md](PROGRESSO.md) para ver a execução do plano.
 
 **Versões:** `main` é a linha atual. A versão anterior está preservada em `legacy` / `v0.1.0-legacy`; as tags `v0.2.0` e `v0.3.0` conservam marcos da nova arquitetura. Veja [VERSOES.md](VERSOES.md) para consultar o histórico e a separação entre GitHub e implantação na Vercel.
 
@@ -88,7 +88,7 @@ Limites desta implementação: últimas 2.000 leituras e 1.000 eventos na sessã
 Interface Ionic React / Capacitor
                │ HTTP /api/v1
                ▼
-API local ── Controlador ── persistência JSON
+API HTTP ─── Controlador ── JSON local / PostgreSQL hospedado
     ▲             ▲
     │ HTTP        └── experimentos isolados com relógio virtual
     │ /device/v1
@@ -147,7 +147,7 @@ O APK atual foi instalado e conectado à API de bancada em um Galaxy S25 Ultra c
 
 Para preparar o modo offline da defesa, execute `npm run contingency:build` e depois `npm run contingency:start`. O APK gerado permite informar o endereço LAN mostrado pelo inicializador, sem nova compilação. Consulte [PUBLICACAO-E-CONTINGENCIA.md](PUBLICACAO-E-CONTINGENCIA.md).
 
-`npm run start:hosted` inicia a API pública e o cliente de dispositivo OpenAPI sob um único supervisor. O `Dockerfile` e o `render.yaml` fornecem a implantação de referência; `npm run test:e2e:hosted` valida duas sessões simultâneas.
+`npm run start:hosted` inicia a API pública e o cliente de dispositivo OpenAPI sob um único supervisor. `app.json` e `Procfile` preparam Heroku Basic + Postgres Essential-0, cobertos pelo crédito mensal do GitHub Education enquanto o benefício estiver ativo. O `Dockerfile` e o `render.yaml` permanecem como alternativa portável; `npm run test:e2e:hosted` valida duas sessões simultâneas.
 
 Os resultados desta etapa estão em [VALIDACAO-DISTRIBUICAO.md](VALIDACAO-DISTRIBUICAO.md).
 

@@ -1,0 +1,42 @@
+{
+  "name": "Irrint API demonstrativa",
+  "description": "API, controlador e dispositivos simulados do protótipo Irriga Inteligente.",
+  "repository": "https://github.com/Johanshs/irrint",
+  "keywords": ["irrigation", "ionic", "node", "postgresql"],
+  "stack": "heroku-24",
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "env": {
+    "IRRINT_SESSION_SECRET": {
+      "description": "Segredo usado para assinar as sessões temporárias.",
+      "generator": "secret"
+    },
+    "IRRINT_DEVICE_TOKEN": {
+      "description": "Credencial interna entre a API e o runner dos dispositivos.",
+      "generator": "secret"
+    },
+    "IRRINT_ALLOWED_ORIGINS": {
+      "description": "Origens autorizadas a acessar a demonstração.",
+      "value": "https://irrigacao-int.vercel.app,capacitor://localhost"
+    },
+    "IRRINT_MAX_ACTIVE_SESSIONS": {
+      "description": "Limite de demonstrações simultâneas.",
+      "value": "12"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql:essential-0",
+      "as": "DATABASE"
+    }
+  ]
+}

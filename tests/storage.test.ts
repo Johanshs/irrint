@@ -1,9 +1,10 @@
 import { mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import type { Pool } from 'pg';
 import { afterEach, describe, expect, it } from 'vitest';
 import { IrrigationControl, initialState } from '../shared/control.ts';
-import { JsonFileStateStore } from '../server/storage.ts';
+import { JsonFileStateStore, PostgresStateStore } from '../server/storage.ts';
 
 const directories: string[] = [];
 afterEach(async () => {
@@ -54,6 +55,45 @@ describe('Armazenamento local validado', () => {
     expect(recovered).toEqual({ state: original, recoveredFromBackup: true });
     expect(JSON.parse(await readFile(path, 'utf8'))).toEqual(original);
     expect((await readdir(directory)).some((name) => name.startsWith('state.json.corrupt-'))).toBe(true);
+  });
+
+  it('inicializa e atualiza o estado persistente no PostgreSQL hospedado', async () => {
+    let stored: unknown = null;
+    let closed = false;
+    const statements: string[] = [];
+    const pool = {
+      async query(sql: string, values?: unknown[]) {
+        const statement = sql.replace(/\s+/g, ' ').trim();
+        statements.push(statement);
+        if (statement.startsWith('CREATE TABLE')) return { rows: [] };
+        if (statement.startsWith('SELECT'))
+          return { rows: stored ? [{ state: structuredClone(stored) }] : [] };
+        if (statement.includes('DO NOTHING')) {
+          stored ??= JSON.parse(values?.[0] as string);
+          return { rows: [] };
+        }
+        stored = JSON.parse(values?.[0] as string);
+        return { rows: [] };
+      },
+      async end() {
+        closed = true;
+      },
+    } as unknown as Pool;
+    const store = new PostgresStateStore('postgres://localhost/irrint', pool);
+    const fallback = initialState(1_800_000_000_000);
+
+    expect(await store.load(fallback)).toEqual({ state: fallback, recoveredFromBackup: false });
+    const updated = structuredClone(fallback);
+    updated.zones[0].crop = 'Alface';
+    await store.save(updated);
+    expect((await store.load(initialState(0))).state).toEqual(updated);
+    await store.close();
+
+    expect({
+      closed,
+      tableCreations: statements.filter((statement) => statement.startsWith('CREATE TABLE')).length,
+      persistedCrop: (stored as typeof updated).zones[0].crop,
+    }).toEqual({ closed: true, tableCreations: 1, persistedCrop: 'Alface' });
   });
 
   it('CT14: retoma histórico e vínculos sem reaplicar comando vencido após reinício', async () => {

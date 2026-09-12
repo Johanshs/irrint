@@ -4,20 +4,20 @@ Marco atual: laboratório demonstrativo concluído, contrato/persistência refor
 
 ## Etapas e situação
 
-| Etapa                | Entregue                                                                                                    | Restante                                                                      |
-| -------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| E0 — Base            | React 18, Ionic 9, Router 6, Capacitor 8, build web, APK debug instalado e execução no Galaxy S25 Ultra     | Assinatura de uma versão pública distribuível                                 |
-| E1 — Contrato        | Zod 1.0, OpenAPI 3.1, sessões locais e hospedadas, isolamento, sequência, prazos, ACK e idempotência        | Gestão de contas reais, caso o protótipo evolua além da demonstração          |
-| E2 — API/dispositivo | API local/hospedável, arquivo recuperável em volume, runner supervisionado e cliente OpenAPI independente   | Migração para banco multi-instância, caso seja necessária escala futura       |
-| E3 — Mobile          | Login, áreas, vínculos, histórico, ajustes, estados operacionais e fluxo principal revisado em Android real | Remoção/revinculação, gestão de contas e regressão física de acessibilidade   |
-| E4 — Evidências      | 72 testes; 4 E2E; 16 ensaios, 48 critérios; CT13/14/18/19/20/21/22; latência; relatórios e bancada Android  | Voltar, rotação, reconexão, fonte e métricas instrumentadas no aparelho       |
-| E5 — 3D              | Peças, inspeção, etiquetas, corte, gotejamento e oito falhas; maquete e fluidez revisadas no S25 Ultra      | Avaliação de uso com participantes e métricas instrumentadas opcionais        |
-| E6 — Distribuição    | Modo hospedado isolado, Docker/Render, health check, E2E multiusuário, launcher local e APK configurável    | Criar o serviço externo, obter HTTPS, cortar a Vercel e reinstalar o APK novo |
-| E7 — TCC             | Escopo, limites, contrato e relatórios reproduzíveis documentados                                           | Instrumento, aplicação com produtores, análise e capítulos de resultados      |
+| Etapa                | Entregue                                                                                                    | Restante                                                                       |
+| -------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| E0 — Base            | React 18, Ionic 9, Router 6, Capacitor 8, build web, APK debug instalado e execução no Galaxy S25 Ultra     | Assinatura de uma versão pública distribuível                                  |
+| E1 — Contrato        | Zod 1.0, OpenAPI 3.1, sessões locais e hospedadas, isolamento, sequência, prazos, ACK e idempotência        | Gestão de contas reais, caso o protótipo evolua além da demonstração           |
+| E2 — API/dispositivo | API local/hospedável, JSON recuperável local, PostgreSQL hospedado, runner e cliente OpenAPI independente   | Transações distribuídas, caso seja necessária escala com mais de uma instância |
+| E3 — Mobile          | Login, áreas, vínculos, histórico, ajustes, estados operacionais e fluxo principal revisado em Android real | Remoção/revinculação, gestão de contas e regressão física de acessibilidade    |
+| E4 — Evidências      | 73 testes; 4 E2E; 16 ensaios, 48 critérios; CT13/14/18/19/20/21/22; latência; relatórios e bancada Android  | Voltar, rotação, reconexão, fonte e métricas instrumentadas no aparelho        |
+| E5 — 3D              | Peças, inspeção, etiquetas, corte, gotejamento e oito falhas; maquete e fluidez revisadas no S25 Ultra      | Avaliação de uso com participantes e métricas instrumentadas opcionais         |
+| E6 — Distribuição    | Modo isolado, PostgreSQL, manifesto Heroku Education, Docker/Render, E2E, launcher local e APK configurável | Ativar o benefício, criar o serviço, cortar a Vercel e reinstalar o APK novo   |
+| E7 — TCC             | Escopo, limites, contrato e relatórios reproduzíveis documentados                                           | Instrumento, aplicação com produtores, análise e capítulos de resultados       |
 
 ## Validação deste marco
 
-- **72/72 testes**: controlador/dispositivo (17), água (7), cenários/repetibilidade/exportação (26), API HTTP (15), armazenamento/reinício (3), cliente OpenAPI (1) e distribuição hospedada (3).
+- **73/73 testes**: controlador/dispositivo (17), água (7), cenários/repetibilidade/exportação (26), API HTTP (15), armazenamento/reinício (4), cliente OpenAPI (1) e distribuição hospedada (3).
 - **4/4 fluxos E2E no Chromium**: teclado e larguras 360/390/430 px com fonte a 125%; contingência WebGL; pausa, 10×, reinício; e dois visitantes isolados no modo hospedado.
 - **48/48 critérios em 16 ensaios**, seed 2026: oito cenários executados em N e S com séries equivalentes sob os mesmos parâmetros.
 - **CT14**: vínculos, leitura, confirmação e eventos persistem após reinício; um comando pendente reaparece vencido e a expiração é gravada.
@@ -47,14 +47,15 @@ O fluxo aceita novas áreas, mas a matriz 3D permanece fixa em N/S para manter c
 
 No modo LAN, a conta e os tokens permanecem somente na memória e o serviço serve apenas à bancada na mesma rede. HTTP sem TLS é permitido somente no APK debug. A trava de build Vercel permanece porque o frontend atual precisa do endereço HTTPS do backend.
 
-O adaptador hospedado usa tokens assinados que continuam válidos após reinício, cria duas áreas por visitante e persiste o estado em volume. Ele limita a 12 sessões ativas por padrão e remove áreas expiradas na abertura de uma nova sessão. A ativação externa permanece pendente para não criar cobrança ou trocar o site antes do teste de homologação.
+O adaptador hospedado usa tokens assinados que continuam válidos após reinício, cria duas áreas por visitante e persiste o estado em PostgreSQL quando `DATABASE_URL` existe. Ele limita a 12 sessões ativas por padrão e remove áreas expiradas na abertura de uma nova sessão. A configuração Heroku Basic + Essential-0 totaliza US$ 12/mês e cabe no crédito de US$ 13/mês do GitHub Education após o benefício ser ativado.
 
 A sessão ao vivo retém as últimas 2.000 leituras e 1.000 eventos e bloqueia novos inícios depois de 500 comandos. A comparação conserva até oito ensaios na visita; exporte os arquivos para retenção. Migrações entre futuras versões de schema seguem pendentes.
 
 ## Próxima sequência
 
-1. Criar o serviço persistente descrito em `render.yaml`, validar o HTTPS e configurar `VITE_API_BASE_URL` na Vercel.
-2. Executar o corte controlado da Vercel e instalar o novo APK de contingência no Galaxy.
-3. Preparar uma versão assinada e repetir Voltar, rotação, reconexão, escala de fonte, FPS/memória e latência como regressão física de distribuição.
-4. Preparar e pilotar tarefas, TCLE e questionário de facilidade/utilidade com produtores.
-5. Executar a avaliação e redigir método realizado, resultados, discussão e conclusão somente com as evidências coletadas.
+1. Ativar o benefício Heroku do GitHub Education e criar o serviço descrito em `app.json`.
+2. Validar o HTTPS e configurar `VITE_API_BASE_URL` na Vercel.
+3. Executar o corte controlado da Vercel e instalar o novo APK de contingência no Galaxy.
+4. Preparar uma versão assinada e repetir Voltar, rotação, reconexão, escala de fonte, FPS/memória e latência como regressão física de distribuição.
+5. Preparar e pilotar tarefas, TCLE e questionário de facilidade/utilidade com produtores.
+6. Executar a avaliação e redigir método realizado, resultados, discussão e conclusão somente com as evidências coletadas.

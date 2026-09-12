@@ -23,12 +23,37 @@ Variáveis obrigatórias:
 | `IRRINT_SESSION_SECRET`  | segredo aleatório com pelo menos 32 bytes para assinar sessões                                  |
 | `IRRINT_DEVICE_TOKEN`    | credencial privada compartilhada somente entre API e runner                                     |
 | `IRRINT_ALLOWED_ORIGINS` | origens exatas separadas por vírgula, incluindo a Vercel e, para o APK, `capacitor://localhost` |
-| `IRRINT_DATA_DIR`        | diretório montado em armazenamento persistente                                                  |
+| `DATABASE_URL`           | conexão PostgreSQL fornecida automaticamente pela Heroku                                        |
+| `IRRINT_DATA_DIR`        | diretório persistente usado apenas quando `DATABASE_URL` não existe                             |
 | `PORT`                   | porta HTTP fornecida pelo provedor                                                              |
 
 `DEMO_USER_EMAIL`, `DEMO_USER_PASSWORD` e `IRRINT_MAX_ACTIVE_SESSIONS` são opcionais. Os padrões são `produtor@demo.local`, `irrigacao` e `12`.
 
-O `Dockerfile` permite usar qualquer provedor que execute contêiner Node 22 e ofereça volume persistente. O `render.yaml` descreve uma implantação de referência com health check em `/healthz` e disco de 1 GB. O disco e a instância contínua são recursos pagos no Render; a contratação deve ser aprovada antes da criação.
+Quando `DATABASE_URL` está presente, o serviço cria a tabela `irrint_state` e usa PostgreSQL. Sem essa variável, mantém o arquivo JSON, de modo que a execução local e o contêiner de referência continuam compatíveis.
+
+## Heroku com GitHub Education
+
+A implantação recomendada para os meses de apresentação usa o benefício estudantil:
+
+| Recurso                       | Valor mensal | Comportamento                        |
+| ----------------------------- | ------------ | ------------------------------------ |
+| 1 dyno Heroku Basic           | US$ 7        | processo web permanentemente ativo   |
+| Heroku Postgres Essential-0   | US$ 5        | 1 GB de persistência                 |
+| Total                         | US$ 12       | coberto pelo crédito de US$ 13/mês   |
+| Margem restante dentro do mês | US$ 1        | não deve ser usada por outro recurso |
+
+O GitHub Student Developer Pack oferece US$ 13 mensais por 24 meses. O crédito não utilizado não acumula. Antes da criação, confirme no painel da Heroku que o benefício está ativo; a Heroku solicita conta verificada e dados de cobrança mesmo quando o crédito cobre os recursos.
+
+O arquivo `app.json` declara o Basic, o banco Essential-0, os segredos e as origens. O `Procfile` inicia `npm start`, e o backend usa `DATABASE_URL` automaticamente. Procedimento:
+
+1. resgatar a oferta Heroku no GitHub Student Developer Pack;
+2. confirmar no Billing da Heroku que os créditos estudantis estão ativos;
+3. criar o aplicativo a partir de `https://github.com/Johanshs/irrint` usando o `app.json`;
+4. confirmar que existe exatamente um dyno `web` Basic e um banco `heroku-postgresql:essential-0`;
+5. configurar implantação automática da branch `main` somente após a homologação;
+6. validar `/healthz`, isolamento, telemetria e comandos antes do corte da Vercel.
+
+O `Dockerfile` e o `render.yaml` permanecem como alternativa portável, mas o Render não é o caminho escolhido enquanto houver o crédito estudantil.
 
 ## Corte controlado da Vercel
 
@@ -71,4 +96,4 @@ O inicializador mostra os IPv4 privados do notebook, inicia API, dois dispositiv
 
 ## Limites
 
-A implantação pública é uma demonstração multiusuário isolada, não um serviço agrícola de produção. O armazenamento em volume pressupõe uma única instância da API. O produto não comprova hardware físico, economia real de água nem resultado agronômico.
+A implantação pública é uma demonstração multiusuário isolada, não um serviço agrícola de produção. O estado PostgreSQL é gravado como um documento validado e o desenho pressupõe uma única instância da API. O produto não comprova hardware físico, economia real de água nem resultado agronômico.
