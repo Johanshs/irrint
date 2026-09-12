@@ -1,5 +1,7 @@
 # Irrint 0.4.1 — aplicativo Android público
 
+> **Versão substituída:** o endpoint Heroku desta compilação foi desativado após a mudança de nome do serviço. Instale a [versão 0.4.2](https://github.com/Johanshs/irrint/releases/tag/v0.4.2).
+
 Este APK permite experimentar a demonstração hospedada do Irriga Inteligente diretamente no Android. Ele se conecta automaticamente à API HTTPS pública e não solicita endereço IP.
 
 ## Como testar

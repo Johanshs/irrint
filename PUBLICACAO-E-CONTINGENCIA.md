@@ -81,6 +81,8 @@ A conexão automática Heroku–GitHub é opcional e ainda depende da autorizaç
 
 Em 12 de setembro de 2026, o aplicativo foi renomeado de `irrint-2026-7f93a1` para `irrint`. O Heroku gerou um novo domínio padrão com identificador aleatório. O procedimento e o inventário de impacto estão em [PLANO-RENOMEACAO.md](PLANO-RENOMEACAO.md).
 
+Depois da troca, `/healthz` respondeu `ok`, a Vercel publicou o bundle com o novo endpoint e o E2E hospedado confirmou duas sessões isoladas, telemetria e comando. O endereço antigo passou a responder HTTP 404 e não deve permanecer em clientes atuais.
+
 ## Corte da Vercel concluído
 
 Em 11 de setembro de 2026:

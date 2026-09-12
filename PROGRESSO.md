@@ -12,7 +12,7 @@ Marco atual: aplicação Android `0.4.2` distribuível, aplicação web publicad
 | E3 — Mobile          | Login, áreas, vínculos, histórico, ajustes, estados operacionais e fluxo principal revisado em Android real | Remoção/revinculação, gestão de contas e regressão física de acessibilidade    |
 | E4 — Evidências      | 73 testes; 4 E2E; 16 ensaios, 48 critérios; CT13/14/18/19/20/21/22; latência; relatórios e bancada Android  | Voltar, rotação, reconexão, fonte e métricas instrumentadas no aparelho        |
 | E5 — 3D              | Peças, inspeção, etiquetas, corte, gotejamento e oito falhas; maquete e fluidez revisadas no S25 Ultra      | Avaliação de uso com participantes e métricas instrumentadas opcionais         |
-| E6 — Distribuição    | Heroku `irrint`, Postgres, Vercel, HTTPS, APK público e contingência em pacote Android separado             | Publicar e instalar os APKs 0.4.2 após a troca de endpoint                      |
+| E6 — Distribuição    | Heroku `irrint`, Postgres, Vercel, HTTPS, E2E público, release 0.4.2 e contingência Android separada         | Instalar os APKs 0.4.2 no aparelho                                              |
 | E7 — TCC             | Escopo, limites, contrato e relatórios reproduzíveis documentados                                           | Instrumento, aplicação com produtores, análise e capítulos de resultados       |
 
 ## Validação deste marco

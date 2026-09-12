@@ -15,6 +15,8 @@ Em 12 de setembro de 2026, o aplicativo Heroku foi renomeado de `irrint-2026-7f9
 
 O APK de contingência foi recompilado como `0.4.2-contingency`, `versionCode 6`, mantendo `br.com.irrint.contingency`, o endpoint LAN e a interface de configuração. Seu SHA-256 é `cce258a4e96111a73d4a4a87cf902699afaecb441348e2e8ca7b048162a4fa69`.
 
+Após o push da `main`, o bundle servido por `https://irrigacao-int.vercel.app/` passou a conter o domínio novo e deixou de conter o antigo. O teste `npm run test:e2e:hosted` foi repetido e aprovou o fluxo com dois visitantes isolados, telemetria e comando. A release [v0.4.2](https://github.com/Johanshs/irrint/releases/tag/v0.4.2) foi publicada com o APK e o checksum; a v0.4.1 foi marcada como substituída.
+
 ## Marco anterior: APK público 0.4.1
 
 `npm run android:public` concluiu o build de release com Android SDK 36. O artefato `distribution/Irrint-0.4.1-publico.apk` apresentou:
