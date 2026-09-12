@@ -39,7 +39,7 @@ describe('Demonstração pública isolada', () => {
     let state: SystemState = emptyState(Date.now());
     const control = new IrrigationControl(state, Date.now, 'hosted-demo');
     const server = createApi(control, {
-      allowedOrigins: ['https://irrigacao-int.vercel.app'],
+      allowedOrigins: ['https://irrigacao-int.vercel.app', 'https://localhost'],
       deviceToken: 'device-secret',
       networkAccess: 'public',
       persist: async () => {
@@ -106,7 +106,7 @@ describe('Demonstração pública isolada', () => {
   it('expõe saúde sem sessão e limita as origens do navegador', async () => {
     const control = new IrrigationControl(emptyState(Date.now()), Date.now, 'hosted-demo');
     const server = createApi(control, {
-      allowedOrigins: ['https://irrigacao-int.vercel.app'],
+      allowedOrigins: ['https://irrigacao-int.vercel.app', 'https://localhost'],
       deviceToken: 'device-secret',
       networkAccess: 'public',
       persist: async () => {},
@@ -119,6 +119,18 @@ describe('Demonstração pública isolada', () => {
     const health = await fetch(`${url}/healthz`);
     expect(health.status).toBe(200);
     expect(await health.json()).toMatchObject({ status: 'ok' });
+    const androidPreflight = await fetch(`${url}/api/v1/session`, {
+      method: 'OPTIONS',
+      headers: {
+        Origin: 'https://localhost',
+        'Access-Control-Request-Method': 'POST',
+        'Access-Control-Request-Headers': 'content-type',
+      },
+    });
+    expect({
+      status: androidPreflight.status,
+      origin: androidPreflight.headers.get('access-control-allow-origin'),
+    }).toEqual({ status: 204, origin: 'https://localhost' });
     expect(
       (
         await fetch(`${url}/api/v1/session`, {

@@ -17,6 +17,18 @@ O APK de contingência foi recompilado como `0.4.2-contingency`, `versionCode 6`
 
 Após o push da `main`, o bundle servido por `https://irrigacao-int.vercel.app/` passou a conter o domínio novo e deixou de conter o antigo. O teste `npm run test:e2e:hosted` foi repetido e aprovou o fluxo com dois visitantes isolados, telemetria e comando. A release [v0.4.2](https://github.com/Johanshs/irrint/releases/tag/v0.4.2) foi publicada com o APK e o checksum; a v0.4.1 foi marcada como substituída.
 
+### Correção da origem Android
+
+Na instalação física, o login exibiu `Failed to fetch`. O Galaxy S25 Ultra estava com `br.com.irrint.app` versão `0.4.2`, `versionCode 6`, e o código do Capacitor 8 confirmou que o esquema Android padrão é HTTPS com host `localhost`. O preflight para `https://localhost` retornava 403, enquanto `capacitor://localhost` e a Vercel retornavam 204.
+
+A configuração hospedada foi corrigida para autorizar explicitamente `https://localhost`, sem liberar origens genéricas. Após o reinício do serviço, a verificação externa observou:
+
+- `https://localhost`: HTTP 204 e `Access-Control-Allow-Origin: https://localhost`;
+- `https://irrigacao-int.vercel.app`: HTTP 204 e a origem correspondente;
+- origem não autorizada: HTTP 403 e nenhum cabeçalho permissivo.
+
+O mesmo APK `0.4.2`, sem recompilação, foi reiniciado por ADB e realizou o login demonstrativo. A tela inicial carregou a Horta norte, a leitura de umidade com origem conectada e os controles da área. A captura [06-apk-publico-0.4.2.png](evidencias/android-s25-ultra/06-apk-publico-0.4.2.png) registra esse estado. Também passaram os 73 testes Vitest e o E2E hospedado de isolamento, telemetria e comando.
+
 ## Marco anterior: APK público 0.4.1
 
 `npm run android:public` concluiu o build de release com Android SDK 36. O artefato `distribution/Irrint-0.4.1-publico.apk` apresentou:

@@ -470,7 +470,7 @@ android/app/build/outputs/apk/debug/app-debug.apk
 
 O aplicativo público usa `br.com.irrint.app`; a contingência usa `br.com.irrint.contingency`. HTTP sem TLS é aceito somente no APK de contingência, para a bancada privada. A distribuição pública usa HTTPS e assinatura de release.
 
-O fluxo foi exercitado em Galaxy S25 Ultra com Android 16/API 36. Os APKs `0.4.2` foram verificados estruturalmente e por assinatura; esta compilação ainda não foi instalada porque não havia aparelho conectado por ADB. Veja [VALIDACAO-DISTRIBUICAO.md](VALIDACAO-DISTRIBUICAO.md).
+O fluxo foi exercitado em Galaxy S25 Ultra com Android 16/API 36. O APK público `0.4.2` foi instalado por ADB, entrou na demonstração pela API hospedada e carregou a telemetria e os controles da Horta norte. Os APKs público e de contingência também foram verificados estruturalmente e por assinatura; a instalação física da contingência `0.4.2` continua pendente. Veja [VALIDACAO-DISTRIBUICAO.md](VALIDACAO-DISTRIBUICAO.md).
 
 ## Publicação
 
@@ -601,7 +601,7 @@ Esses limites definem a evidência desta versão e devem acompanhar apresentaç�
 | [CONTRATO.md](CONTRATO.md)                                       | Rotas, schemas, regras, estados e modelo de dispositivo.  |
 | [DEMONSTRACAO-3D.md](DEMONSTRACAO-3D.md)                         | Roteiro do laboratório, cenários e interpretação visual.  |
 | [PUBLICACAO-E-CONTINGENCIA.md](PUBLICACAO-E-CONTINGENCIA.md)     | Backend hospedado, corte da Vercel e defesa offline.      |
-| [VALIDACAO-DISTRIBUICAO.md](VALIDACAO-DISTRIBUICAO.md)           | Evidências do modo hospedável e do APK `0.4.0`.           |
+| [VALIDACAO-DISTRIBUICAO.md](VALIDACAO-DISTRIBUICAO.md)           | Evidências do modo hospedado e dos APKs `0.4.2`.          |
 | [VALIDACAO-MOBILE-OPENAPI.md](VALIDACAO-MOBILE-OPENAPI.md)       | Rede local, interoperabilidade e E2E mobile.              |
 | [VALIDACAO-ANDROID-S25-ULTRA.md](VALIDACAO-ANDROID-S25-ULTRA.md) | Execução observada no aparelho físico.                    |
 | [VERSOES.md](VERSOES.md)                                         | Linha atual, tags e preservação da versão legacy.         |
@@ -611,13 +611,11 @@ Esses limites definem a evidência desta versão e devem acompanhar apresentaç�
 
 ## Próximos passos
 
-1. Ativar o backend HTTPS e executar o corte controlado da Vercel.
-2. Reinstalar e validar fisicamente o APK de contingência `0.4.0`.
-3. Produzir um APK/AAB de release assinado para distribuição.
-4. Repetir rotação, botão Voltar, reconexão, fonte ampliada, FPS, memória e bateria no Android.
-5. Definir remoção e revinculação segura de componentes com histórico.
-6. Preparar, pilotar e aplicar a avaliação com produtores.
-7. Redigir os resultados e a conclusão do TCC somente com as evidências coletadas.
+1. Instalar e validar fisicamente o APK de contingência `0.4.2`.
+2. Repetir rotação, botão Voltar, reconexão, fonte ampliada, FPS, memória e bateria no Android.
+3. Definir remoção e revinculação segura de componentes com histórico.
+4. Preparar, pilotar e aplicar a avaliação com produtores.
+5. Redigir os resultados e a conclusão do TCC somente com as evidências coletadas.
 
 ## Versões, contribuição e licença
 

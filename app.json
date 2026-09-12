@@ -20,7 +20,7 @@
     },
     "IRRINT_ALLOWED_ORIGINS": {
       "description": "Origens autorizadas a acessar a demonstração.",
-      "value": "https://irrigacao-int.vercel.app,capacitor://localhost"
+      "value": "https://irrigacao-int.vercel.app,https://localhost,capacitor://localhost"
     },
     "IRRINT_MAX_ACTIVE_SESSIONS": {
       "description": "Limite de demonstrações simultâneas.",

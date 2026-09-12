@@ -323,7 +323,7 @@ describe('API HTTP com cliente de dispositivo independente', () => {
     ).toBe(413);
   });
 
-  it('CT18: libera preflight do aplicativo Capacitor somente no modo LAN explícito', async () => {
+  it('CT18: libera as origens do aplicativo Capacitor somente no modo LAN explícito', async () => {
     const { url } = await setup('lan');
     const response = await fetch(`${url}/api/v1/session`, {
       method: 'OPTIONS',
@@ -344,6 +344,19 @@ describe('API HTTP com cliente de dispositivo independente', () => {
       methods: 'GET, POST, PUT, OPTIONS',
       headers: 'Authorization, Content-Type, X-Runner-Id',
     });
+
+    const androidResponse = await fetch(`${url}/api/v1/session`, {
+      method: 'OPTIONS',
+      headers: {
+        Origin: 'https://localhost',
+        'Access-Control-Request-Method': 'POST',
+        'Access-Control-Request-Headers': 'authorization,content-type',
+      },
+    });
+    expect({
+      status: androidResponse.status,
+      origin: androidResponse.headers.get('access-control-allow-origin'),
+    }).toEqual({ status: 204, origin: 'https://localhost' });
 
     const loopback = await setup();
     expect(

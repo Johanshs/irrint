@@ -36,7 +36,7 @@ Variáveis do serviço hospedado:
 | ------------------------ | ----------------------------------------------------------------------------------------------- |
 | `IRRINT_SESSION_SECRET`  | segredo aleatório com pelo menos 32 bytes para assinar sessões                                  |
 | `IRRINT_DEVICE_TOKEN`    | credencial privada compartilhada somente entre API e runner                                     |
-| `IRRINT_ALLOWED_ORIGINS` | origens exatas separadas por vírgula, incluindo a Vercel e, para o APK, `capacitor://localhost` |
+| `IRRINT_ALLOWED_ORIGINS` | origens exatas separadas por vírgula: Vercel, `https://localhost` no Android e `capacitor://localhost` em clientes Capacitor que usem esse esquema |
 | `DATABASE_URL`           | conexão PostgreSQL fornecida automaticamente pela Heroku                                        |
 | `IRRINT_DATA_DIR`        | diretório persistente usado apenas quando `DATABASE_URL` não existe                             |
 | `PORT`                   | porta HTTP fornecida pelo provedor                                                              |

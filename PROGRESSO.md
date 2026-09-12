@@ -1,4 +1,4 @@
-# Execução do plano · 11 de setembro de 2026
+# Execução do plano · 12 de setembro de 2026
 
 Marco atual: aplicação Android `0.4.2` distribuível, aplicação web publicada, laboratório demonstrativo concluído, PostgreSQL hospedado, API acessível por HTTPS e LAN, APK público assinado, APK local configurável, segundo cliente sobre OpenAPI e E2E web automatizado. O serviço Heroku foi simplificado para o nome `irrint`; veja [VERSOES.md](VERSOES.md).
 
@@ -6,13 +6,13 @@ Marco atual: aplicação Android `0.4.2` distribuível, aplicação web publicad
 
 | Etapa                | Entregue                                                                                                    | Restante                                                                       |
 | -------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| E0 — Base            | React 18, Ionic 9, Router 6, Capacitor 8, build web, identidade visual e APK público assinado               | Regressão física da compilação 0.4.2 no Galaxy S25 Ultra                       |
+| E0 — Base            | React 18, Ionic 9, Router 6, Capacitor 8, build web, identidade visual, APK público assinado e login físico 0.4.2 | Regressão física completa da variante de contingência                      |
 | E1 — Contrato        | Zod 1.0, OpenAPI 3.1, sessões locais e hospedadas, isolamento, sequência, prazos, ACK e idempotência        | Gestão de contas reais, caso o protótipo evolua além da demonstração           |
 | E2 — API/dispositivo | API local/hospedável, JSON recuperável local, PostgreSQL hospedado, runner e cliente OpenAPI independente   | Transações distribuídas, caso seja necessária escala com mais de uma instância |
 | E3 — Mobile          | Login, áreas, vínculos, histórico, ajustes, estados operacionais e fluxo principal revisado em Android real | Remoção/revinculação, gestão de contas e regressão física de acessibilidade    |
 | E4 — Evidências      | 73 testes; 4 E2E; 16 ensaios, 48 critérios; CT13/14/18/19/20/21/22; latência; relatórios e bancada Android  | Voltar, rotação, reconexão, fonte e métricas instrumentadas no aparelho        |
 | E5 — 3D              | Peças, inspeção, etiquetas, corte, gotejamento e oito falhas; maquete e fluidez revisadas no S25 Ultra      | Avaliação de uso com participantes e métricas instrumentadas opcionais         |
-| E6 — Distribuição    | Heroku `irrint`, Postgres, Vercel, HTTPS, E2E público, release 0.4.2 e contingência Android separada         | Instalar os APKs 0.4.2 no aparelho                                              |
+| E6 — Distribuição    | Heroku `irrint`, Postgres, Vercel, HTTPS, E2E público, release 0.4.2 e APK público validado no S25 Ultra     | Instalar e validar fisicamente o APK local de contingência                      |
 | E7 — TCC             | Escopo, limites, contrato e relatórios reproduzíveis documentados                                           | Instrumento, aplicação com produtores, análise e capítulos de resultados       |
 
 ## Validação deste marco
@@ -21,7 +21,7 @@ Marco atual: aplicação Android `0.4.2` distribuível, aplicação web publicad
 - **4/4 fluxos E2E no Chromium**: teclado e larguras 360/390/430 px com fonte a 125%; contingência WebGL; pausa, 10×, reinício; e dois visitantes isolados no modo hospedado.
 - **48/48 critérios em 16 ensaios**, seed 2026: oito cenários executados em N e S com séries equivalentes sob os mesmos parâmetros.
 - **CT14**: vínculos, leitura, confirmação e eventos persistem após reinício; um comando pendente reaparece vencido e a expiração é gravada.
-- **CT18, web e bancada Android**: CORS/preflight, host LAN privado, configuração HTTP exclusiva de debug, endpoint incorporado, foco por teclado, 360/390/430 px, fonte ampliada e contingência WebGL foram automatizados. O APK foi instalado no Galaxy S25 Ultra; login, API, acionamento/parada do sul, áreas, ajustes, histórico e laboratório WebGL 2.0 funcionaram. Voltar, rotação, reconexão, fonte e FPS/memória ainda não têm coleta física instrumentada.
+- **CT18, web e bancada Android**: CORS/preflight cobre `https://localhost`, `capacitor://localhost` e a origem Vercel exata; host LAN privado, configuração HTTP exclusiva de debug, endpoint incorporado, foco por teclado, 360/390/430 px, fonte ampliada e contingência WebGL foram automatizados. O APK público `0.4.2` foi instalado no Galaxy S25 Ultra; login na API hospedada e carregamento da telemetria passaram após a correção CORS. Acionamento/parada do sul, áreas, ajustes, histórico e laboratório WebGL 2.0 já haviam funcionado no mesmo aparelho. Voltar, rotação, reconexão, fonte e FPS/memória ainda não têm coleta física instrumentada.
 - **CT20**: `clients/openapi-device.ts` não importa controlador nem simulador, descobre rotas pelos `operationId` e completou ciclo automático por HTTP com `source: device`.
 - **CT21**: fechamento rejeitado deixa estado incerto e a válvula interna segue aberta. O ensaio registra 89 s contabilizados e 0,890 L nominais em N e S.
 - **CT22**: lease impede dois produtores simultâneos e permite substituição após 6 s; relatório vazio usa `not-measured` e `null`; o E2E confirma que pausar o replay não pausa o runner, aceleração/reinício funcionam e o segundo ensaio não altera o primeiro.
@@ -53,7 +53,7 @@ A sessão ao vivo retém as últimas 2.000 leituras e 1.000 eventos e bloqueia n
 
 ## Próxima sequência
 
-1. Instalar no Galaxy o [APK público `0.4.2`](https://github.com/Johanshs/irrint/releases/tag/v0.4.2) e o APK local de contingência.
+1. Instalar e validar no Galaxy o APK local de contingência `0.4.2-contingency`.
 2. Repetir Voltar, rotação, reconexão, escala de fonte, FPS/memória e latência como regressão física de distribuição.
 3. Preparar e pilotar tarefas, TCLE e questionário de facilidade/utilidade com produtores.
 4. Executar a avaliação e redigir método realizado, resultados, discussão e conclusão somente com as evidências coletadas.
