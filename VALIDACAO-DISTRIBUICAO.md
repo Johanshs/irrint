@@ -16,6 +16,8 @@ Data: 12 de setembro de 2026.
 
 A chave e suas credenciais permanecem somente no ambiente local, ignoradas pelo Git. Não havia aparelho conectado por ADB; a validação desta compilação foi estrutural, de conteúdo e assinatura.
 
+O APK e o checksum foram publicados em [GitHub Releases v0.4.1](https://github.com/Johanshs/irrint/releases/tag/v0.4.1). O APK de contingência não foi anexado à release.
+
 ## Serviço hospedável
 
 O modo `start:hosted` foi iniciado localmente com o mesmo conjunto de variáveis exigido pelo contêiner. O supervisor manteve a API e o cliente de dispositivo OpenAPI no mesmo serviço, em processos separados.

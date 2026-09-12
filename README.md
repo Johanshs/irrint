@@ -286,6 +286,8 @@ O roteiro detalhado, os valores de referência e a explicação das falhas estã
 
 O APK público usa a API hospedada declarada em `.env.production`. Ele não exibe a seção de configuração de IP e recusa endpoints sem HTTPS durante a compilação.
 
+**Download:** [Irrint 0.4.1 — APK público](https://github.com/Johanshs/irrint/releases/download/v0.4.1/Irrint-0.4.1-publico.apk)
+
 ```powershell
 npm run android:public
 ```

@@ -21,6 +21,8 @@ Os dois caminhos preservam o mesmo contrato HTTP. O ambiente público cria duas 
 
 O primeiro build cria `android/irrint-release.jks` e `android/keystore.properties`. Esses arquivos não entram no Git e devem ser guardados juntos em backup privado, conforme [android/ASSINATURA-APK.md](android/ASSINATURA-APK.md).
 
+A versão homologada está em [GitHub Releases v0.4.1](https://github.com/Johanshs/irrint/releases/tag/v0.4.1). Somente o APK público e seu checksum foram anexados; a contingência permanece local.
+
 ## Serviço hospedado
 
 O processo `npm run start:hosted` supervisiona:
