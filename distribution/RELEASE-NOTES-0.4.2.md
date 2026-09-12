@@ -1,5 +1,7 @@
 # Irrint 0.4.2 — endpoint Heroku atualizado
 
+> **Versão substituída:** instale a [versão 0.4.3](https://github.com/Johanshs/irrint/releases/tag/v0.4.3), que adiciona a exportação de arquivos no Android.
+
 Esta versão substitui a 0.4.1 depois que o aplicativo Heroku passou a se chamar `irrint`. O APK usa automaticamente a nova API HTTPS `https://irrint-79e47c1c9fa0.herokuapp.com` e mantém a mesma identidade de assinatura Android.
 
 ## Como testar

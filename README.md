@@ -1,6 +1,6 @@
 # Irrint — Irrigação Inteligente
 
-[![Versão](https://img.shields.io/badge/versão-0.4.2-2f855a)](package.json)
+[![Versão](https://img.shields.io/badge/versão-0.4.3-2f855a)](package.json)
 [![Node.js](https://img.shields.io/badge/Node.js-22-339933?logo=nodedotjs&logoColor=white)](package.json)
 [![Ionic React](https://img.shields.io/badge/Ionic_React-9-3880ff?logo=ionic&logoColor=white)](https://ionicframework.com/docs/react)
 [![Capacitor](https://img.shields.io/badge/Capacitor-8-119eff?logo=capacitor&logoColor=white)](https://capacitorjs.com/docs)
@@ -8,7 +8,7 @@
 
 Aplicativo híbrido, API e ambiente de simulação para monitorar e controlar sistemas de irrigação. O projeto foi desenvolvido como protótipo de TCC e demonstra, sem exigir hardware físico, como um produtor poderia acompanhar a umidade, configurar regras, acionar válvulas e analisar falhas por uma interface mobile.
 
-> **Situação atual:** a versão `0.4.2` possui APK público assinado, ligado à API HTTPS hospedada e sem configuração de IP. A Vercel continua em [irrigacao-int.vercel.app](https://irrigacao-int.vercel.app/). Um segundo APK, identificado como **Irrint Contingência**, mantém a operação em rede local e pode coexistir no mesmo Android.
+> **Situação atual:** a versão `0.4.3` possui APK público assinado, ligado à API HTTPS hospedada, sem configuração de IP e com exportação pelo seletor nativo do Android. A Vercel continua em [irrigacao-int.vercel.app](https://irrigacao-int.vercel.app/). Um segundo APK, identificado como **Irrint Contingência**, mantém a operação em rede local e pode coexistir no mesmo Android.
 
 <p align="center">
   <img src="evidencias/android-s25-ultra/02-irrigacao-sul.png" width="30%" alt="Controle da irrigação no Android" />
@@ -286,13 +286,13 @@ O roteiro detalhado, os valores de referência e a explicação das falhas estã
 
 O APK público usa a API hospedada declarada em `.env.production`. Ele não exibe a seção de configuração de IP e recusa endpoints sem HTTPS durante a compilação.
 
-**Download:** [Irrint 0.4.2 — APK público](https://github.com/Johanshs/irrint/releases/download/v0.4.2/Irrint-0.4.2-publico.apk)
+**Download:** [Irrint 0.4.3 — APK público](https://github.com/Johanshs/irrint/releases/download/v0.4.3/Irrint-0.4.3-publico.apk)
 
 ```powershell
 npm run android:public
 ```
 
-O artefato é gravado em `distribution/Irrint-0.4.2-publico.apk`, acompanhado pelo SHA-256. No primeiro build, o comando cria uma identidade de assinatura local. Preserve juntos, em backup privado, `android/irrint-release.jks` e `android/keystore.properties`: futuras atualizações do aplicativo público precisam da mesma chave.
+O artefato é gravado em `distribution/Irrint-0.4.3-publico.apk`, acompanhado pelo SHA-256. No primeiro build, o comando cria uma identidade de assinatura local. Preserve juntos, em backup privado, `android/irrint-release.jks` e `android/keystore.properties`: futuras atualizações do aplicativo público precisam da mesma chave.
 
 Identificador Android: `br.com.irrint.app`. Credenciais da demonstração: `produtor@demo.local` / `irrigacao`.
 
@@ -427,13 +427,13 @@ npm run build
 | `measure:latency` | 30 ciclos locais de pedido, ACK e telemetria coerente.            |
 | `build`           | Typecheck e aplicação web em `dist/`.                             |
 
-### Marco registrado em 11 de setembro de 2026
+### Marco atualizado em 12 de setembro de 2026
 
-- **73/73 testes Vitest**.
-- **4/4 fluxos E2E**: três do aplicativo e um do modo hospedado.
+- **74/74 testes Vitest**.
+- **5/5 fluxos E2E**: quatro do aplicativo, incluindo download JSON, e um do modo hospedado.
 - **48/48 critérios em 16 ensaios**, usando os oito cenários em N e S.
-- Build web e APK de contingência concluídos.
-- Fluxo mobile anterior instalado e exercitado em um Galaxy S25 Ultra real.
+- Build web, APK público assinado e APK de contingência concluídos na versão `0.4.3`.
+- APK público atualizado sobre a versão anterior e exportação JSON exercitada em um Galaxy S25 Ultra real.
 - Modo LAN verificado com login, duas áreas, telemetria e comandos.
 - Modo hospedado verificado localmente com dois visitantes isolados.
 
@@ -470,7 +470,7 @@ android/app/build/outputs/apk/debug/app-debug.apk
 
 O aplicativo público usa `br.com.irrint.app`; a contingência usa `br.com.irrint.contingency`. HTTP sem TLS é aceito somente no APK de contingência, para a bancada privada. A distribuição pública usa HTTPS e assinatura de release.
 
-O fluxo foi exercitado em Galaxy S25 Ultra com Android 16/API 36. O APK público `0.4.2` foi instalado por ADB, entrou na demonstração pela API hospedada e carregou a telemetria e os controles da Horta norte. Os APKs público e de contingência também foram verificados estruturalmente e por assinatura; a instalação física da contingência `0.4.2` continua pendente. Veja [VALIDACAO-DISTRIBUICAO.md](VALIDACAO-DISTRIBUICAO.md).
+O fluxo foi exercitado em Galaxy S25 Ultra com Android 16/API 36. O APK público `0.4.3` foi instalado por atualização sobre a `0.4.2`, entrou na demonstração pela API hospedada e entregou um relatório JSON ao seletor nativo de compartilhamento e salvamento. Os APKs público e de contingência também foram verificados estruturalmente; a instalação física da contingência `0.4.3` continua pendente. Veja [VALIDACAO-DISTRIBUICAO.md](VALIDACAO-DISTRIBUICAO.md).
 
 ## Publicação
 
@@ -601,7 +601,7 @@ Esses limites definem a evidência desta versão e devem acompanhar apresentaç�
 | [CONTRATO.md](CONTRATO.md)                                       | Rotas, schemas, regras, estados e modelo de dispositivo.  |
 | [DEMONSTRACAO-3D.md](DEMONSTRACAO-3D.md)                         | Roteiro do laboratório, cenários e interpretação visual.  |
 | [PUBLICACAO-E-CONTINGENCIA.md](PUBLICACAO-E-CONTINGENCIA.md)     | Backend hospedado, corte da Vercel e defesa offline.      |
-| [VALIDACAO-DISTRIBUICAO.md](VALIDACAO-DISTRIBUICAO.md)           | Evidências do modo hospedado e dos APKs `0.4.2`.          |
+| [VALIDACAO-DISTRIBUICAO.md](VALIDACAO-DISTRIBUICAO.md)           | Evidências do modo hospedado e dos APKs `0.4.3`.          |
 | [VALIDACAO-MOBILE-OPENAPI.md](VALIDACAO-MOBILE-OPENAPI.md)       | Rede local, interoperabilidade e E2E mobile.              |
 | [VALIDACAO-ANDROID-S25-ULTRA.md](VALIDACAO-ANDROID-S25-ULTRA.md) | Execução observada no aparelho físico.                    |
 | [VERSOES.md](VERSOES.md)                                         | Linha atual, tags e preservação da versão legacy.         |
@@ -611,7 +611,7 @@ Esses limites definem a evidência desta versão e devem acompanhar apresentaç�
 
 ## Próximos passos
 
-1. Instalar e validar fisicamente o APK de contingência `0.4.2`.
+1. Instalar e validar fisicamente o APK de contingência `0.4.3`.
 2. Repetir rotação, botão Voltar, reconexão, fonte ampliada, FPS, memória e bateria no Android.
 3. Definir remoção e revinculação segura de componentes com histórico.
 4. Preparar, pilotar e aplicar a avaliação com produtores.

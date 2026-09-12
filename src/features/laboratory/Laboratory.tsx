@@ -8,6 +8,7 @@ import { scenarios } from '../../../shared/experiments';
 import type { ExperimentInput, ExperimentReport } from '../../../shared/experiments';
 import type { Snapshot } from '../../../shared/contracts';
 import { perPlantMilliliters } from '../../../shared/water';
+import { exportFile } from '../../lib/export-file';
 import { ExperimentInsights } from './ExperimentInsights';
 import { experimentCsv, experimentHandout, replaySnapshot } from './report';
 import './laboratory.css';
@@ -40,14 +41,6 @@ const preview: Snapshot = {
     rule: { mode: 'manual', startBelow: 35, stopAt: 45, maxDurationSeconds: 60 },
   })),
 };
-function download(name: string, content: string, type: string) {
-  const url = URL.createObjectURL(new Blob([content], { type }));
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = name;
-  anchor.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
 
 export function Laboratory() {
   const [zoneId, setZoneId] = useState<'north' | 'south'>('north');
@@ -107,6 +100,14 @@ export function Laboratory() {
       setError(error instanceof Error ? error.message : 'Não foi possível executar.');
     } finally {
       setRunning(false);
+    }
+  }
+  async function exportResult(name: string, content: string, type: string, title: string) {
+    setError('');
+    try {
+      await exportFile({ name, content, type, title });
+    } catch {
+      setError('Não foi possível exportar o arquivo. Tente novamente.');
     }
   }
   const frame = report?.frames[frameIndex];
@@ -398,17 +399,38 @@ export function Laboratory() {
           </ul>
           <div className="lab-exports">
             <button
-              onClick={() => download(prefix + '.html', experimentHandout(report), 'text/html;charset=utf-8')}
+              onClick={() =>
+                void exportResult(
+                  prefix + '.html',
+                  experimentHandout(report),
+                  'text/html;charset=utf-8',
+                  'Relatório do experimento Irrint',
+                )
+              }
             >
               Relatório para impressão
             </button>
             <button
-              onClick={() => download(prefix + '.csv', experimentCsv(report), 'text/csv;charset=utf-8')}
+              onClick={() =>
+                void exportResult(
+                  prefix + '.csv',
+                  experimentCsv(report),
+                  'text/csv;charset=utf-8',
+                  'Dados do experimento Irrint',
+                )
+              }
             >
               Dados CSV
             </button>
             <button
-              onClick={() => download(prefix + '.json', JSON.stringify(report, null, 2), 'application/json')}
+              onClick={() =>
+                void exportResult(
+                  prefix + '.json',
+                  JSON.stringify(report, null, 2),
+                  'application/json',
+                  'Execução do experimento Irrint',
+                )
+              }
             >
               Execução JSON
             </button>

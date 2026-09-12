@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
 async function loginWithKeyboard(page: Page) {
@@ -131,4 +132,20 @@ test('CT22: pausa, velocidade, reinício e nova execução permanecem isolados',
   await expect(rows.nth(0)).toContainText('3 s');
   await expect(rows.nth(1)).toContainText('Solo seco e recuperação');
   await expect(rows.nth(1)).toContainText('21 s');
+});
+
+test('CT23: exportação web baixa um relatório JSON válido', async ({ page }) => {
+  await loginWithKeyboard(page);
+  await page.goto('/app/history');
+
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Exportar JSON' }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toMatch(/^irrint-execucao-.*\.json$/);
+
+  const path = await download.path();
+  expect(path).not.toBeNull();
+  const report = JSON.parse(await readFile(path!, 'utf8'));
+  expect(report).toMatchObject({ reportVersion: '1.1' });
+  expect(report.measurements).toHaveLength(2);
 });

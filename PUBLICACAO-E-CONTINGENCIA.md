@@ -11,17 +11,18 @@ Os dois caminhos preservam o mesmo contrato HTTP. O ambiente público cria duas 
 
 ## APK público
 
-`npm run android:public` gera `distribution/Irrint-0.4.2-publico.apk` com:
+`npm run android:public` gera `distribution/Irrint-0.4.3-publico.apk` com:
 
 - pacote `br.com.irrint.app` e nome **Irriga Inteligente**;
 - API Heroku HTTPS incorporada ao bundle;
 - configuração de IP local removida da interface;
 - assinatura de release RSA 4096, preservada localmente para atualizações;
 - ícone e splash próprios do Irrint.
+- exportação de JSON, CSV e HTML pelo seletor nativo de compartilhamento e salvamento.
 
 O primeiro build cria `android/irrint-release.jks` e `android/keystore.properties`. Esses arquivos não entram no Git e devem ser guardados juntos em backup privado, conforme [android/ASSINATURA-APK.md](android/ASSINATURA-APK.md).
 
-A versão atual está em [GitHub Releases v0.4.2](https://github.com/Johanshs/irrint/releases/tag/v0.4.2). Somente o APK público e seu checksum são anexados; a contingência permanece local.
+A versão atual está em [GitHub Releases v0.4.3](https://github.com/Johanshs/irrint/releases/tag/v0.4.3). Somente o APK público e seu checksum são anexados; a contingência permanece local.
 
 ## Serviço hospedado
 

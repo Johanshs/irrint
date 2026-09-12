@@ -9,6 +9,7 @@ import type {
   ZoneCreate,
   ZoneUpdate,
 } from '../../../shared/contracts';
+import { exportFile } from '../../lib/export-file';
 
 const configuredBase = import.meta.env.VITE_API_BASE_URL ?? '';
 const apiOverrideKey = 'irrint-api-base-url';
@@ -170,16 +171,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const data = await request('/api/v1/report');
-      const url = URL.createObjectURL(
-        new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }),
-      );
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `irrint-execucao-${new Date().toISOString().replaceAll(':', '-')}.json`;
-      link.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      await exportFile({
+        name: `irrint-execucao-${new Date().toISOString().replaceAll(':', '-')}.json`,
+        content: JSON.stringify(data, null, 2),
+        type: 'application/json',
+        title: 'Execução do Irrint',
+      });
     } catch {
-      setError('Não foi possível exportar. Verifique a conexão com o serviço.');
+      setError('Não foi possível exportar o arquivo. Tente novamente.');
     }
   }
   return (

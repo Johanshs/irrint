@@ -1,6 +1,16 @@
-# Validação da distribuição 0.4.2
+# Validação da distribuição 0.4.3
 
 Data: 12 de setembro de 2026.
+
+## Exportação Android e APK 0.4.3
+
+A exportação deixou de depender de URLs `blob:` no WebView. No Android, o aplicativo grava o conteúdo UTF-8 no cache privado com `@capacitor/filesystem` e entrega o URI ao seletor do sistema com `@capacitor/share`. O navegador mantém o download por link temporário. O mesmo adaptador atende o relatório geral em JSON e os resultados do laboratório em HTML, CSV e JSON.
+
+`npm run android:public` gerou `distribution/Irrint-0.4.3-publico.apk` com pacote `br.com.irrint.app`, `versionCode 7`, `versionName 0.4.3`, assinatura APK v2 e o mesmo certificado RSA 4096 das versões anteriores. O SHA-256 do APK é `131b278667d1f0b0fdb0452fb926876ee39921e96dc413486e85e3da21810b85`.
+
+O APK foi instalado por atualização sobre a `0.4.2` no Galaxy S25 Ultra. Ao acionar **Exportar JSON**, o Android abriu `com.android.intentresolver/.ChooserActivityLauncher` com um arquivo `irrint-execucao-*.json` anexado e destinos de salvamento e compartilhamento. Isso confirma a criação do arquivo e sua entrega ao sistema; nenhum destino externo foi selecionado durante a validação.
+
+O APK de contingência também foi recompilado como `0.4.3-contingency`, `versionCode 7`, mantendo o pacote separado `br.com.irrint.contingency`. Seu SHA-256 é `71204107c88454f27f0264e73b7551276d51f14d73bf6e38f4300d65466dc305`. A instalação física dessa variante continua pendente.
 
 ## Renomeação do serviço e APK 0.4.2
 
@@ -114,10 +124,11 @@ Não havia aparelho conectado por ADB nesta validação. Os dois APKs novos fora
 
 ## Suíte
 
-- 73/73 testes Vitest;
-- 3/3 E2E anteriores do aplicativo;
+- 74/74 testes Vitest;
+- 4/4 E2E do aplicativo, incluindo o download e a leitura do JSON exportado;
 - 1/1 E2E novo da distribuição hospedada;
 - build web concluído;
-- APK público de release e APK de contingência concluídos.
+- APK público de release e APK de contingência `0.4.3` concluídos;
+- atualização e exportação nativa do APK público confirmadas no Galaxy S25 Ultra.
 
 O aviso de chunks grandes de Ionic e Three.js permanece informativo. Ele não impediu build, execução ou o teste Android anterior.

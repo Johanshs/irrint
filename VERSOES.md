@@ -12,6 +12,8 @@ A tag [`v0.4.1`](https://github.com/Johanshs/irrint/tree/v0.4.1) preserva a dist
 
 A tag [`v0.4.2`](https://github.com/Johanshs/irrint/tree/v0.4.2) atualiza os clientes após o aplicativo Heroku passar a se chamar `irrint` e documenta a estratégia para futuras renomeações.
 
+A tag [`v0.4.3`](https://github.com/Johanshs/irrint/tree/v0.4.3) adiciona exportação nativa de JSON, CSV e HTML no Android, mantendo o download direto no navegador.
+
 A tag [`v0.2.0`](https://github.com/Johanshs/irrint/tree/v0.2.0) preserva o marco anterior da nova arquitetura, inclusive os controles ao vivo que existiam no laboratório. Nenhuma tag anterior foi movida.
 
 Para executar: `npm ci` e `npm run demo:start`. Os próximos itens estão em [PROGRESSO.md](PROGRESSO.md).
@@ -30,6 +32,6 @@ git worktree add ../irrint-legacy v0.1.0-legacy
 
 ## GitHub e site publicado
 
-Código atual no GitHub e implantação pública permanecem artefatos distintos. A distribuição Android e o frontend estão na versão `0.4.2`; o serviço hospedado mantém a mesma base funcional e os mesmos dados após a mudança de nome.
+Código atual no GitHub e implantação pública permanecem artefatos distintos. A distribuição Android e o frontend estão na versão `0.4.3`; o serviço hospedado mantém a mesma base funcional e os mesmos dados após a mudança de nome.
 
 A API está em `https://irrint-79e47c1c9fa0.herokuapp.com`, no aplicativo Heroku `irrint`, com um dyno Basic e Postgres Essential-0 cobertos pelo GitHub Education. A interface atual está em [irrigacao-int.vercel.app](https://irrigacao-int.vercel.app/), e `.env.production` registra o endereço da API utilizado pelo bundle. A trava anterior foi removida de `vercel.json` somente após a homologação pública.
