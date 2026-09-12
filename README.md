@@ -640,6 +640,4 @@ npm run build
 
 Mudanças de interface ou dos fluxos hospedados também devem executar os E2E correspondentes e registrar evidências relevantes.
 
-**Licença:** este repositório ainda não possui um arquivo `LICENSE`. Defina uma licença antes de autorizar reutilização ou distribuição por terceiros.
-
 **Repositório:** [github.com/Johanshs/irrint](https://github.com/Johanshs/irrint)
