@@ -11,7 +11,7 @@ Os dois caminhos preservam o mesmo contrato HTTP. O ambiente público cria duas 
 
 ## APK público
 
-`npm run android:public` gera `distribution/Irrint-0.4.1-publico.apk` com:
+`npm run android:public` gera `distribution/Irrint-0.4.2-publico.apk` com:
 
 - pacote `br.com.irrint.app` e nome **Irriga Inteligente**;
 - API Heroku HTTPS incorporada ao bundle;
@@ -21,7 +21,7 @@ Os dois caminhos preservam o mesmo contrato HTTP. O ambiente público cria duas 
 
 O primeiro build cria `android/irrint-release.jks` e `android/keystore.properties`. Esses arquivos não entram no Git e devem ser guardados juntos em backup privado, conforme [android/ASSINATURA-APK.md](android/ASSINATURA-APK.md).
 
-A versão homologada está em [GitHub Releases v0.4.1](https://github.com/Johanshs/irrint/releases/tag/v0.4.1). Somente o APK público e seu checksum foram anexados; a contingência permanece local.
+A versão atual está em [GitHub Releases v0.4.2](https://github.com/Johanshs/irrint/releases/tag/v0.4.2). Somente o APK público e seu checksum são anexados; a contingência permanece local.
 
 ## Serviço hospedado
 
@@ -71,13 +71,15 @@ O `Dockerfile` e o `render.yaml` permanecem como alternativa portável, mas o Re
 
 ### Implantação ativa
 
-- Aplicativo Heroku: `irrint-2026-7f93a1`;
-- API HTTPS: `https://irrint-2026-7f93a1-42d8a0dfb354.herokuapp.com`;
+- Aplicativo Heroku: `irrint`;
+- API HTTPS: `https://irrint-79e47c1c9fa0.herokuapp.com`;
 - recursos: um dyno Basic e um Postgres Essential-0;
 - crédito confirmado antes da criação: US$ 312;
 - custo nominal dos recursos: US$ 12/mês, limitado aos produtos cobertos pelo benefício.
 
 A conexão automática Heroku–GitHub é opcional e ainda depende da autorização OAuth da conta. O serviço atual foi criado diretamente do repositório pelo `app.json`; atualizações de backend podem ser publicadas por implantação manual até essa autorização ser concluída.
+
+Em 12 de setembro de 2026, o aplicativo foi renomeado de `irrint-2026-7f93a1` para `irrint`. O Heroku gerou um novo domínio padrão com identificador aleatório. O procedimento e o inventário de impacto estão em [PLANO-RENOMEACAO.md](PLANO-RENOMEACAO.md).
 
 ## Corte da Vercel concluído
 

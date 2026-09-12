@@ -1,8 +1,21 @@
-# Validação da distribuição 0.4.1
+# Validação da distribuição 0.4.2
 
 Data: 12 de setembro de 2026.
 
-## APK público assinado
+## Renomeação do serviço e APK 0.4.2
+
+Em 12 de setembro de 2026, o aplicativo Heroku foi renomeado de `irrint-2026-7f93a1` para `irrint`. O painel confirmou o novo domínio `https://irrint-79e47c1c9fa0.herokuapp.com`, e `/healthz` respondeu `status: ok`. O domínio anterior passou a responder HTTP 404, comportamento esperado pelo Heroku após a troca.
+
+`npm run android:public` gerou `distribution/Irrint-0.4.2-publico.apk` com:
+
+- pacote `br.com.irrint.app`, versão `0.4.2`, `versionCode 6`, `minSdk 24` e `targetSdk 36`;
+- certificado de atualização preservado, SHA-256 `668fa1395e373e704730bb8081b27d6ff11a8848fe4912d5a517be095f773e4a` e chave RSA 4096;
+- SHA-256 do APK `2678378a9fd5419d77cd6e8e241192d6d8dfbed6b499f0b308eb793e3df01684`;
+- domínio novo presente no bundle, domínio antigo ausente e interface de IP ausente.
+
+O APK de contingência foi recompilado como `0.4.2-contingency`, `versionCode 6`, mantendo `br.com.irrint.contingency`, o endpoint LAN e a interface de configuração. Seu SHA-256 é `cce258a4e96111a73d4a4a87cf902699afaecb441348e2e8ca7b048162a4fa69`.
+
+## Marco anterior: APK público 0.4.1
 
 `npm run android:public` concluiu o build de release com Android SDK 36. O artefato `distribution/Irrint-0.4.1-publico.apk` apresentou:
 

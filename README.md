@@ -1,6 +1,6 @@
 # Irrint — Irrigação Inteligente
 
-[![Versão](https://img.shields.io/badge/versão-0.4.1-2f855a)](package.json)
+[![Versão](https://img.shields.io/badge/versão-0.4.2-2f855a)](package.json)
 [![Node.js](https://img.shields.io/badge/Node.js-22-339933?logo=nodedotjs&logoColor=white)](package.json)
 [![Ionic React](https://img.shields.io/badge/Ionic_React-9-3880ff?logo=ionic&logoColor=white)](https://ionicframework.com/docs/react)
 [![Capacitor](https://img.shields.io/badge/Capacitor-8-119eff?logo=capacitor&logoColor=white)](https://capacitorjs.com/docs)
@@ -8,7 +8,7 @@
 
 Aplicativo híbrido, API e ambiente de simulação para monitorar e controlar sistemas de irrigação. O projeto foi desenvolvido como protótipo de TCC e demonstra, sem exigir hardware físico, como um produtor poderia acompanhar a umidade, configurar regras, acionar válvulas e analisar falhas por uma interface mobile.
 
-> **Situação atual:** a versão `0.4.1` possui APK público assinado, ligado à API HTTPS hospedada e sem configuração de IP. A Vercel continua em [irrigacao-int.vercel.app](https://irrigacao-int.vercel.app/). Um segundo APK, identificado como **Irrint Contingência**, mantém a operação em rede local e pode coexistir no mesmo Android.
+> **Situação atual:** a versão `0.4.2` possui APK público assinado, ligado à API HTTPS hospedada e sem configuração de IP. A Vercel continua em [irrigacao-int.vercel.app](https://irrigacao-int.vercel.app/). Um segundo APK, identificado como **Irrint Contingência**, mantém a operação em rede local e pode coexistir no mesmo Android.
 
 <p align="center">
   <img src="evidencias/android-s25-ultra/02-irrigacao-sul.png" width="30%" alt="Controle da irrigação no Android" />
@@ -286,13 +286,13 @@ O roteiro detalhado, os valores de referência e a explicação das falhas estã
 
 O APK público usa a API hospedada declarada em `.env.production`. Ele não exibe a seção de configuração de IP e recusa endpoints sem HTTPS durante a compilação.
 
-**Download:** [Irrint 0.4.1 — APK público](https://github.com/Johanshs/irrint/releases/download/v0.4.1/Irrint-0.4.1-publico.apk)
+**Download:** [Irrint 0.4.2 — APK público](https://github.com/Johanshs/irrint/releases/download/v0.4.2/Irrint-0.4.2-publico.apk)
 
 ```powershell
 npm run android:public
 ```
 
-O artefato é gravado em `distribution/Irrint-0.4.1-publico.apk`, acompanhado pelo SHA-256. No primeiro build, o comando cria uma identidade de assinatura local. Preserve juntos, em backup privado, `android/irrint-release.jks` e `android/keystore.properties`: futuras atualizações do aplicativo público precisam da mesma chave.
+O artefato é gravado em `distribution/Irrint-0.4.2-publico.apk`, acompanhado pelo SHA-256. No primeiro build, o comando cria uma identidade de assinatura local. Preserve juntos, em backup privado, `android/irrint-release.jks` e `android/keystore.properties`: futuras atualizações do aplicativo público precisam da mesma chave.
 
 Identificador Android: `br.com.irrint.app`. Credenciais da demonstração: `produtor@demo.local` / `irrigacao`.
 
@@ -470,7 +470,7 @@ android/app/build/outputs/apk/debug/app-debug.apk
 
 O aplicativo público usa `br.com.irrint.app`; a contingência usa `br.com.irrint.contingency`. HTTP sem TLS é aceito somente no APK de contingência, para a bancada privada. A distribuição pública usa HTTPS e assinatura de release.
 
-O fluxo foi exercitado em Galaxy S25 Ultra com Android 16/API 36. Os APKs `0.4.1` foram verificados estruturalmente e por assinatura; esta compilação ainda não foi instalada porque não havia aparelho conectado por ADB. Veja [VALIDACAO-DISTRIBUICAO.md](VALIDACAO-DISTRIBUICAO.md).
+O fluxo foi exercitado em Galaxy S25 Ultra com Android 16/API 36. Os APKs `0.4.2` foram verificados estruturalmente e por assinatura; esta compilação ainda não foi instalada porque não havia aparelho conectado por ADB. Veja [VALIDACAO-DISTRIBUICAO.md](VALIDACAO-DISTRIBUICAO.md).
 
 ## Publicação
 
@@ -478,7 +478,7 @@ O frontend e a API precisam ser publicados de forma coordenada. Implantar soment
 
 ### Backend
 
-Produção: `https://irrint-2026-7f93a1-42d8a0dfb354.herokuapp.com`. O endpoint `/healthz`, duas sessões isoladas, telemetria e o ciclo de abrir/parar foram validados em 11 de setembro de 2026.
+Produção: `https://irrint-79e47c1c9fa0.herokuapp.com`. O aplicativo Heroku se chama `irrint`; o sufixo é acrescentado automaticamente pela plataforma. O endpoint `/healthz`, duas sessões isoladas, telemetria e o ciclo de abrir/parar foram validados antes da troca e devem ser revalidados após cada renomeação.
 
 O comando de produção é:
 

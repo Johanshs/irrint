@@ -1,18 +1,18 @@
 # Execução do plano · 11 de setembro de 2026
 
-Marco atual: aplicação Android `0.4.1` distribuível, aplicação web publicada, laboratório demonstrativo concluído, PostgreSQL hospedado, API acessível por HTTPS e LAN, APK público assinado, APK local configurável, segundo cliente sobre OpenAPI e E2E web automatizado. A base v0.2.0 e a versão legacy permanecem consultáveis; veja [VERSOES.md](VERSOES.md).
+Marco atual: aplicação Android `0.4.2` distribuível, aplicação web publicada, laboratório demonstrativo concluído, PostgreSQL hospedado, API acessível por HTTPS e LAN, APK público assinado, APK local configurável, segundo cliente sobre OpenAPI e E2E web automatizado. O serviço Heroku foi simplificado para o nome `irrint`; veja [VERSOES.md](VERSOES.md).
 
 ## Etapas e situação
 
 | Etapa                | Entregue                                                                                                    | Restante                                                                       |
 | -------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| E0 — Base            | React 18, Ionic 9, Router 6, Capacitor 8, build web, identidade visual e APK público assinado               | Regressão física da compilação 0.4.1 no Galaxy S25 Ultra                       |
+| E0 — Base            | React 18, Ionic 9, Router 6, Capacitor 8, build web, identidade visual e APK público assinado               | Regressão física da compilação 0.4.2 no Galaxy S25 Ultra                       |
 | E1 — Contrato        | Zod 1.0, OpenAPI 3.1, sessões locais e hospedadas, isolamento, sequência, prazos, ACK e idempotência        | Gestão de contas reais, caso o protótipo evolua além da demonstração           |
 | E2 — API/dispositivo | API local/hospedável, JSON recuperável local, PostgreSQL hospedado, runner e cliente OpenAPI independente   | Transações distribuídas, caso seja necessária escala com mais de uma instância |
 | E3 — Mobile          | Login, áreas, vínculos, histórico, ajustes, estados operacionais e fluxo principal revisado em Android real | Remoção/revinculação, gestão de contas e regressão física de acessibilidade    |
 | E4 — Evidências      | 73 testes; 4 E2E; 16 ensaios, 48 critérios; CT13/14/18/19/20/21/22; latência; relatórios e bancada Android  | Voltar, rotação, reconexão, fonte e métricas instrumentadas no aparelho        |
 | E5 — 3D              | Peças, inspeção, etiquetas, corte, gotejamento e oito falhas; maquete e fluidez revisadas no S25 Ultra      | Avaliação de uso com participantes e métricas instrumentadas opcionais         |
-| E6 — Distribuição    | Heroku Basic/Postgres, Vercel, HTTPS, E2E público, APK release no GitHub e contingência em pacote separado | Instalar os dois APKs 0.4.1 no aparelho                                         |
+| E6 — Distribuição    | Heroku `irrint`, Postgres, Vercel, HTTPS, APK público e contingência em pacote Android separado             | Publicar e instalar os APKs 0.4.2 após a troca de endpoint                      |
 | E7 — TCC             | Escopo, limites, contrato e relatórios reproduzíveis documentados                                           | Instrumento, aplicação com produtores, análise e capítulos de resultados       |
 
 ## Validação deste marco
@@ -53,7 +53,7 @@ A sessão ao vivo retém as últimas 2.000 leituras e 1.000 eventos e bloqueia n
 
 ## Próxima sequência
 
-1. Instalar no Galaxy o [APK público `0.4.1`](https://github.com/Johanshs/irrint/releases/tag/v0.4.1) e o APK local de contingência.
+1. Instalar no Galaxy o [APK público `0.4.2`](https://github.com/Johanshs/irrint/releases/tag/v0.4.2) e o APK local de contingência.
 2. Repetir Voltar, rotação, reconexão, escala de fonte, FPS/memória e latência como regressão física de distribuição.
 3. Preparar e pilotar tarefas, TCLE e questionário de facilidade/utilidade com produtores.
 4. Executar a avaliação e redigir método realizado, resultados, discussão e conclusão somente com as evidências coletadas.
