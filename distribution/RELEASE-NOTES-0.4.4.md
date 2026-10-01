@@ -22,6 +22,8 @@ As plantas e o cenário são ilustrativos. O simulador não modela espécie, cre
 
 - pacote `br.com.irrint.app`, `versionCode 8` e `versionName 0.4.4`;
 - 74 testes Vitest, build web e quatro fluxos E2E do laboratório aprovados;
-- assinatura, SHA-256 e instalação por atualização no Galaxy S25 Ultra: pendentes até o build assinado.
+- assinatura APK v2 com o mesmo certificado RSA 4096 das versões anteriores (SHA-256 do certificado `668fa139…5f773e4a`, idêntico ao da 0.4.3);
+- SHA-256 do APK `ee6d3475daea5084327eb5b33bb5c1e89185512814baa36fce602e4820125d43`;
+- instalação por atualização e desempenho do laboratório no Galaxy S25 Ultra: pendentes.
 
 O APK de contingência local permanece separado e não é anexado à release pública.
