@@ -39,11 +39,11 @@ export function ComponentInspector({ part, onClose }: { part: FieldComponent; on
     );
     container.appendChild(renderer.domElement);
     const scene = new T.Scene();
-    scene.add(new T.HemisphereLight('#ffffff', '#6d9387', 3));
-    const key = new T.DirectionalLight('#fff0d3', 4);
+    scene.add(new T.HemisphereLight('#ffffff', '#7d9a80', 1.5));
+    const key = new T.DirectionalLight('#fff0d3', 2.4);
     key.position.set(3, 5, 4);
     scene.add(key);
-    const rim = new T.DirectionalLight('#9ddced', 2);
+    const rim = new T.DirectionalLight('#9ddced', 0.9);
     rim.position.set(-3, 1, -2);
     scene.add(rim);
     const model = createComponent(part.kind);

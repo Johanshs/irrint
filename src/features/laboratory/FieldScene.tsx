@@ -5,6 +5,7 @@ import type { Snapshot } from '../../../shared/contracts';
 import { zoneStatus } from '../irrigation/session';
 import { createField } from './field-model';
 import { disposeScene } from './models';
+import { createSky, skyHorizon } from './scenery';
 import { fieldComponents, type FieldComponent } from './components';
 import { ComponentInspector } from './ComponentInspector';
 import './laboratory.css';
@@ -56,20 +57,21 @@ export default function FieldScene(props: Props) {
     renderer.domElement.setAttribute('role', 'img');
     renderer.domElement.setAttribute(
       'aria-label',
-      'Campo 3D com dois canteiros, sensores, microcontroladores e irrigação por gotejamento. Os componentes também estão disponíveis em Visualização e componentes.',
+      'Maquete 3D ilustrativa em estilo cartoon: dois canteiros com cultivos de Roraima, sensores, microcontroladores e irrigação por gotejamento. Os componentes também estão disponíveis em Visualização e componentes.',
     );
     host.appendChild(renderer.domElement);
     const scene = new T.Scene();
-    scene.background = new T.Color('#eaf1ec');
-    const camera = new T.PerspectiveCamera(39, 1, 0.1, 70);
+    scene.background = createSky();
+    scene.fog = new T.Fog(skyHorizon, 26, 85);
+    const camera = new T.PerspectiveCamera(39, 1, 0.1, 120);
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enablePan = false;
     controls.minDistance = 5;
     controls.maxDistance = 24;
     controls.maxPolarAngle = Math.PI / 2.15;
     reset.current = () => {
-      camera.position.set(9, 10, 12);
-      controls.target.set(-0.4, 0.1, 0);
+      camera.position.set(7.4, 5.4, 10.2);
+      controls.target.set(-0.3, -0.1, 0);
       controls.update();
     };
     reset.current();
@@ -79,8 +81,9 @@ export default function FieldScene(props: Props) {
       camera.position.set(5.45, 5.85, z + 6);
       controls.update();
     };
-    scene.add(new T.HemisphereLight('#fffaed', '#748678', 2.5));
-    const sun = new T.DirectionalLight('#fff3dc', 3);
+    // Cel-shaded lighting: soft sky fill plus a warm sun that drives the toon bands.
+    scene.add(new T.HemisphereLight('#f4fbff', '#8a9a6a', 1.7));
+    const sun = new T.DirectionalLight('#fff1d6', 2.6);
     sun.position.set(-3, 10, 5);
     sun.castShadow = true;
     sun.shadow.mapSize.set(1024, 1024);
@@ -88,6 +91,21 @@ export default function FieldScene(props: Props) {
     sun.shadow.normalBias = 0.035;
     scene.add(sun);
     const field = createField(scene);
+    // Light mode for weak or software-rendered devices: drops ink lines, shadows and far scenery.
+    // It changes only the look; the observed snapshot and every indicator stay the same.
+    let lite = false;
+    const setLite = () => {
+      lite = true;
+      sun.castShadow = false;
+      scene.traverse((object) => {
+        if (object.userData.ink || object.userData.decor) object.visible = false;
+      });
+    };
+    const gl = renderer.getContext();
+    const debug = gl.getExtension('WEBGL_debug_renderer_info');
+    const gpu = debug ? String(gl.getParameter(debug.UNMASKED_RENDERER_WEBGL)) : '';
+    if (/swiftshader|llvmpipe|softpipe|software/i.test(gpu)) setLite();
+    let slowFrames = 0;
     // Components stay fixed in world space; only their screen projection changes with the camera.
     const anchors = new Map(
       fieldComponents.map((part) => [
@@ -101,9 +119,18 @@ export default function FieldScene(props: Props) {
       hovered = id;
       for (const [key, group] of field.parts)
         group.traverse((object) => {
-          if (object instanceof T.Mesh && object.material instanceof T.MeshStandardMaterial) {
-            object.material.emissive.set(key === id ? '#1a5548' : '#000000');
-            object.material.emissiveIntensity = key === id ? 0.65 : 0;
+          const mat = object instanceof T.Mesh ? object.material : null;
+          if (mat instanceof T.MeshToonMaterial || mat instanceof T.MeshStandardMaterial) {
+            // Keep each material's own glow (LEDs) and restore it when the hover ends.
+            mat.userData.baseEmissive ??= [mat.emissive.getHex(), mat.emissiveIntensity];
+            const [color, intensity] = mat.userData.baseEmissive as [number, number];
+            if (key === id) {
+              mat.emissive.set('#2a8f74');
+              mat.emissiveIntensity = 0.55;
+            } else {
+              mat.emissive.setHex(color);
+              mat.emissiveIntensity = intensity;
+            }
           }
         });
       renderer.domElement.style.cursor = id ? 'pointer' : 'grab';
@@ -162,6 +189,11 @@ export default function FieldScene(props: Props) {
     const anchor = new T.Vector3();
     renderer.setAnimationLoop((time) => {
       if (time - lastTime < 33) return;
+      // Sustained frames slower than ~12 fps switch to light mode (never back, to avoid flicker).
+      if (!lite && lastTime && visible && !document.hidden && !latest.current.inspected) {
+        slowFrames = time - lastTime > 85 ? slowFrames + 1 : Math.max(0, slowFrames - 1);
+        if (slowFrames > 24) setLite();
+      }
       const delta = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
       if (!visible || document.hidden || latest.current.inspected) return;
@@ -357,6 +389,7 @@ export default function FieldScene(props: Props) {
           <p className="scene-caption">
             Arraste para girar · pinça para aproximar · toque em um componente para explorar
             {section ? ' · raízes e bulbos de umidade ilustrativos' : ''}
+            {' · cultivos ilustrativos de Roraima: hortaliças em N, mudas em S'}
             {!motion
               ? ' · gotejamento oculto'
               : props.replay && !props.replay.playing

@@ -112,11 +112,23 @@ Umidade é um índice normalizado: +0,85 ponto/s aberto, -0,15 parado, com ruíd
 
 Modelos procedurais em Three.js, com instâncias para elementos repetidos e agrupamento de geometrias estáticas por material. Sem ativos 3D baixados ou chamadas pagas. Desenho limitado e suspenso fora da tela; recursos liberados ao desmontar. A renderização não avança o dispositivo nem contabiliza volume. FPS, memória e bateria em aparelho ainda precisam de medição.
 
+### Estilo visual cartoon (branch `feat/laboratorio-3d-cartoon`)
+
+A maquete passou a usar sombreamento em faixas (`MeshToonMaterial` com rampa de 4 tons) e contorno em tinta por casco invertido, num diorama elevado sobre o lavrado. Tudo continua procedural e original; não há modelos, texturas ou fotos baixados.
+
+- **Componentes de gotejamento:** reservatório de polietileno com nervuras, tampa e registro de saída; bomba com aletas, tampa do ventilador, voluta e conexões em PVC; válvula solenoide em latão com bobina, conector e alavanca de sangria; gotejador tipo botão sobre linha de polietileno preto, com microtubo. As linhas laterais ficam suspensas em estacas e terminam em tampão "figura 8"; o tronco principal é em PVC branco com cotovelos e apoios.
+- **Cultivos ilustrativos de Roraima:** área N (Hortaliças) com cheiro-verde, pimenta-de-cheiro e melancia; área S (Mudas) com bananeira, açaizeiro e cupuaçuzeiro. Melancia, banana, hortaliças, açaí e cupuaçu aparecem entre as produções do estado/de Boa Vista em levantamento divulgado pela Folha BV. As plantas são decoração: o simulador não modela espécie, crescimento, absorção nem produtividade, e o campo `crop` da área pode ser editado sem alterar o desenho.
+- **Cenário:** buritis (vereda), capim do lavrado, morros e silhueta de tepui inspirada no Monte Roraima, céu em degradê e névoa. É ambientação, sem relação com dados climáticos.
+- **Modo leve:** em renderização por software (SwiftShader/llvmpipe) ou com quadros abaixo de ~12 fps de forma sustentada, a cena desliga contornos, sombras e o cenário distante. Só muda a aparência; snapshot, indicadores e replay são os mesmos.
+
+Invariantes preservados: pontos de conexão, posições dos 18 emissores, gotas, manchas de umidade, corte do solo, anel de estado da válvula e `update()` por quadro continuam com a mesma lógica. A renderização segue apenas observando snapshots. Desempenho em aparelho físico (FPS, memória, aquecimento) ainda precisa ser medido.
+
 Referências visuais e técnicas consultadas no refinamento anterior:
 
 - [DFRobot — SEN0193](https://wiki.dfrobot.com/sen0193): forma da sonda capacitiva.
 - [Espressif — ESP32 DevKitC V4](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32/esp32-devkitc/user_guide.html): placa, pinos, módulo RF, USB e botões.
 - [Smart Garden IoT com Wokwi](https://github.com/hkhuang07/smart-garden-iot): separação entre dispositivo simulado e aplicação; não é fonte de física 3D.
+- [Folha BV — Mapa da agricultura mostra diversidade agrícola de Roraima](https://folhabv.com.br/noticia/CIDADES/Interior/Mapa-da-agricultura-mostra-diversidade-agricola-de-Roraima/77119): culturas usadas como inspiração para as plantas ilustrativas.
 - [Three.js — InstancedMesh](https://threejs.org/docs/pages/InstancedMesh.html) e [partículas](https://threejs.org/examples/webgl_points_waves.html): repetição de elementos e efeitos visuais.
 
 As placas, sondas, válvulas e bomba são exemplos identificáveis. Outros componentes exigem adaptador/firmware, calibração e validação do contrato; a maquete não promete compatibilidade universal.
