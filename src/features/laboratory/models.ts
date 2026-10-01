@@ -355,7 +355,7 @@ export function createComponent(kind: ComponentKind): T.Group {
     mesh(group, new T.ConeGeometry(0.03, 0.03, 8), material('#4aa3e8'), [0, -0.055, 0.14]).rotation.x =
       Math.PI;
   }
-  return bake(group, { width: 0.0018 });
+  return bake(group, { width: 0.0014 });
 }
 
 /** Box with rounded vertical edges, sitting on y = 0. */

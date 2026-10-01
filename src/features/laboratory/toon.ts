@@ -71,7 +71,7 @@ const inkFragment = /* glsl */ `
   }
 `;
 
-export function inkMaterial(width = 0.0022, color = '#2a2622') {
+export function inkMaterial(width = 0.0016, color = '#2a2622') {
   return new T.ShaderMaterial({
     uniforms: { width: { value: width }, color: { value: new T.Color(color) } },
     vertexShader: inkVertex,

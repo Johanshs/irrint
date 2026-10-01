@@ -99,6 +99,12 @@ export default function FieldScene(props: Props) {
       sun.castShadow = false;
       scene.traverse((object) => {
         if (object.userData.ink || object.userData.decor) object.visible = false;
+        const mat = object instanceof T.Mesh ? object.material : null;
+        if (mat instanceof T.MeshToonMaterial && mat.userData.liteColor) {
+          mat.map = null;
+          mat.color.set(mat.userData.liteColor as string);
+          mat.needsUpdate = true;
+        }
       });
     };
     const gl = renderer.getContext();

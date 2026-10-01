@@ -153,15 +153,18 @@ export function createField(scene: T.Scene) {
     component(`valve-${id}`, [-2.55, 0.14, z], 0.65);
     const controller = component(`controller-${id}`, [-3.9, 0.53, z + 1.0], 0.62);
     controller.rotation.x = 0.48;
-    // Weatherproof enclosure (open) on a post.
-    const enclosure = material('#dfe3dc');
-    box(decor, [1.05, 0.06, 1.1], [-3.7, 0.36, z + 1.0], enclosure);
-    for (const dz of [-0.53, 0.53]) box(decor, [1.05, 0.14, 0.04], [-3.7, 0.42, z + 1.0 + dz], enclosure);
-    for (const dx of [-0.51, 0.51]) box(decor, [0.04, 0.14, 1.1], [-3.7 + dx, 0.42, z + 1.0], enclosure);
-    tube(decor, [-3.85, -0.47, z + 1], [-3.85, 0.33, z + 1], 0.045, fitting);
-    tube(decor, [-3.3, 0.42, z + 0.85], [-2.65, 0.34, z + 0.23], 0.014, cable);
-    component(`sensor-${id}`, [3.05, 0.53, z + 0.69], 0.58, -0.2);
-    tube(decor, [3.1, 1.03, z + 0.65], [3.38, 0.29, z + 1.02], 0.014, cableDark);
+    // Mounting plate tilted with the board (just below its pins) on a post: no part crosses another.
+    const mount = new T.Group();
+    mount.position.set(-3.9, 0.53, z + 1.0);
+    mount.rotation.x = 0.48;
+    decor.add(mount);
+    box(mount, [0.84, 0.025, 0.92], [0.163, -0.115, 0], material('#dfe3dc'));
+    tube(decor, [-3.74, -0.47, z + 0.95], [-3.74, 0.4, z + 0.95], 0.04, fitting);
+    tube(decor, [-3.4, 0.38, z + 0.82], [-2.56, 0.33, z + 0.22], 0.014, cable);
+    // Probe between the end of the drip lines and the side wall, inserted up to its mark.
+    component(`sensor-${id}`, [3.35, 0.53, z + 0.36], 0.58, -0.25);
+    tube(decor, [3.44, 1.0, z + 0.28], [3.64, 0.45, z + 0.12], 0.014, cableDark);
+    tube(decor, [3.64, 0.45, z + 0.12], [3.65, -0.3, z + 0.12], 0.014, cableDark);
     tube(decor, [-1.98, 0.5, z - 0.72], [-1.98, 0.5, z + 0.72], 0.035, pvc);
     for (const dz of [-0.72, 0.72])
       mesh(decor, new T.SphereGeometry(0.045, 10, 6), fitting, [-1.98, 0.5, z + dz]);
@@ -223,7 +226,7 @@ export function createField(scene: T.Scene) {
     }
     // The 17 decorative emitters share materials with the template and are merged into one batch.
     scene.add(emitters);
-    bake(emitters, { width: 0.0018 });
+    bake(emitters, { width: 0.0014 });
     emitters.traverse((child) => {
       child.userData.componentId = `emitter-${id}`;
     });

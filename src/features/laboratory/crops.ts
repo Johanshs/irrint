@@ -244,8 +244,9 @@ export function createGarden(scene: T.Object3D) {
       let previous = new T.Vector3(x, y + 0.01, z);
       for (let i = 0; i < 7; i++) {
         const a = (i / 7) * Math.PI * 2 + rnd() * 0.5;
-        const reach = 0.12 + rnd() * 0.1;
-        const node = new T.Vector3(x + Math.cos(a) * reach, y + 0.012, z + Math.sin(a) * reach * 0.8);
+        // Compact footprint, nudged away from the drip line behind the plant.
+        const reach = 0.1 + rnd() * 0.06;
+        const node = new T.Vector3(x + Math.cos(a) * reach, y + 0.012, z + 0.04 + Math.sin(a) * reach * 0.8);
         segment('vine', new T.Vector3(x, y + 0.012, z), node, 0.008);
         place(
           'lobed',
@@ -253,7 +254,7 @@ export function createGarden(scene: T.Object3D) {
           node.clone().setY(y + 0.035),
           -a + Math.PI / 2,
           0.3 + rnd() * 0.25,
-          [0.13, 0.15, 0.13],
+          [0.11, 0.15, 0.11],
         );
         previous = node;
       }
@@ -274,7 +275,8 @@ export function createGarden(scene: T.Object3D) {
       segment('pseudostem', new T.Vector3(x, y, z), new T.Vector3(x, y + 0.24, z), 0.034);
       place('ball', 'wood', new T.Vector3(x, y + 0.01, z), 0, 0, [0.045, 0.025, 0.045]);
       for (let i = 0; i < 4; i++) {
-        const a = (i / 4) * Math.PI * 2 + rnd() * 0.6;
+        // Leaves open sideways and forward, never back across the drip line and its stakes.
+        const a = [-1.9, -0.65, 0.65, 1.9][i] + (rnd() - 0.5) * 0.3;
         const base = new T.Vector3(x, y + 0.2 + i * 0.012, z);
         const petioleEnd = base.clone().add(new T.Vector3(Math.sin(a) * 0.05, 0.08, Math.cos(a) * 0.05));
         segment('pseudostem', base, petioleEnd, 0.009);
@@ -284,7 +286,7 @@ export function createGarden(scene: T.Object3D) {
           petioleEnd,
           a,
           0.35 + rnd() * 0.25,
-          [0.15, 0.12, 0.34],
+          [0.13, 0.12, 0.24],
           (rnd() - 0.5) * 0.4,
         );
       }
@@ -298,9 +300,9 @@ export function createGarden(scene: T.Object3D) {
         const top = new T.Vector3(sx, y + 0.1 + stem * 0.04, sz);
         segment('wood', new T.Vector3(sx, y, sz), top, 0.011);
         for (let frond = 0; frond < 3; frond++) {
-          const yaw = frond * 2.1 + stem * 1 + rnd() * 0.4;
+          const yaw = [-1.6, 0, 1.6][frond] + stem * 0.5 + (rnd() - 0.5) * 0.3;
           const horizontal = new T.Vector3(Math.sin(yaw), 0, Math.cos(yaw));
-          const length = 0.24 + rnd() * 0.06;
+          const length = 0.19 + rnd() * 0.04;
           const at = (t: number) =>
             top
               .clone()
@@ -317,7 +319,7 @@ export function createGarden(scene: T.Object3D) {
                 .multiplyScalar(s)
                 .addScaledVector(horizontal, 0.5)
                 .add(new T.Vector3(0, -0.45, 0));
-              leafAlong(k % 2 ? 'leaf' : 'leafDark', point, direction, 0.09 - t * 0.03, 0.022);
+              leafAlong(k % 2 ? 'leaf' : 'leafDark', point, direction, 0.08 - t * 0.03, 0.022);
             }
           }
         }
