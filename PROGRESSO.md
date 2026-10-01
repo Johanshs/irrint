@@ -1,19 +1,19 @@
 # Execução do plano · 12 de setembro de 2026
 
-Marco atual: aplicação Android `0.4.3` distribuível, aplicação web publicada, laboratório demonstrativo concluído, PostgreSQL hospedado, API acessível por HTTPS e LAN, exportação nativa, APK público assinado, APK local configurável, segundo cliente sobre OpenAPI e E2E web automatizado. O serviço Heroku foi simplificado para o nome `irrint`; veja [VERSOES.md](VERSOES.md).
+Marco atual: aplicação Android `0.4.4` distribuível, laboratório 3D em estilo cartoon, aplicação web publicada, laboratório demonstrativo concluído, PostgreSQL hospedado, API acessível por HTTPS e LAN, exportação nativa, APK público assinado, APK local configurável, segundo cliente sobre OpenAPI e E2E web automatizado. O serviço Heroku foi simplificado para o nome `irrint`; veja [VERSOES.md](VERSOES.md).
 
 ## Etapas e situação
 
-| Etapa                | Entregue                                                                                                    | Restante                                                                       |
-| -------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| E0 — Base            | React 18, Ionic 9, Router 6, Capacitor 8, build web, identidade visual, APK público assinado e exportação física 0.4.3 | Regressão física completa da variante de contingência                   |
-| E1 — Contrato        | Zod 1.0, OpenAPI 3.1, sessões locais e hospedadas, isolamento, sequência, prazos, ACK e idempotência        | Gestão de contas reais, caso o protótipo evolua além da demonstração           |
-| E2 — API/dispositivo | API local/hospedável, JSON recuperável local, PostgreSQL hospedado, runner e cliente OpenAPI independente   | Transações distribuídas, caso seja necessária escala com mais de uma instância |
-| E3 — Mobile          | Login, áreas, vínculos, histórico, ajustes, estados operacionais e fluxo principal revisado em Android real | Remoção/revinculação, gestão de contas e regressão física de acessibilidade    |
-| E4 — Evidências      | 74 testes; 5 E2E; 16 ensaios, 48 critérios; CT13/14/18/19/20/21/22/23; latência; relatórios e bancada Android | Voltar, rotação, reconexão, fonte e métricas instrumentadas no aparelho       |
-| E5 — 3D              | Peças, inspeção, etiquetas, corte, gotejamento e oito falhas; maquete e fluidez revisadas no S25 Ultra      | Avaliação de uso com participantes e métricas instrumentadas opcionais         |
-| E6 — Distribuição    | Heroku `irrint`, Postgres, Vercel, HTTPS, E2E público, release 0.4.3 e APK público validado no S25 Ultra     | Instalar e validar fisicamente o APK local de contingência                      |
-| E7 — TCC             | Escopo, limites, contrato e relatórios reproduzíveis documentados                                           | Instrumento, aplicação com produtores, análise e capítulos de resultados       |
+| Etapa                | Entregue                                                                                                               | Restante                                                                       |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| E0 — Base            | React 18, Ionic 9, Router 6, Capacitor 8, build web, identidade visual, APK público assinado e exportação física 0.4.3 | Regressão física completa da variante de contingência                          |
+| E1 — Contrato        | Zod 1.0, OpenAPI 3.1, sessões locais e hospedadas, isolamento, sequência, prazos, ACK e idempotência                   | Gestão de contas reais, caso o protótipo evolua além da demonstração           |
+| E2 — API/dispositivo | API local/hospedável, JSON recuperável local, PostgreSQL hospedado, runner e cliente OpenAPI independente              | Transações distribuídas, caso seja necessária escala com mais de uma instância |
+| E3 — Mobile          | Login, áreas, vínculos, histórico, ajustes, estados operacionais e fluxo principal revisado em Android real            | Remoção/revinculação, gestão de contas e regressão física de acessibilidade    |
+| E4 — Evidências      | 74 testes; 5 E2E; 16 ensaios, 48 critérios; CT13/14/18/19/20/21/22/23; latência; relatórios e bancada Android          | Voltar, rotação, reconexão, fonte e métricas instrumentadas no aparelho        |
+| E5 — 3D              | Peças, inspeção, etiquetas, corte, gotejamento e oito falhas; maquete e fluidez revisadas no S25 Ultra                 | Avaliação de uso com participantes e métricas instrumentadas opcionais         |
+| E6 — Distribuição    | Heroku `irrint`, Postgres, Vercel, HTTPS, E2E público, release 0.4.3 e APK público validado no S25 Ultra               | Instalar e validar fisicamente o APK local de contingência                     |
+| E7 — TCC             | Escopo, limites, contrato e relatórios reproduzíveis documentados                                                      | Instrumento, aplicação com produtores, análise e capítulos de resultados       |
 
 ## Validação deste marco
 

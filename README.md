@@ -1,6 +1,6 @@
 # Irrint — Irrigação Inteligente
 
-[![Versão](https://img.shields.io/badge/versão-0.4.3-2f855a)](package.json)
+[![Versão](https://img.shields.io/badge/versão-0.4.4-2f855a)](package.json)
 [![Node.js](https://img.shields.io/badge/Node.js-22-339933?logo=nodedotjs&logoColor=white)](package.json)
 [![Ionic React](https://img.shields.io/badge/Ionic_React-9-3880ff?logo=ionic&logoColor=white)](https://ionicframework.com/docs/react)
 [![Capacitor](https://img.shields.io/badge/Capacitor-8-119eff?logo=capacitor&logoColor=white)](https://capacitorjs.com/docs)
@@ -8,7 +8,7 @@
 
 Aplicativo híbrido, API e ambiente de simulação para monitorar e controlar sistemas de irrigação. O projeto foi desenvolvido como protótipo de TCC e demonstra, sem exigir hardware físico, como um produtor poderia acompanhar a umidade, configurar regras, acionar válvulas e analisar falhas por uma interface mobile.
 
-> **Situação atual:** a versão `0.4.3` possui APK público assinado, ligado à API HTTPS hospedada, sem configuração de IP e com exportação pelo seletor nativo do Android. A Vercel continua em [irrigacao-int.vercel.app](https://irrigacao-int.vercel.app/). Um segundo APK, identificado como **Irrint Contingência**, mantém a operação em rede local e pode coexistir no mesmo Android.
+> **Situação atual:** a versão `0.4.4` traz o laboratório 3D redesenhado em estilo cartoon e possui APK público assinado, ligado à API HTTPS hospedada, sem configuração de IP e com exportação pelo seletor nativo do Android. A Vercel continua em [irrigacao-int.vercel.app](https://irrigacao-int.vercel.app/). Um segundo APK, identificado como **Irrint Contingência**, mantém a operação em rede local e pode coexistir no mesmo Android.
 
 <p align="center">
   <img src="evidencias/android-s25-ultra/02-irrigacao-sul.png" width="30%" alt="Controle da irrigação no Android" />
@@ -286,13 +286,13 @@ O roteiro detalhado, os valores de referência e a explicação das falhas estã
 
 O APK público usa a API hospedada declarada em `.env.production`. Ele não exibe a seção de configuração de IP e recusa endpoints sem HTTPS durante a compilação.
 
-**Download:** [Irrint 0.4.3 — APK público](https://github.com/Johanshs/irrint/releases/download/v0.4.3/Irrint-0.4.3-publico.apk)
+**Download:** [Irrint 0.4.4 — APK público](https://github.com/Johanshs/irrint/releases/download/v0.4.4/Irrint-0.4.4-publico.apk)
 
 ```powershell
 npm run android:public
 ```
 
-O artefato é gravado em `distribution/Irrint-0.4.3-publico.apk`, acompanhado pelo SHA-256. No primeiro build, o comando cria uma identidade de assinatura local. Preserve juntos, em backup privado, `android/irrint-release.jks` e `android/keystore.properties`: futuras atualizações do aplicativo público precisam da mesma chave.
+O artefato é gravado em `distribution/Irrint-0.4.4-publico.apk`, acompanhado pelo SHA-256. No primeiro build, o comando cria uma identidade de assinatura local. Preserve juntos, em backup privado, `android/irrint-release.jks` e `android/keystore.properties`: futuras atualizações do aplicativo público precisam da mesma chave.
 
 Identificador Android: `br.com.irrint.app`. Credenciais da demonstração: `produtor@demo.local` / `irrigacao`.
 
