@@ -2,6 +2,36 @@ const json = (schema: object) => ({ content: { 'application/json': { schema } } 
 const response = (description: string, schema: object) => ({ description, ...json(schema) });
 const ref = (name: string) => ({ $ref: `#/components/schemas/${name}` });
 
+// Shared by the request schemas and the stored objects. CommandInput and Telemetry
+// reject unknown fields, so Command and Reading repeat these properties instead of
+// extending them with allOf, which would forbid their own extra fields.
+const commandInputProperties = {
+  action: { type: 'string', enum: ['open', 'close'] },
+  durationSeconds: { type: 'integer', minimum: 5, maximum: 600 },
+  idempotencyKey: { type: 'string', format: 'uuid' },
+};
+const telemetryRequired = [
+  'schemaVersion',
+  'deviceId',
+  'sequence',
+  'moisture',
+  'unit',
+  'valve',
+  'lastCommandId',
+  'source',
+];
+const telemetryProperties = {
+  schemaVersion: { const: '1.0' },
+  deviceId: { type: 'string', minLength: 1, maxLength: 80 },
+  sequence: { type: 'integer', minimum: 0 },
+  moisture: { type: 'number', minimum: 0, maximum: 100 },
+  unit: { const: 'normalizedPercent' },
+  valve: { type: 'string', enum: ['open', 'closed'] },
+  lastCommandId: { type: ['string', 'null'], format: 'uuid' },
+  source: { type: 'string', enum: ['simulated', 'device'] },
+  water: ref('Water'),
+};
+
 /** Machine-readable contract for operator and device clients. */
 export const openApiDocument = {
   openapi: '3.1.0',
@@ -237,39 +267,34 @@ export const openApiDocument = {
         type: 'object',
         additionalProperties: false,
         required: ['action', 'idempotencyKey'],
-        properties: {
-          action: { type: 'string', enum: ['open', 'close'] },
-          durationSeconds: { type: 'integer', minimum: 5, maximum: 600 },
-          idempotencyKey: { type: 'string', format: 'uuid' },
-        },
+        properties: commandInputProperties,
       },
       Command: {
-        allOf: [
-          ref('CommandInput'),
-          {
-            type: 'object',
-            required: [
-              'id',
-              'zoneId',
-              'deviceId',
-              'origin',
-              'status',
-              'requestedAt',
-              'expiresAt',
-              'appliedAt',
-            ],
-            properties: {
-              id: { type: 'string', format: 'uuid' },
-              zoneId: { type: 'string' },
-              deviceId: { type: 'string' },
-              origin: { type: 'string', enum: ['manual', 'automatic'] },
-              status: { type: 'string', enum: ['pending', 'applied', 'rejected', 'expired', 'superseded'] },
-              requestedAt: { type: 'integer' },
-              expiresAt: { type: 'integer' },
-              appliedAt: { type: ['integer', 'null'] },
-            },
-          },
+        type: 'object',
+        additionalProperties: false,
+        required: [
+          'id',
+          'zoneId',
+          'deviceId',
+          'action',
+          'idempotencyKey',
+          'origin',
+          'status',
+          'requestedAt',
+          'expiresAt',
+          'appliedAt',
         ],
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          zoneId: { type: 'string' },
+          deviceId: { type: 'string' },
+          ...commandInputProperties,
+          origin: { type: 'string', enum: ['manual', 'automatic'] },
+          status: { type: 'string', enum: ['pending', 'applied', 'rejected', 'expired', 'superseded'] },
+          requestedAt: { type: 'integer' },
+          expiresAt: { type: 'integer' },
+          appliedAt: { type: ['integer', 'null'] },
+        },
       },
       Water: {
         type: 'object',
@@ -283,27 +308,8 @@ export const openApiDocument = {
       Telemetry: {
         type: 'object',
         additionalProperties: false,
-        required: [
-          'schemaVersion',
-          'deviceId',
-          'sequence',
-          'moisture',
-          'unit',
-          'valve',
-          'lastCommandId',
-          'source',
-        ],
-        properties: {
-          schemaVersion: { const: '1.0' },
-          deviceId: { type: 'string', minLength: 1, maxLength: 80 },
-          sequence: { type: 'integer', minimum: 0 },
-          moisture: { type: 'number', minimum: 0, maximum: 100 },
-          unit: { const: 'normalizedPercent' },
-          valve: { type: 'string', enum: ['open', 'closed'] },
-          lastCommandId: { type: ['string', 'null'], format: 'uuid' },
-          source: { type: 'string', enum: ['simulated', 'device'] },
-          water: ref('Water'),
-        },
+        required: telemetryRequired,
+        properties: telemetryProperties,
       },
       Ack: {
         type: 'object',
@@ -317,14 +323,14 @@ export const openApiDocument = {
         },
       },
       Reading: {
-        allOf: [
-          ref('Telemetry'),
-          {
-            type: 'object',
-            required: ['zoneId', 'receivedAt'],
-            properties: { zoneId: { type: 'string' }, receivedAt: { type: 'integer' } },
-          },
-        ],
+        type: 'object',
+        additionalProperties: false,
+        required: [...telemetryRequired, 'zoneId', 'receivedAt'],
+        properties: {
+          ...telemetryProperties,
+          zoneId: { type: 'string' },
+          receivedAt: { type: 'integer' },
+        },
       },
       Zone: {
         type: 'object',
